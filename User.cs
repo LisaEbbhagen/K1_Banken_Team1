@@ -25,7 +25,11 @@ namespace K1_Banken_Team1
 
         public void AddAccount(Account account)
         {
-            Accounts.Add(account);
+            if (!Accounts.Contains(account)) //kollar så att kontot inte redan finns i listan  
+            { 
+                Accounts.Add(account);
+            }  
+               
         }
     }
 }

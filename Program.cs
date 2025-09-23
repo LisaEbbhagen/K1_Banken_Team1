@@ -26,6 +26,7 @@
                         break;
                     case "3":
                         Console.WriteLine("Avslutar.");
+                        running = false;
                         break;
                     default:
                         Console.WriteLine("Ogiltigt val.");
@@ -35,7 +36,5 @@
                 }
             }
         }
-
-        static List<User> users = new List<User>(); //Lista för användare
     }
 }
