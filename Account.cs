@@ -6,7 +6,17 @@ using System.Threading.Tasks;
 
 namespace K1_Banken_Team1
 {
-    internal class Account
+    public class Account
     {
+        public string AccountNumber { get; private set; }
+
+        public double Balance { get; private set; }
+
+        public Account (string accountNumber)
+        {
+            AccountNumber = accountNumber;
+            Balance = 0; // nytt konto har 0 i saldo
+        }
+
     }
 }

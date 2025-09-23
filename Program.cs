@@ -4,7 +4,38 @@
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            bool running = true;
+
+            while (running)   //När running är true så körs meny loppen
+            {
+                Console.WriteLine("Välkommen till K1 Banken!\n");
+                Console.WriteLine("Välj ett av följande alternativ!");
+
+                Console.WriteLine("1. Logga in");
+                Console.WriteLine("2. Skapa konto");
+                Console.WriteLine("3. Avsluta");
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        Login();
+                        break;
+                    case "2":
+                        CreateAccount();
+                        break;
+                    case "3":
+                        Console.WriteLine("Avslutar.");
+                        break;
+                    default:
+                        Console.WriteLine("Ogiltigt val.");
+                        break;
+
+
+                }
+            }
         }
+
+        static List<User> users = new List<User>(); //Lista för användare
     }
 }
