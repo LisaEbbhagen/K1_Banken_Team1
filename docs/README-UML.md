@@ -1,0 +1,3 @@
+#UML-sketch *A User can have multiple Accounts (1 to ). *An Account can have multiple Transactions (1 to ). *Each Transaction is linked to exactly one Account.
+
++----------------+ | User | +----------------+ | - userId | | - name | | - personalId | | - email | +----------------+ | + createAccount() | +----------------+ | | 1 v +----------------+ | Account | +----------------+ | - accountId | | - accountNumber| | - balance | | - accountType | +----------------+ | + makeTransaction() | +----------------+ | | 1 v +---------------------+ | Transaction | +---------------------+ | - transactionId | | - date | | - amount | | - type | +---------------------+ | + execute() | +---------------------+
