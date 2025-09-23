@@ -19,10 +19,10 @@
                 switch (choice)
                 {
                     case "1":
-                        
+                        Login();
                         break;
                     case "2":
-                       
+                        CreatAccount();
                         break;
                     case "3":
                         Console.WriteLine("Avslutar.");
