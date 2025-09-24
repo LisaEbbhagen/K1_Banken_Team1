@@ -1,9 +1,11 @@
-v.39, rapportör: 
+v.39, rapportör: Lisa
 Deltagare (närvaro): Abdalle, Rolf, Lisa 
 Sprintmål (veckans DoD): Implementerat enkla use cases: skapa konto, lista konton, se saldo + Körbar demo
 
-Vad vi gjorde:
-Problem/hinder:
+Vad vi gjorde: Bra struktur på mötet, lätt att komma igång. Alla bidrog. 
+Skapade ett nytt projekt och gjorde förra veckans uppdrag på nytt. Ordnade med dokumentationen och mappstrukturen i GitHub. Kom nästan i mål med våra klasser, metoder o properties. Ingen färdig demo finns än. 
+
+Problem/hinder: Problem att mergea från Abdalle och Rolfs brancher. Troligtvis berodde detta på att mappstrukturen fortfarande var under uppbyggnad när deras brancher skapades. Har fått ett nytt större konferensrum men det delas fortfarande med den andra Umeå-gruppen vilket upplevs lite distaherande. 
 
 ________________________________________________________________________________
 
