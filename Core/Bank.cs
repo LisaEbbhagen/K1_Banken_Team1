@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace K1_Banken_Team1
+﻿namespace K1_Banken_Team1
 {
     public class Bank
     {
@@ -29,6 +23,36 @@ namespace K1_Banken_Team1
             return accounts.FirstOrDefault(a => a.AccountNumber == accountNumber);
         }
 
+        public bool Transfer(string fromAccountNumber, string toAccountNumber, decimal amount) //metod för att skicka/ta ut pengar och kollar konton.
+        {
+            Account from = FindAccount(fromAccountNumber);
+            Account to = FindAccount(toAccountNumber);
+
+            if(from == null || to == null)
+            {
+                Console.WriteLine("Ett eller båda kontonumren är fel");
+                return false;
+            }
+
+            if (from.Withdraw(amount))
+            {
+                to.Deposit(amount);
+                Console.WriteLine($"Förtöver {amount} från {fromAccountNumber} till {toAccountNumber}");
+                return true;
+            }
+
+            Console.WriteLine("Överföring misslyckades.");
+            return false;
+        }
+
+        public void ShowBalance()
+        {
+            foreach(var user in users)
+            {
+                decimal total = user.Accounts.Sum(a => a.Balance);
+                Console.WriteLine($"{user.Name} {user.Id} - {total}SEK");
+            }
+        }
 
     }
 }
