@@ -1,3 +1,12 @@
+v.40 rapportör: Rolf
+Deltagare (närvaro): Abdalle, Rolf
+Sprintmål (veckans DoD): Implementerat enkla use cases: skapa konto, lista konton, se saldo + Körbar demo 
+
+Vad vi gjorde: Vi började dagen men ett möte med Malin där hon ville gå igenom Github igen med alla. Rolf ändrade menyn och la till en Transfer metod samt metod för att sätta in och ta ut pengar, Abdalle valde att göra SavingsAccount och en CheckingAccounts.
+
+Problem/hinder: Bara två som var närvaro och båda är sjuka så blev mycket att göra för två sjuklingar. Abdelle stötte på massa buggar men han vet ej varför.
+________________________________________________________________________________
+
 v.39, rapportör: Lisa
 Deltagare (närvaro): Abdalle, Rolf, Lisa 
 Sprintmål (veckans DoD): Implementerat enkla use cases: skapa konto, lista konton, se saldo + Körbar demo
