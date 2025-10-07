@@ -6,11 +6,23 @@
         {
             Bank myBank = new Bank();
 
+            User Abdalle = new User("Abdalle", "4729", "U01");
+            User Lisa = new User("Lisa", "5842", "U02");
+            User Rolf = new User("Rolf", "1406", "U03");
+
+            myBank.AddUser(Abdalle);
+            myBank.AddUser(Lisa);
+            myBank.AddUser(Rolf);
+
+            myBank.OpenAccount(Abdalle, "A01");
+            myBank.OpenAccount(Lisa, "A02");
+            myBank.OpenAccount(Rolf, "A03");
+
             bool running = true;
 
             while (running)   //När running är true så körs meny loppen
             {
-                Console.WriteLine("Välkommen till K1 Banken!\n");
+                Console.WriteLine("\nVälkommen till K1 Banken!\n");
                 Console.WriteLine("Välj ett av följande alternativ!");
 
                 Console.WriteLine("1. Sätta in pengar");
