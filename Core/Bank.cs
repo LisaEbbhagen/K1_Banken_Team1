@@ -4,7 +4,7 @@
     {
         public List<User> users { get; private set; } = new List<User>(); //Lista för användare
         public List<Account> accounts { get; private set; } = new List<Account>(); //Lista för konton
-
+        public List<Transaction> transactions { get; private set; } = new List<Transaction>(); //Lista för transaktioner
         public void OpenAccount(User user, string accountNumber) //Metod för att öppna konto
         {
             if (accounts.Any(a => a.AccountNumber == accountNumber)) //Kollar om kontonumret redan finns
@@ -52,6 +52,14 @@
                 decimal total = user.Accounts.Sum(a => a.Balance);
                 Console.WriteLine($"{user.Name} {user.Id} - {total}SEK");
             }
+        }
+
+        public List<Transaction> threeBiggestAmount()
+        {
+            return transactions //returnera värden med följande tre metoder i beaktning
+                .OrderByDecending(t => t.Amount) //sorterar listan i fallande ordning (Lambda)
+                .Take(3)
+                .ToList(); //returnerar resultatet till en vanlig lista
         }
 
     }
