@@ -93,10 +93,28 @@
         public List<Transaction> threeBiggestAmount()
         {
             return transactions //returnera värden med följande tre metoder i beaktning
-                .OrderByDecending(t => t.Amount) //sorterar listan i fallande ordning (Lambda)
+                .OrderByDescending(t => t.Amount) //sorterar listan i fallande ordning (Lambda)
                 .Take(3)
                 .ToList(); //returnerar resultatet till en vanlig lista
         }
 
+
+        public void PrintTotalBalanceAll()
+        {
+            // Gruppera alla konton per ägare (Owner)
+            var grouped = accounts
+                .GroupBy(a => a.Owner)    
+                 .Select(g => new     // g är varje grupp av konton för en användare
+                 {
+                    Owner = g.Key,      // användaren
+                    TotalBalance = g.Sum(a => a.Balance) // summera alla konton i gruppen
+                 });
+
+            Console.WriteLine("Totalt saldo per användare:");
+            foreach (var g in grouped)
+            {
+                Console.WriteLine($"{g.Owner.Name} - {g.TotalBalance} SEK");
+            }
+        }
     }
 }
