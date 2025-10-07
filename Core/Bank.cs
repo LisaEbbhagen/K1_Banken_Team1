@@ -17,11 +17,11 @@
             }
         }
 
-        public List<Account> accounts { get; private set; } = new List<Account>(); //Lista för konton
+        public Dictionary<string, Account> accounts = new Dictionary<string, Account>(); //Dictionary för konton
 
         public List<Account> AccountsWithPositivBalance() //LINQ för konton med positivt saldo
         {
-            return accounts.Where(accounts => accounts.Balance > 0).ToList();
+            return accounts.Values.Where(accounts => accounts.Balance > 0).ToList();
         }
 
         public void PrintAccountsWithPositivBalance() //Metod för att skriva ut konton med positivt saldo
@@ -43,20 +43,21 @@
         public List<Transaction> transactions { get; private set; } = new List<Transaction>(); //Lista för transaktioner
         public void OpenAccount(User user, string accountNumber) //Metod för att öppna konto
         {
-            if (accounts.Any(a => a.AccountNumber == accountNumber)) //Kollar om kontonumret redan finns
+            if (accounts.ContainsKey(accountNumber)) //Kollar om kontonumret redan finns
             {
                 Console.WriteLine("Kontonumret finns redan.");
                 return;
             }
 
             Account newAccount = new Account(accountNumber, user); //Skapar nytt konto
-            accounts.Add(newAccount); //Lägger till kontot i listan
+            accounts.Add(accountNumber, newAccount); //Lägger till kontot
             user.AddAccount(newAccount); //Lägger till kontot i användarens lista
         }
 
         public Account FindAccount(string accountNumber)//Metod för att hitta konto
         {
-            return accounts.FirstOrDefault(a => a.AccountNumber == accountNumber);
+            accounts.TryGetValue(accountNumber, out Account account);
+            return account;
         }
 
         public bool Transfer(string fromAccountNumber, string toAccountNumber, decimal amount) //metod för att skicka/ta ut pengar och kollar konton.
@@ -93,7 +94,7 @@
         public List<Transaction> threeBiggestAmount()
         {
             return transactions //returnera värden med följande tre metoder i beaktning
-                .OrderByDecending(t => t.Amount) //sorterar listan i fallande ordning (Lambda)
+                .OrderByDescending(t => t.Amount) //sorterar listan i fallande ordning (Lambda)
                 .Take(3)
                 .ToList(); //returnerar resultatet till en vanlig lista
         }
