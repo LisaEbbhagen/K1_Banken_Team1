@@ -32,9 +32,14 @@
                         decimal wAmount = decimal.Parse(Console.ReadLine());
                         //mer kod?
                         break;
-                    case "3":
-
-
+                    case "3": //visa transaktioner 
+                        Console.WriteLine("De tre största transaktionerna är:");
+                        //Sortera transaktioner efter belopp, visa dem tre största
+                        var topThree = myBank.threeBiggestAmount();
+                        foreach (var trans in topThree)
+                        {
+                            Console.WriteLine(trans);
+                        }
                         break;
                     case "4":
                         myBank.ShowBalance();
