@@ -12,7 +12,7 @@ namespace K1_Banken_Team1
         public string Pin { get; private set; }
         public string Id { get; private set; }
 
-        public List<Account> Accounts { get; private set; }     // Aggregation/komposition → användaren äger sina konton
+        public HashSet<Account> Accounts { get; private set; }     // Aggregation/komposition → användaren äger sina konton
 
 
         public User(string name, string pin, string id)
@@ -20,7 +20,7 @@ namespace K1_Banken_Team1
             Name = name;
             Pin = pin;
             Id = id;
-            Accounts = new List<Account>(); // viktigt! annars är listan null
+            Accounts = new HashSet<Account>(); // viktigt! annars är listan null
         }
 
         public void AddAccount(Account account)

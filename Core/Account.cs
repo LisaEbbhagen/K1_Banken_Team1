@@ -20,5 +20,18 @@ namespace K1_Banken_Team1
             Balance = 0; // nytt konto har 0 i saldo
         }
 
+        public bool Deposit(decimal amount) //metod för att sätta in pengar.
+        {
+            if (amount <= 0) return false;
+            Balance += amount;
+            return true;
+        }
+
+        public bool Withdraw(decimal amount) //metod för att ta ut pengar.
+        {
+            if(amount <= 0 || amount > Balance) return false;
+            Balance -= amount;
+            return true;
+        }
     }
 }
