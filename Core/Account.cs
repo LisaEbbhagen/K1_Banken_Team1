@@ -10,7 +10,7 @@ namespace K1_Banken_Team1
     {
         public string AccountNumber { get; private set; }
 
-        public decimal Balance { get; private set; }
+        public decimal Balance { get; protected set; } //För att subklasserna ska komma åt värdet behöver det vara protected
         public User Owner { get; private set; } // varje konto har en ägare
 
         List<Transaction> transactions = new List<Transaction>(); // varje konto har en lista med transaktioner
@@ -25,6 +25,18 @@ namespace K1_Banken_Team1
 
         public virtual bool Deposit(decimal amount) //metod för att sätta in pengar.
         {
+            if (amount <= 0)
+            {
+                Console.WriteLine("Error: Summan du väljer att sätta in måste vara mer än 0kr.");
+                return false;
+            }
+
+            else
+            {
+                Balance += amount;
+                Console.WriteLine($"Aktuellt saldo efter insättning: {Balance}");
+                return true;
+            }
             if (amount <= 0) return false;
             Balance += amount;
 
@@ -41,6 +53,17 @@ namespace K1_Banken_Team1
 
         public virtual bool Withdraw(decimal amount) //metod för att ta ut pengar.
         {
+            if (amount <= 0 || amount > Balance)
+            {
+                Console.WriteLine("Error: Summan du väljer att sätta in måste vara mer än 0kr.");
+                return false;
+            }
+            else
+            {
+                Balance -= amount;
+                Console.WriteLine($"Aktuellt saldo efter uttag: {Balance}");
+                return true; 
+            }
             if (amount <= 0 || amount > Balance) return false;
             Balance -= amount;
 

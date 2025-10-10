@@ -140,7 +140,7 @@
                     "Transfer");
                 transactions.Add(transaction);
 
-                Console.WriteLine($"Förtöver {amount} från {fromAccountNumber} till {toAccountNumber}");
+                Console.WriteLine($"För över {amount} från {fromAccountNumber} till {toAccountNumber}");
                 return true;
             }
             if (amount <= 0)
@@ -175,11 +175,11 @@
         {
             // Gruppera alla konton per ägare (Owner)
             var grouped = accounts
-                .GroupBy(a => a.Value.Owner)
+                .GroupBy(a => a.Value.Owner)    
                  .Select(g => new     // g är varje grupp av konton för en användare
                  {
-                     Owner = g.Key,      // användaren
-                     TotalBalance = g.Sum(a => a.Value.Balance) // summera alla konton i gruppen
+                    Owner = g.Key,      // användaren
+                    TotalBalance = g.Sum(a => a.Value.Balance) // summera alla konton i gruppen
                  });
 
             Console.WriteLine("Totalt saldo per användare:");
