@@ -26,7 +26,9 @@
                 Console.Clear();
                 Console.WriteLine("=== Välkommen till K1 Banken ===");
                 Console.WriteLine("1. Logga in");
-                Console.WriteLine("2. Avsluta");
+                Console.WriteLine("2. Skapa konto (Ej implementerat)");
+                Console.WriteLine("3. Admin");
+                Console.WriteLine("4. Avsluta");
                 Console.Write("Val: ");
                 string startChoice = Console.ReadLine();
 
