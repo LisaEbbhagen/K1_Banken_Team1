@@ -74,8 +74,22 @@
             if (from.Withdraw(amount))
             {
                 to.Deposit(amount);
+
+                var transaction = new Transaction(
+                    Guid.NewGuid().ToString(),
+                    fromAccountNumber,
+                    amount,
+                    DateTime.Now,
+                    "Transfer");
+                transactions.Add(transaction);
+
                 Console.WriteLine($"Förtöver {amount} från {fromAccountNumber} till {toAccountNumber}");
                 return true;
+            }
+            if (amount <= 0)
+            {
+                Console.WriteLine("Beloppet måste vara större än noll.");
+                return false;
             }
 
             Console.WriteLine("Överföring misslyckades.");
