@@ -54,9 +54,19 @@
                         }
                         break;
 
-                    case "2":
+                    case "2": //Skapa konto (Ej implementerat)
+                        
+                        break;
+
+                    case "3":
+                        myBank.AdminMenu();
+                        break;
+
+                    case "4":
+                        Console.WriteLine("Avslutar programmet...");
                         running = false;
                         break;
+
                     default:
                         Console.WriteLine("Ogiltigt val. Försök igen.");
                         Console.ReadKey();
@@ -108,7 +118,7 @@
                                 }
                                 break;
 
-                            case "3": //visa transaktioner 
+                            case "3": //visa transaktioner BEHÖVER FIXAS
                                 Console.WriteLine("De tre största transaktionerna är:");
                                 //Sortera transaktioner efter belopp, visa dem tre största
                                 var topThree = myBank.threeBiggestAmount();
