@@ -1,3 +1,21 @@
+v.41 rapportör: Rolf
+Deltagare (närvaro): Lisa, Rolf
+Sprintmål (veckans DoD): List, Dictionary, HashSet används på minst ett ställe var. Minst 3 LINQ-frågor (Where, OrderBy, GroupBy) fungerar och skriver ut resultat. Felhantering finns för tomma listor, null, ogiltig inmatning. Lokal demo körbar utan krascher.
+
+Vad vi gjorde: Vi började med att gå igenom vad som gjorts förra veckan. Vi la till filtrering, sortering, gruppering och aggregering. Vi ändrade också några av våra List till Dictionary och HashSet där vi tror det skulle passa bra samt ändra de fel som kommer med att ändra List.
+
+Problem/hinder: Bara två som var närvaro så det är svårt att få med allt så vi skulle behöva lite extra tid eller att alla är närvarande så vi hinner få med det vi missat från föregående workshops.
+________________________________________________________________________________
+
+v.40 rapportör: Rolf
+Deltagare (närvaro): Abdalle, Rolf
+Sprintmål (veckans DoD): Implementerat enkla use cases: skapa konto, lista konton, se saldo + Körbar demo 
+
+Vad vi gjorde: Vi började dagen men ett möte med Malin där hon ville gå igenom Github igen med alla. Rolf ändrade menyn och la till en Transfer metod samt metod för att sätta in och ta ut pengar, Abdalle valde att göra SavingsAccount och en CheckingAccounts.
+
+Problem/hinder: Bara två som var närvaro och båda är sjuka så blev mycket att göra för två sjuklingar. Abdelle stötte på massa buggar men han vet ej varför.
+________________________________________________________________________________
+
 v.39, rapportör: Lisa
 Deltagare (närvaro): Abdalle, Rolf, Lisa 
 Sprintmål (veckans DoD): Implementerat enkla use cases: skapa konto, lista konton, se saldo + Körbar demo
