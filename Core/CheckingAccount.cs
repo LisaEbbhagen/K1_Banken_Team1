@@ -2,25 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace K1_Banken_Team1
+namespace K1_Banken_Team1.Core
 {
-    public class Account
+    public class CheckingAccount : Account
     {
-        public string AccountNumber { get; private set; }
+        public CheckingAccount(string accountNumber, User owner) : base(accountNumber, owner) { }
 
-        public decimal Balance { get; protected set; } //För att subklasserna ska komma åt värdet behöver det vara protected
-        public User Owner { get; private set; } // varje konto har en ägare
-
-        public Account(string accountNumber, User owner)
-        {
-            AccountNumber = accountNumber;
-            Owner = owner;
-            Balance = 0; // nytt konto har 0 i saldo
-        }
-
-        public virtual bool Deposit(decimal amount) //metod för att sätta in pengar.
+        public override bool Deposit(decimal amount) //metod för att sätta in pengar.
         {
             if (amount <= 0)
             {
@@ -36,7 +27,7 @@ namespace K1_Banken_Team1
             }
         }
 
-        public virtual bool Withdraw(decimal amount) //metod för att ta ut pengar.
+        public override bool Withdraw(decimal amount) //metod för att ta ut pengar.
         {
             if (amount <= 0 || amount > Balance)
             {
@@ -47,7 +38,7 @@ namespace K1_Banken_Team1
             {
                 Balance -= amount;
                 Console.WriteLine($"Aktuellt saldo efter uttag: {Balance}");
-                return true; 
+                return true;
             }
         }
     }
