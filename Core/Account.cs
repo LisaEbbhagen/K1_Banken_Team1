@@ -10,7 +10,7 @@ namespace K1_Banken_Team1
     {
         public string AccountNumber { get; private set; }
 
-        public decimal Balance { get; private set; }
+        public decimal Balance { get;  set; }
         public User Owner { get; private set; } // varje konto har en ägare
 
         public Account(string accountNumber, User owner)

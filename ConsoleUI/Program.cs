@@ -18,48 +18,132 @@
             myBank.OpenAccount(Lisa, "A02");
             myBank.OpenAccount(Rolf, "A03");
 
-            bool running = true;
+            bool run = true;
 
-            while (running)   //När running är true så körs meny loppen
+            while (run)   //När running är true så körs meny loppen
             {
-                Console.WriteLine("\nVälkommen till K1 Banken!\n");
-                Console.WriteLine("Välj ett av följande alternativ!");
+                Console.WriteLine(
+                    "\nVälkommen till K1 Banken!\n" + 
+                    "Välj ett av följande alternativ:\n" +
+                    "1. Sätta in penga\n" + 
+                    "2. Ta ut pengar\n" + 
+                    "3. Visa transaktioner\n" + 
+                    "4. Visa saldo\n" + 
+                    "5. Avsluta");
 
-                Console.WriteLine("1. Sätta in pengar");
-                Console.WriteLine("2. Ta ut pengar");
-                Console.WriteLine("3. Visa transaktioner");
-                Console.WriteLine("4. Visa saldo");
-                Console.WriteLine("5. Avsluta");
-                string choice = Console.ReadLine();
+                //Validerar användarens inmatning - ser till att bara siffror 1-5 godtas
+                string input = Console.ReadLine(); 
+                if (!int.TryParse(input, out int choice)) //TryParse kontrollerar inmatningen och stoppar ogiltiga val innan switch körs
+                {
+                    Console.WriteLine("Ogiltigt val! Skriv ett nummer mellan 1 och 5.");
+                }
 
                 switch (choice)
                 {
-                    case "1":
-                        Console.WriteLine("Belopp: ");
-                        decimal dAmount = decimal.Parse(Console.ReadLine());
-                        //mer kod?
-                        break;
-                    case "2":
-                        Console.WriteLine("Belopp: ");
-                        decimal wAmount = decimal.Parse(Console.ReadLine());
-                        //mer kod?
-                        break;
-                    case "3": //visa transaktioner 
-                        Console.WriteLine("De tre största transaktionerna är:");
-                        //Sortera transaktioner efter belopp, visa dem tre största
-                        var topThree = myBank.threeBiggestAmount();
-                        foreach (var trans in topThree)
+                    case 1: //Sätter in penger på valt konto efter validering
+                        Console.WriteLine("Kontonummer: ");
+                        string accNoIn = Console.ReadLine();
+
+                        var accIn = myBank.FindAccount(accNoIn);
+
+                        if (accIn == null)
                         {
-                            Console.WriteLine(trans);
+                            Console.WriteLine("Kontot hittades inte.");
+                            break;
+                        }
+                        Console.WriteLine("belopp: ");
+                        if (! decimal.TryParse(Console.ReadLine(), out decimal depositAmount) || depositAmount <= 0)
+                        {
+                            Console.WriteLine("Ogiltigt belopp! ");
+                            break;
+                        }
+
+                        accIn.Balance += depositAmount;
+                        Console.WriteLine($"{depositAmount} kr insatt på konto {accIn.AccountNumber}." +
+                            $"Nytt saldo: {accIn.Balance} kr.");
+                        break;
+
+
+                    case 2: //ta ut penger på valt konto efter validering
+                        Console.Write("Kontonummer: ");
+                        string accNoOut = Console.ReadLine();
+                        var accOut = myBank.FindAccount(accNoOut);
+
+                        if (accOut == null)
+                        {
+                            Console.WriteLine("❌ Kontot hittades inte.");
+                            break;
+                        }
+
+                        Console.Write("Belopp: ");
+                        if (!decimal.TryParse(Console.ReadLine(), out decimal withdrawAmount) || withdrawAmount <= 0)
+                        {
+                            Console.WriteLine("❌ Ogiltigt belopp.");
+                            break;
+                        }
+
+                        if (withdrawAmount > accOut.Balance)
+                        {
+                            Console.WriteLine("❌ För lite pengar på kontot.");
+                            break;
+                        }
+
+                        accOut.Balance -= withdrawAmount;
+                        Console.WriteLine($"✅ {withdrawAmount} kr uttaget från konto {accOut.AccountNumber}. Nytt saldo: {accOut.Balance} kr.");
+                        break;
+
+                    case 3: //visa topp 3 transaktioner för valt konto 
+                        Console.WriteLine("kontonummer:");
+                        string accNoT = Console.ReadLine();
+
+                        var top3 = myBank.transactions
+                            .Where(t=> t.AccountNumber ==accNoT)
+                            .OrderByDescending (t => t.Amount)
+                            .Take(3)
+                            .ToList();
+
+                        if (top3.Count == 0)                    //om inga transaktioner finns
+                            Console.WriteLine("Inga transaktioner ännu.");
+                        else                  // annars finns det minst 1 transaktion
+                        {
+                            Console.WriteLine($"{top3[0].Type} | {top3[0].Amount} kr"); //skriv ut första
+                            if (top3.Count > 1) Console.WriteLine($"{top3[1].Type} | {top3[1].Amount} kr"); //om minst 2, skriv ut andra
+                            if (top3.Count > 2) Console.WriteLine($"{top3[2].Type} | {top3[2].Amount} kr"); //om minst 3, skriv ut tredje
                         }
                         break;
-                    case "4":
-                        myBank.ShowBalance();
+
+                    case 4:
+                        Console.WriteLine("Kontonummer:"); // frågar om vilket konto saldot ska visas
+                        string accNoBalance = Console.ReadLine();
+
+                        var accBalance = myBank.FindAccount(accNoBalance); //letar upp kontot i banken
+
+                        if (accBalance == null) // om kontot inte finns
+                        {
+                            Console.WriteLine("Kontot hittades inte.");
+                            break;
+                        }
+
+                        //om kontot finns - skriv ut saldot
+                        Console.WriteLine($"Saldo för konto {accBalance.AccountNumber}: {accBalance.Balance} kr");
                         break;
-                    case "5":
+
+                    case 5:
                         Console.WriteLine("Avslutar.");
-                        running = false; //Sätter running till false för att avsluta loopen
+                        run = false; //Sätter running till false för att avsluta loopen
                         break;
+
+                }
+            while (run) // inre Loop - ger användaren val efter varje menyval (fortsätt eller avsluta)
+                {
+
+                    Console.WriteLine("1. Forsätt\n" + "2. Avsluta");
+                    string choice2 = Console.ReadLine();
+
+                    if (choice2 == "1") { /*run förblir true break*/ break; } //tillbaka till ytterloopen
+                    if (choice2 == "2") { run = false; break; }               //avsluta ytterloopen
+
+                    Console.WriteLine("ogiltigt val! Skriv 1 eller 2.");
 
                 }
             }

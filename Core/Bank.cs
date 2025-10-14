@@ -9,11 +9,11 @@
             if (!users.Any(u => u.Id == user.Id))
             {
                 users.Add(user);
-                Console.WriteLine($"Användare {user.Name} med ID {user.Id} har lagts till.");
+                //Console.WriteLine($"Användare {user.Name} med ID {user.Id} har lagts till.");
             }
             else
             {
-                Console.WriteLine("Användaren finns redan.");
+                //Console.WriteLine("Användaren finns redan.");
             }
         }
 
