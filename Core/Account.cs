@@ -35,20 +35,16 @@ namespace K1_Banken_Team1
             {
                 Balance += amount;
                 Console.WriteLine($"Aktuellt saldo efter insättning: {Balance}");
-                return true;
-            }
-            if (amount <= 0) return false;
-            Balance += amount;
-
-            var transaction = new Transaction(
+                var transaction = new Transaction(
                 Guid.NewGuid().ToString(), // unikt id för transaktionen
                 AccountNumber,
                 amount,
                 DateTime.Now,
                 "Deposit");
 
-            transactions.Add(transaction);
-            return true;
+                transactions.Add(transaction);
+                return true;
+            }
         }
 
         public virtual bool Withdraw(decimal amount) //metod för att ta ut pengar.
@@ -62,20 +58,16 @@ namespace K1_Banken_Team1
             {
                 Balance -= amount;
                 Console.WriteLine($"Aktuellt saldo efter uttag: {Balance}");
-                return true; 
-            }
-            if (amount <= 0 || amount > Balance) return false;
-            Balance -= amount;
-
-            var transaction = new Transaction(
+                var transaction = new Transaction(
                 Guid.NewGuid().ToString(),
                 AccountNumber,
                 -amount, // negativt belopp för uttag
                 DateTime.Now,
                 "Withdraw");
 
-            transactions.Add(transaction);
-            return true;
+                transactions.Add(transaction);
+                return true; 
+            }
         }
 
         public void PrintTransactions() //metod för att skriva ut transaktioner
