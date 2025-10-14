@@ -31,15 +31,8 @@ namespace K1_Banken_Team1
                 return false;
             }
 
-            else
-            {
                 Balance += amount;
-                Console.WriteLine($"Aktuellt saldo efter insättning: {Balance}");
-                return true;
-            }
-            if (amount <= 0) return false;
-            Balance += amount;
-
+            
             var transaction = new Transaction(
                 Guid.NewGuid().ToString(), // unikt id för transaktionen
                 AccountNumber,
@@ -48,6 +41,7 @@ namespace K1_Banken_Team1
                 "Deposit");
 
             transactions.Add(transaction);
+            Console.WriteLine($"Aktuellt saldo efter insättning: {Balance}");
             return true;
         }
 
@@ -76,6 +70,11 @@ namespace K1_Banken_Team1
 
             transactions.Add(transaction);
             return true;
+        }
+
+        public void AddTransaction(Transaction transaction)
+        {
+            transactions.Add(transaction);
         }
 
         public void PrintTransactions() //metod för att skriva ut transaktioner

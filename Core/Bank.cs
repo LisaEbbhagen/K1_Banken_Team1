@@ -8,13 +8,16 @@
 
             while (running)
             {
-                
-                Console.WriteLine("=== Admin Meny ===");
+
+                Console.WriteLine("\n=== Admin Meny ===");
                 Console.WriteLine("1. Lista alla konton");
                 Console.WriteLine("2. Visa konton med positivt saldo");
                 Console.WriteLine("3. Visa tre största transaktioner");
                 Console.WriteLine("4. Visa total saldo per användare");
-                Console.WriteLine("5. Logga ut");
+                Console.WriteLine("5. Visa största insättning eller uttag per användare");
+                Console.WriteLine("6. Visa användare med flerst transaktioner");
+                Console.WriteLine("7. Sök konto (kontonummer eller namn)");
+                Console.WriteLine("8. Logga ut");
                 Console.Write("Val: ");
                 string choice = Console.ReadLine();
 
@@ -46,6 +49,18 @@
                         break;
 
                     case "5":
+                        ShowBiggestTransactionPerUser();
+                        break;
+
+                    case "6":
+                        ShowUserWithMostTransactions();
+                        break;
+
+                    case "7":
+                        SearchAccount();
+                        break;
+
+                    case "8":
                         Console.WriteLine("Loggar ut från Admin...");
                         running = false;
                         break;
@@ -117,7 +132,7 @@
             return account;
         }
 
-        public bool Transfer(string fromAccountNumber, string toAccountNumber, decimal amount) //metod för att skicka/ta ut pengar och kollar konton.
+        public bool Transfer(string fromAccountNumber, string toAccountNumber, decimal amount)
         {
             Account from = FindAccount(fromAccountNumber);
             Account to = FindAccount(toAccountNumber);
@@ -125,6 +140,12 @@
             if (from == null || to == null)
             {
                 Console.WriteLine("Ett eller båda kontonumren är fel");
+                return false;
+            }
+
+            if (amount <= 0)
+            {
+                Console.WriteLine("Beloppet måste vara större än noll.");
                 return false;
             }
 
@@ -138,15 +159,16 @@
                     amount,
                     DateTime.Now,
                     "Transfer");
+
+                // Lägg till i Bank.transactions
                 transactions.Add(transaction);
+
+                // Lägg till i respektive kontos transaktionslista
+                from.AddTransaction(transaction);
+                to.AddTransaction(transaction);
 
                 Console.WriteLine($"För över {amount} från {fromAccountNumber} till {toAccountNumber}");
                 return true;
-            }
-            if (amount <= 0)
-            {
-                Console.WriteLine("Beloppet måste vara större än noll.");
-                return false;
             }
 
             Console.WriteLine("Överföring misslyckades.");
@@ -175,17 +197,89 @@
         {
             // Gruppera alla konton per ägare (Owner)
             var grouped = accounts
-                .GroupBy(a => a.Value.Owner)    
+                .GroupBy(a => a.Value.Owner)
                  .Select(g => new     // g är varje grupp av konton för en användare
                  {
-                    Owner = g.Key,      // användaren
-                    TotalBalance = g.Sum(a => a.Value.Balance) // summera alla konton i gruppen
+                     Owner = g.Key,      // användaren
+                     TotalBalance = g.Sum(a => a.Value.Balance) // summera alla konton i gruppen
                  });
 
             Console.WriteLine("Totalt saldo per användare:");
             foreach (var g in grouped)
             {
                 Console.WriteLine($"{g.Owner.Name} - {g.TotalBalance} SEK");
+            }
+        }
+
+        public void ShowBiggestTransactionPerUser()
+        {
+            Console.WriteLine("Största insättning eller uttag per användare:");
+
+            var groupedByUser = accounts.Values
+                                        .GroupBy(a => a.Owner.Name);
+
+            foreach (var group in groupedByUser)
+            {
+                var allTransactions = group.SelectMany(a => a.Transactions);
+                var biggestDeposit = allTransactions
+                                        .Where(t => t.Amount > 0)
+                                        .OrderByDescending(t => t.Amount)
+                                        .FirstOrDefault();
+                var biggestWithdraw = allTransactions
+                                            .Where(t => t.Amount < 0)
+                                            .OrderBy(t => t.Amount) // mest negativt
+                                            .FirstOrDefault();
+
+                Console.WriteLine($"\nAnvändare: {group.Key}");
+                Console.WriteLine($"  Största insättning: {(biggestDeposit != null ? biggestDeposit.Amount + " kr" : "Ingen")}");
+                Console.WriteLine($"  Största uttag: {(biggestWithdraw != null ? biggestWithdraw.Amount + " kr" : "Ingen")}");
+            }
+
+        }
+
+        public void ShowUserWithMostTransactions()
+        {
+            var userWithMost = transactions
+                .GroupBy(t => FindAccount(t.AccountNumber).Owner.Name)
+                .Select(g => new
+                {
+                    User = g.Key,
+                    Count = g.Count()
+                })
+                .OrderByDescending(u => u.Count)
+                .FirstOrDefault();
+
+            if (userWithMost != null)
+            {
+                Console.WriteLine($"\nAnvändare med flest transaktioner: {userWithMost.User} med {userWithMost.Count} st.");
+            }
+            else
+            {
+                Console.WriteLine("Inga transaktioner hittades.");
+            }
+        }
+
+
+        private void SearchAccount()
+        {
+            Console.WriteLine("\nAnge kontonummer eller namn:");
+            string input = Console.ReadLine().ToLower();
+
+            var results = accounts.Values
+                                  .Where(a => a.AccountNumber.ToLower().Contains(input) ||
+                                              a.Owner.Name.ToLower().Contains(input))
+                                  .ToList();
+
+            if (results.Count == 0)
+            {
+                Console.WriteLine("Inga konton hittades.");
+                return;
+            }
+
+            foreach (var acc in results)
+            {           
+                Console.WriteLine("\nResultat:");
+                Console.WriteLine($"{acc.AccountNumber} {acc.Owner.Name} {acc.Balance} kr");
             }
         }
     }
