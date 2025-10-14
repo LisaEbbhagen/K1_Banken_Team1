@@ -23,5 +23,11 @@ namespace K1_Banken_Team1
             Timestamp = timestamp;
             Type = type;
         }
+
+        //metod för att visa senaste transaktioner:
+        public void LatestTransactions()
+        {
+
+        }
     }
 }
