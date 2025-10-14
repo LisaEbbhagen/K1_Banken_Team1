@@ -31,8 +31,6 @@ namespace K1_Banken_Team1
                 return false;
             }
 
-            else
-            {
                 Balance += amount;
                 Console.WriteLine($"Aktuellt saldo efter insättning: {Balance}");
                 var transaction = new Transaction(
@@ -68,6 +66,11 @@ namespace K1_Banken_Team1
                 transactions.Add(transaction);
                 return true; 
             }
+        }
+
+        public void AddTransaction(Transaction transaction)
+        {
+            transactions.Add(transaction);
         }
 
         public void PrintTransactions() //metod för att skriva ut transaktioner
