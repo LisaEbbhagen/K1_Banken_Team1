@@ -43,7 +43,7 @@ namespace K1_Banken_Team1
                 transactions.Add(transaction);
                 return true;
             }
-        }
+        
 
         public virtual bool Withdraw(decimal amount) //metod för att ta ut pengar.
         {
