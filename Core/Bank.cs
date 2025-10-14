@@ -170,7 +170,73 @@
                 .ToList(); //returnerar resultatet till en vanlig lista
         }
 
+        public List<Transaction> LatestTransactions()
+        {
+            Console.WriteLine("Vilken typ av transaktioner vill du se?");
+            Console.WriteLine("1. Endast insättningar");
+            Console.WriteLine("2. Endast uttag");
+            Console.WriteLine("3. Endast överföringar");
+            Console.WriteLine("4. Alla transaktioner");
+            Console.WriteLine("5. Gå tillbaka till föregående meny");
 
+            string choice = Console.ReadLine();
+            IEnumerable<Transaction> filtered = Enumerable.Empty<Transaction>(); //Skapar en tom sekvens av Transaction-objekt, en tom lista som du kan fylla senare. 
+
+
+
+            //return transactions //returnera värden med följande tre metoder i beaktning
+            //   .OrderByDateTime(t => t.Amount) //sorterar listan i fallande ordning (Lambda)
+            //   .Take(10)
+            //   .ToList(); //returnerar resultatet till en vanlig lista
+            switch (choice)
+            {
+                case "1":
+                    Console.WriteLine("Senaste insättningarna:");
+                    filtered = transactions
+                        .Where(t => t.Type == "Deposit")
+                        .OrderByDescending(t => t.Timestamp)
+                        .Take(10);
+                    break;
+
+                case "2":
+                    Console.WriteLine("Senaste uttagen:");
+                    filtered = transactions
+                        .Where(t => t.Type == "Withdraw")
+                        .OrderByDescending(t => t.Timestamp)
+                        .Take(10);
+                    break;
+
+                case "3":
+                    Console.WriteLine("Senaste överföringarna:");
+                    filtered = transactions
+                        .Where(t => t.Type == "Transfer")
+                        .OrderByDescending(t => t.Timestamp)
+                        .Take(10);
+                    break;
+
+                case "4":
+                    Console.WriteLine("Alla senaste transaktioner:");
+                    filtered = transactions
+                        .OrderByDescending(t => t.Timestamp)
+                        .Take(10);
+                    break;
+
+                case "5":
+                    Console.WriteLine("Går tillbaka till föregående meny.\n");
+                    return new List<Transaction>(); // returnerar tom lista vilket gör att vi undviker ev krascher               
+
+                default:
+                    Console.WriteLine("Ogiltigt val, försök igen.");
+                    return new List<Transaction>(); // returnerar tom lista vilket gör att vi undviker ev krascher               
+            }
+            //Console.WriteLine("\nDe senaste transaktionerna:");
+            foreach (var t in filtered)
+            {
+                Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount:C} -Konto: {t.AccountNumber}");
+            }
+
+            return filtered.ToList();
+        }
         public void PrintTotalBalanceAll()
         {
             // Gruppera alla konton per ägare (Owner)

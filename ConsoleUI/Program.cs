@@ -119,13 +119,14 @@
                                 break;
 
                             case "3": //visa transaktioner BEHÖVER FIXAS
-                                Console.WriteLine("De tre största transaktionerna är:");
-                                //Sortera transaktioner efter belopp, visa dem tre största
-                                var topThree = myBank.threeBiggestAmount();
-                                foreach (var trans in topThree)
-                                {
-                                    Console.WriteLine(trans);
-                                }
+                                var latest = myBank.LatestTransactions();
+                                //Console.WriteLine("De tre största transaktionerna är:");
+                                ////Sortera transaktioner efter belopp, visa dem tre största
+                                //var topThree = myBank.threeBiggestAmount();
+                                //foreach (var trans in topThree)
+                                //{
+                                //    Console.WriteLine(trans);
+                                //}
                                 break;
 
                             case "4":
