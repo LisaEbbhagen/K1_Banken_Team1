@@ -10,7 +10,7 @@ namespace K1_Banken_Team1
     {
         public string AccountNumber { get; private set; }
 
-        public decimal Balance { get; protected set; } //För att subklasserna ska komma åt värdet behöver det vara protected
+        public decimal Balance { get; set; } //För att subklasserna ska komma åt värdet behöver det vara protected
         public User Owner { get; private set; } // varje konto har en ägare
 
         List<Transaction> transactions = new List<Transaction>(); // varje konto har en lista med transaktioner
