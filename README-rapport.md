@@ -1,3 +1,12 @@
+v.42 rapportör: Lisa
+Deltagare (närvaro): Lisa, Rolf, Abdalle
+Sprintmål (veckans DoD): Menygränssnitt (ConsoleUI) för inloggning: enkel loopad meny, se till att val för användaren endast visas i inloggat läge
+
+Vad vi gjorde: Vi började med att gå igenom vad som gjorts förra veckan så alla var med på tåget. Rolf la till fler menyval och metoder för Admin. Lisa la till funktion att kunna visa transaktioner med filter samt uppdaterade UML. Abdalle jobbade med att hitta en lösning för att uttagen ska vara gratis/avgift/övertrassering. 
+
+Problem/hinder: Abdalle hade till en början problem med att skapa pullrequests men vi löste det tillsammans. Vi hade också ett tag då två personer satt i samma uppdaterade dev-branch men den ena kunde köra programmet och den andra inte, hittade orsaken.
+Kontraktet ej påskrivet av alla ännu. 
+____________________________________________________________________________________________________________________-
 v.41 rapportör: Rolf
 Deltagare (närvaro): Lisa, Rolf
 Sprintmål (veckans DoD): List, Dictionary, HashSet används på minst ett ställe var. Minst 3 LINQ-frågor (Where, OrderBy, GroupBy) fungerar och skriver ut resultat. Felhantering finns för tomma listor, null, ogiltig inmatning. Lokal demo körbar utan krascher.
