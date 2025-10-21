@@ -1,3 +1,19 @@
+v.43 rapportör: Abdalle
+
+Deltagare (närvaro): Lisa, Abdalle
+Sprintmål (veckans DoD): Bygga vidare från föregående vecka och färdigställa menyvalen för insättning, uttag, visning av transaktioner samt saldo.
+
+Vad vi gjorde:
+Lisa och Abdalle gick igenom det senaste från föregående vecka. Abdalle implementerade funktioner för insättning, uttag och visning av senaste transaktioner.
+
+Problem/hinder:
+Abdalle hade problem med dev-branchen som visade fel version och inte gick att uppdatera. Efter att ha klonat om projektet kunde han fortsätta, men fick därefter merge-konflikter i pull requesten.
+Lisa la då in Abdalles kod i menyvalen, vilket visade på ett bra samarbete i gruppen när något strular.
+När arbetet skulle mergas skedde en felaktig merge till main, vilket gjorde det svårt att hitta tillbaka och orsakade ytterligare förseningar. Eftersom Rolf inte deltog denna vecka blev arbetet mer intensivt för Lisa och Abdalle.
+
+
+___________________________________________________________________________________________________________________________
+
 v.42 rapportör: Lisa
 Deltagare (närvaro): Lisa, Rolf, Abdalle
 Sprintmål (veckans DoD): Menygränssnitt (ConsoleUI) för inloggning: enkel loopad meny, se till att val för användaren endast visas i inloggat läge
