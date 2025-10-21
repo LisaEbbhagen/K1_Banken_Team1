@@ -18,29 +18,22 @@
             myBank.OpenAccount(Lisa, "A02");
             myBank.OpenAccount(Rolf, "A03");
 
-            bool run = true;
+            bool running = true;
 
-            while (run)   //När running är true så körs meny loppen
+            while (running) // == YTTRE MENY LOOP ==
             {
-                Console.WriteLine(
-                    "\nVälkommen till K1 Banken!\n" + 
-                    "Välj ett av följande alternativ:\n" +
-                    "1. Sätta in penga\n" + 
-                    "2. Ta ut pengar\n" + 
-                    "3. Visa transaktioner\n" + 
-                    "4. Visa saldo\n" + 
-                    "5. Avsluta");
+                Console.Clear();
+                Console.WriteLine("=== Välkommen till K1 Banken ===");
+                Console.WriteLine("1. Logga in");
+                Console.WriteLine("2. Skapa konto (Ej implementerat)");
+                Console.WriteLine("3. Avsluta");
+                Console.Write("Val: ");
+                string startChoice = Console.ReadLine();
 
-                //Validerar användarens inmatning - ser till att bara siffror 1-5 godtas
-                string input = Console.ReadLine(); 
-                if (!int.TryParse(input, out int choice)) //TryParse kontrollerar inmatningen och stoppar ogiltiga val innan switch körs
-                {
-                    Console.WriteLine("Ogiltigt val! Skriv ett nummer mellan 1 och 5.");
-                }
 
-                switch (choice)
+                switch (startChoice)
                 {
-                    case 1: //Sätter in penger på valt konto efter validering
+                    case "1": //Sätter in penger på valt konto efter validering
                         Console.WriteLine("Kontonummer: ");
                         string accNoIn = Console.ReadLine();
 
@@ -64,7 +57,7 @@
                         break;
 
 
-                    case 2: //ta ut penger på valt konto efter validering
+                    case "2": //ta ut penger på valt konto efter validering
                         Console.Write("Kontonummer: ");
                         string accNoOut = Console.ReadLine();
                         var accOut = myBank.FindAccount(accNoOut);
@@ -92,7 +85,7 @@
                         Console.WriteLine($"✅ {withdrawAmount} kr uttaget från konto {accOut.AccountNumber}. Nytt saldo: {accOut.Balance} kr.");
                         break;
 
-                    case 3: //visa topp 3 transaktioner för valt konto 
+                    case "3": //visa topp 3 transaktioner för valt konto 
                         Console.WriteLine("kontonummer:");
                         string accNoT = Console.ReadLine();
 
@@ -112,7 +105,7 @@
                         }
                         break;
 
-                    case 4:
+                    case "4":
                         Console.WriteLine("Kontonummer:"); // frågar om vilket konto saldot ska visas
                         string accNoBalance = Console.ReadLine();
 
@@ -128,20 +121,20 @@
                         Console.WriteLine($"Saldo för konto {accBalance.AccountNumber}: {accBalance.Balance} kr");
                         break;
 
-                    case 5:
+                    case "5":
                         Console.WriteLine("Avslutar.");
-                        run = false; //Sätter running till false för att avsluta loopen
+                        running = false; //Sätter running till false för att avsluta loopen
                         break;
 
                 }
-            while (run) // inre Loop - ger användaren val efter varje menyval (fortsätt eller avsluta)
+            while (running) // inre Loop - ger användaren val efter varje menyval (fortsätt eller avsluta)
                 {
 
                     Console.WriteLine("1. Forsätt\n" + "2. Avsluta");
                     string choice2 = Console.ReadLine();
 
                     if (choice2 == "1") { /*run förblir true break*/ break; } //tillbaka till ytterloopen
-                    if (choice2 == "2") { run = false; break; }               //avsluta ytterloopen
+                    if (choice2 == "2") { running = false; break; }               //avsluta ytterloopen
 
                     Console.WriteLine("ogiltigt val! Skriv 1 eller 2.");
 
