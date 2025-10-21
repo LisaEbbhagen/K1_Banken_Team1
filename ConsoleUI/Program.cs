@@ -18,6 +18,18 @@
             myBank.OpenAccount(Lisa, "A02");
             myBank.OpenAccount(Rolf, "A03");
 
+
+            myBank.Transfer("B01", "A01", 50000);
+            myBank.Transfer("B02", "A01", 2000);
+            myBank.Transfer("A01", "B03", 5000);
+            myBank.Transfer("A02", "B04", 300);
+            myBank.Transfer("A02", "B05", 1000);
+            myBank.Transfer("B06", "A02", 10000);
+            myBank.Transfer("B07", "A02", 500);
+            myBank.Transfer("B08", "A03", 2000);
+            myBank.Transfer("B09", "A03", 30000);
+            myBank.Transfer("A03", "B10", 500);
+
             bool running = true;
 
             while (running)   //När running är true så körs meny loppen
