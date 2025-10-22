@@ -12,10 +12,10 @@
                 Console.WriteLine("\n=== Admin Meny ===");
                 Console.WriteLine("1. Lista alla konton");
                 Console.WriteLine("2. Visa konton med positivt saldo");
-                Console.WriteLine("3. Visa tre största transaktioner");
+                Console.WriteLine("3. Visa de tre största transaktioner");
                 Console.WriteLine("4. Visa total saldo per användare");
-                Console.WriteLine("5. Visa största insättning eller uttag per användare");
-                Console.WriteLine("6. Visa användare med flerst transaktioner");
+                Console.WriteLine("5. Visa största insättning & uttag per användare");
+                Console.WriteLine("6. Visa användare med flest transaktioner");
                 Console.WriteLine("7. Sök konto (kontonummer eller namn)");
                 Console.WriteLine("8. Logga ut");
                 Console.Write("Val: ");
@@ -29,10 +29,12 @@
                         {
                             Console.WriteLine($"Konto: {acc.AccountNumber}, Ägare: {acc.Owner.Name}, Saldo: {acc.Balance} SEK");
                         }
+                        Pause();
                         break;
 
                     case "2":
                         PrintAccountsWithPositivBalance();
+                        Pause();
                         break;
 
                     case "3":
@@ -42,22 +44,27 @@
                         {
                             Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount} kr – Konto: {t.AccountNumber}");
                         }
+                        Pause();
                         break;
 
                     case "4":
                         PrintTotalBalanceAll();
+                        Pause();
                         break;
 
                     case "5":
                         ShowBiggestTransactionPerUser();
+                        Pause();
                         break;
 
                     case "6":
                         ShowUserWithMostTransactions();
+                        Pause();
                         break;
 
                     case "7":
                         SearchAccount();
+                        Pause();
                         break;
 
                     case "8":
@@ -263,12 +270,13 @@
         {
             // Gruppera alla konton per ägare (Owner)
             var grouped = accounts
-                .GroupBy(a => a.Value.Owner)
+                 .GroupBy(a => a.Value.Owner)
                  .Select(g => new     // g är varje grupp av konton för en användare
                  {
                      Owner = g.Key,      // användaren
                      TotalBalance = g.Sum(a => a.Value.Balance) // summera alla konton i gruppen
-                 });
+                 })
+                 .OrderByDescending(g => g.TotalBalance); //sortera i fallande ordning
 
             Console.WriteLine("Totalt saldo per användare:");
             foreach (var g in grouped)
@@ -342,11 +350,22 @@
                 return;
             }
 
+            Console.WriteLine("\nResultat:");
+            Console.WriteLine("--------------------------------------------------");
+            Console.WriteLine($"{"Kontonummer",-15} {"Ägare",-20} {"Saldo",10}"); // -15 -20=Vänsterjustera och reservera 15 resp 20 tecken, 10=högerjustera o reservera 10 tecken. :C = formaterar som valuta
+            Console.WriteLine("--------------------------------------------------");
+
             foreach (var acc in results)
-            {           
-                Console.WriteLine("\nResultat:");
-                Console.WriteLine($"{acc.AccountNumber} {acc.Owner.Name} {acc.Balance} kr");
+            {
+                Console.WriteLine($"{acc.AccountNumber,-15} {acc.Owner.Name,-20} {acc.Balance,10:C}");
             }
+        }
+
+        private void Pause()
+        {
+            Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
+            Console.ReadKey();
+            Console.Clear(); // Rensar konsolen för en fräsch meny
         }
     }
 }
