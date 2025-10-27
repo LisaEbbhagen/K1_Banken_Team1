@@ -89,7 +89,8 @@
                         Console.WriteLine("2. Ta ut pengar");
                         Console.WriteLine("3. Visa transaktioner");
                         Console.WriteLine("4. Visa saldo");
-                        Console.WriteLine("5. Avsluta");
+                        Console.WriteLine("5. Öppna ett nytt sparkonto");
+                        Console.WriteLine("6. Avsluta");
                         string choice = Console.ReadLine();
 
                         switch (choice)
@@ -134,6 +135,10 @@
                                 break;
 
                             case "5":
+                                myBank.AddNewSavingsAccount(currentUser);
+                                break;
+
+                            case "6":
                                 Console.WriteLine($"Loggar ut {currentUser.Name}...");
                                 loggedIn = false;
                                 break;
