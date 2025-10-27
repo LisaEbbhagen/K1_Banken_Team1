@@ -14,10 +14,10 @@ namespace K1_Banken_Team1
                 Console.WriteLine("\n=== Admin Meny ===");
                 Console.WriteLine("1. Lista alla konton");
                 Console.WriteLine("2. Visa konton med positivt saldo");
-                Console.WriteLine("3. Visa tre största transaktioner");
+                Console.WriteLine("3. Visa de tre största transaktioner");
                 Console.WriteLine("4. Visa total saldo per användare");
-                Console.WriteLine("5. Visa största insättning eller uttag per användare");
-                Console.WriteLine("6. Visa användare med flerst transaktioner");
+                Console.WriteLine("5. Visa största insättning & uttag per användare");
+                Console.WriteLine("6. Visa användare med flest transaktioner");
                 Console.WriteLine("7. Sök konto (kontonummer eller namn)");
                 Console.WriteLine("8. Logga ut");
                 Console.Write("Val: ");
@@ -271,6 +271,8 @@ namespace K1_Banken_Team1
                      Owner = g.Key,      // användaren
                      TotalBalance = g.Sum(a => a.Value.Balance) // summera alla konton i gruppen
                  });
+                 })
+                 .OrderByDescending(g => g.TotalBalance); //sortera i fallande ordning
 
             Console.WriteLine("Totalt saldo per användare:");
             foreach (var g in grouped)
@@ -344,14 +346,20 @@ namespace K1_Banken_Team1
                 return;
             }
 
+            Console.WriteLine("\nResultat:");
+            Console.WriteLine("--------------------------------------------------");
+            Console.WriteLine($"{"Kontonummer",-15} {"Ägare",-20} {"Saldo",10}"); // -15 -20=Vänsterjustera och reservera 15 resp 20 tecken, 10=högerjustera o reservera 10 tecken. :C = formaterar som valuta
+            Console.WriteLine("--------------------------------------------------");
+
             foreach (var acc in results)
             {
                 Console.WriteLine("\nResultat:");
                 Console.WriteLine($"{acc.AccountNumber} {acc.Owner.Name} {acc.Balance} kr");
             }
         }
-
-        public void AddNewSavingsAccount(User user)
+        private void Pause()
+          
+        public void AddNewSavingsAccount(User user) 
         {
             string accountNumber;
 
