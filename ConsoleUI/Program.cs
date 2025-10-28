@@ -227,7 +227,7 @@ namespace K1_Banken_Team1
                                 var accounts = myBank.ListAccounts(currentUser);
 
                                 //Om inga konto finns
-                                if (account == null || !accounts.Any())
+                                if (accounts == null || !accounts.Any())
                                 {
                                     Console.WriteLine("ℹ️Du har inga konton.");
                                     myBank.Pause();
