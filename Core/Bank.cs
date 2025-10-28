@@ -42,7 +42,7 @@
                         Console.WriteLine("De tre största transaktionerna:");
                         foreach (var t in topThree)
                         {
-                            Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount} kr – Konto: {t.AccountNumber}");
+                            Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount} kr – Konto: {t.AccountNumber}"); //*fixa till utskriften, svenska o engelska blandas
                         }
                         Pause();
                         break;
@@ -139,48 +139,77 @@
             return account;
         }
 
-        public bool Transfer(string fromAccountNumber, string toAccountNumber, decimal amount)
+        //Alla transaktionstyper samlade i en metod:
+        public bool ExecuteTransaction(string type, string accountNumber, decimal amount, string toAccountNumber = null)
+
         {
-            Account from = FindAccount(fromAccountNumber);
-            Account to = FindAccount(toAccountNumber);
-
-            if (from == null || to == null)
+            if (amount<=0)
             {
-                Console.WriteLine("Ett eller båda kontonumren är fel");
+                Console.WriteLine("Ogiltigt belopp. Ange ett belopp större än 0.");
                 return false;
             }
 
-            if (amount <= 0)
+            var account = FindAccount(accountNumber);
+            if (account == null)
             {
-                Console.WriteLine("Beloppet måste vara större än noll.");
+                Console.WriteLine("Kontot hittades inte.");
                 return false;
             }
 
-            if (from.Withdraw(amount))
+            switch (type)
             {
-                to.Deposit(amount);
+                case "Deposit":
+                    if (account.Deposit(amount))
+                    {
+                        var transD = account.Transactions.LastOrDefault(); //Transaktionen hämtas från bankens translista
+                        if (transD != null) transactions.Add(transD); //Om transaktionen inte är null läggs den till i kontots translista
+                        Console.WriteLine($"Insättning på {amount} kr till konto {accountNumber} genomförd.");
+                        return true;
+                    }
+                    return false;
 
-                var transaction = new Transaction(
-                    Guid.NewGuid().ToString(),
-                    fromAccountNumber,
-                    amount,
-                    DateTime.Now,
-                    "Transfer");
+                case "Withdraw":
+                    if (account.Withdraw(amount))
+                    {
+                        var transW = account.Transactions.LastOrDefault(); //Transaktionen hämtas från bankens translista
+                        if (transW != null) transactions.Add(transW); //Om transaktionen inte är null läggs den till i kontots translista
+                        Console.WriteLine($"Uttag på {amount} kr från konto {accountNumber} genomförd.");
+                        return true;
+                    }
+                    Console.WriteLine("Uttag misslyckades, kontrollera saldo.");
+                    return false;
 
-                // Lägg till i Bank.transactions
-                transactions.Add(transaction);
+                case "Transfer":
+                    var toAccount = FindAccount(toAccountNumber);
+                    if (toAccount == null)
+                    {
+                        Console.WriteLine("Mottagarkontot hittades inte.");
+                        return false;
+                    }
 
-                // Lägg till i respektive kontos transaktionslista
-                from.AddTransaction(transaction);
-                to.AddTransaction(transaction);
+                    if (!account.Withdraw(amount))
+                    {
+                        Console.WriteLine("Överföring misslyckades. Kontrollera saldo.");
+                        return false;
+                    }
 
-                Console.WriteLine($"För över {amount} från {fromAccountNumber} till {toAccountNumber}");
-                return true;
+                    toAccount.Deposit(amount);
+
+                    var transFrom = account.Transactions.LastOrDefault(); //Överföringen hämtas från bankens translista
+                    var transTo = toAccount.Transactions.LastOrDefault(); //Överföringen hämtas från bankens translista
+                    if (transFrom != null) transactions.Add(transFrom); //Om överföringen inte är null läggs den till i från-kontots translista
+                    if (transTo != null) transactions.Add(transTo); //Om överföringen inte är null läggs den till i till-kontots translista
+
+                    Console.WriteLine($"Överförde {amount} kr från {accountNumber} till {toAccountNumber}.");
+                        return true;
+
+                default:
+                    Console.WriteLine("Ogiltig transaktionstyp.");
+                    return false;
             }
-
-            Console.WriteLine("Överföring misslyckades.");
-            return false;
         }
+
+            
 
         public void ShowBalance()
         {
@@ -199,7 +228,7 @@
                 .ToList(); //returnerar resultatet till en vanlig lista
         }
 
-        public List<Transaction> LatestTransactions()
+        public List<Transaction> LatestTransactions(string accountNumber)
         {
             Console.WriteLine("Vilken typ av transaktioner vill du se?");
             Console.WriteLine("1. Endast insättningar");
@@ -211,18 +240,12 @@
             string choice = Console.ReadLine();
             IEnumerable<Transaction> filtered = Enumerable.Empty<Transaction>(); //Skapar en tom sekvens av Transaction-objekt, en tom lista som du kan fylla senare. 
 
-
-
-            //return transactions //returnera värden med följande tre metoder i beaktning
-            //   .OrderByDateTime(t => t.Amount) //sorterar listan i fallande ordning (Lambda)
-            //   .Take(10)
-            //   .ToList(); //returnerar resultatet till en vanlig lista
             switch (choice)
             {
                 case "1":
                     Console.WriteLine("Senaste insättningarna:");
                     filtered = transactions
-                        .Where(t => t.Type == "Deposit")
+                        .Where(t => t.Type == "Deposit" && t.AccountNumber == accountNumber)
                         .OrderByDescending(t => t.Timestamp)
                         .Take(10);
                     break;
@@ -230,7 +253,7 @@
                 case "2":
                     Console.WriteLine("Senaste uttagen:");
                     filtered = transactions
-                        .Where(t => t.Type == "Withdraw")
+                        .Where(t => t.Type == "Withdraw" && t.AccountNumber == accountNumber)
                         .OrderByDescending(t => t.Timestamp)
                         .Take(10);
                     break;
@@ -238,16 +261,16 @@
                 case "3":
                     Console.WriteLine("Senaste överföringarna:");
                     filtered = transactions
-                        .Where(t => t.Type == "Transfer")
+                        .Where(t => t.Type == "Transfer" && t.AccountNumber == accountNumber)
                         .OrderByDescending(t => t.Timestamp)
                         .Take(10);
                     break;
 
                 case "4":
-                    Console.WriteLine("Alla senaste transaktioner:");
+                    Console.WriteLine("Alla transaktioner:");
                     filtered = transactions
-                        .OrderByDescending(t => t.Timestamp)
-                        .Take(10);
+                        .Where(t => t.AccountNumber == accountNumber)
+                        .OrderByDescending(t => t.Timestamp);
                     break;
 
                 case "5":
@@ -258,11 +281,16 @@
                     Console.WriteLine("Ogiltigt val, försök igen.");
                     return new List<Transaction>(); // returnerar tom lista vilket gör att vi undviker ev krascher               
             }
-            //Console.WriteLine("\nDe senaste transaktionerna:");
+            //Utskrift i tabellformat
+            Console.WriteLine("-----------------------------------------------------------------------------------------------");
+            Console.WriteLine($"{"Tidstämpel:",-20}  {"Typ:",-12}  {"Summa:",-15}  {"Kontonummer:",-10}");
+            Console.WriteLine("-----------------------------------------------------------------------------------------------");
+           
             foreach (var t in filtered)
             {
-                Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount:C} -Konto: {t.AccountNumber}");
+                Console.WriteLine($"{t.Timestamp,-20} | {t.Type,-12} | {t.Amount,-15:C} | {t.AccountNumber,-10}");
             }
+            Console.WriteLine("-----------------------------------------------------------------------------------------------");
 
             return filtered.ToList();
         }

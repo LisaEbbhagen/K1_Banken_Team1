@@ -20,16 +20,12 @@ namespace K1_Banken_Team1
             myBank.OpenAccount(Lisa, "A02");
             myBank.OpenAccount(Rolf, "A03");
 
-            myBank.Transfer("B01", "A01", 50000);
-            myBank.Transfer("B02", "A01", 2000);
-            myBank.Transfer("A01", "B03", 5000);
-            myBank.Transfer("A02", "B04", 300);
-            myBank.Transfer("A02", "B05", 1000);
-            myBank.Transfer("B06", "A02", 10000);
-            myBank.Transfer("B07", "A02", 500);
-            myBank.Transfer("B08", "A03", 2000);
-            myBank.Transfer("B09", "A03", 30000);
-            myBank.Transfer("A03", "B10", 500);
+            myBank.ExecuteTransaction("Deposit", "A01", 20000);
+            myBank.ExecuteTransaction("Withdraw", "A01", 5000);
+            myBank.ExecuteTransaction("Deposit", "A02", 15000);
+            myBank.ExecuteTransaction("Withdraw", "A02", 7000);
+            myBank.ExecuteTransaction("Deposit", "A03", 25000);
+            myBank.ExecuteTransaction("Withdraw", "A03", 500);
 
             bool running = true;
 
@@ -126,13 +122,16 @@ namespace K1_Banken_Team1
                                     Console.WriteLine("Ogiltigt belopp! ");
                                     break;
                                 }
-                                else
+                           
+                                if (myBank.ExecuteTransaction("Deposit", accIn.AccountNumber, depositAmount))
                                 {
-                                    accIn.Balance += depositAmount;
                                     Console.WriteLine($"{depositAmount} kr insatt på konto {accIn.AccountNumber}." +
                                         $"Nytt saldo: {accIn.Balance} kr.");
                                 }
-                                   
+                                else
+                                {
+                                    Console.WriteLine("Insättning misslyckades.");
+                                }
                                 break;
 
                             case "2":
@@ -153,37 +152,38 @@ namespace K1_Banken_Team1
                                     Console.WriteLine("❌ Ogiltigt belopp.");
                                     break;
                                 }
-
                                 if (withdrawAmount > accOut.Balance)
                                 {
                                     Console.WriteLine("❌ För lite pengar på kontot.");
                                     break;
                                 }
-
-                                accOut.Balance -= withdrawAmount;
-                                Console.WriteLine($"✅ {withdrawAmount} kr uttaget från konto {accOut.AccountNumber}. Nytt saldo: {accOut.Balance} kr.");
-                                break;
-
-                            case "3": //visa topp 3 transaktioner för valt konto 
-                                Console.WriteLine("kontonummer:");
-                                string accNoT = Console.ReadLine();
-
-                                var top3 = myBank.transactions
-                                    .Where(t => t.AccountNumber == accNoT)
-                                    .OrderByDescending(t => t.Amount)
-                                    .Take(3)
-                                    .ToList();
-
-                                if (top3.Count == 0)                    //om inga transaktioner finns
-                                    Console.WriteLine("Inga transaktioner ännu.");
-                                else                  // annars finns det minst 1 transaktion
+                                if (myBank.ExecuteTransaction("Withdraw", accOut.AccountNumber, withdrawAmount))
+                                { 
+                                    Console.WriteLine($"✅ {withdrawAmount} kr uttaget från konto {accOut.AccountNumber}. Nytt saldo: {accOut.Balance} kr.");
+                                }
+                                else
                                 {
-                                    Console.WriteLine($"{top3[0].Type} | {top3[0].Amount} kr"); //skriv ut första
-                                    if (top3.Count > 1) Console.WriteLine($"{top3[1].Type} | {top3[1].Amount} kr"); //om minst 2, skriv ut andra
-                                    if (top3.Count > 2) Console.WriteLine($"{top3[2].Type} | {top3[2].Amount} kr"); //om minst 3, skriv ut tredje
+                                    Console.WriteLine("Uttag misslyckades.");
                                 }
                                 break;
 
+                            case "3": //Visa transaktioner
+                                Console.Write("Kontonummer: ");
+                                string accNo = Console.ReadLine();
+                                var accNumber = myBank.FindAccount(accNo);
+
+                                if (accNumber == null)
+                                {
+                                    Console.WriteLine("❌ Kontot hittades inte.");
+                                    break;
+                                }
+                                else
+                                {
+                                    myBank.LatestTransactions(accNo); //Kontonumret skickas till metoden 
+                                }
+                                break;
+
+                       
                             case "4":
                                 Console.WriteLine("Kontonummer:"); // frågar om vilket konto saldot ska visas
                                 string accNoBalance = Console.ReadLine();
