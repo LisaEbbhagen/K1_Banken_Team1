@@ -5,12 +5,7 @@ namespace K1_Banken_Team1
     internal class Program
     {
 
-        private static void Pause()
-        {
-            Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
-            Console.ReadKey(true);
-            Console.Clear();
-        }
+       
         static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -28,10 +23,9 @@ namespace K1_Banken_Team1
             myBank.AddUser(Rolf);
 
             myBank.OpenAccount(Abdalle, "A01");
-            myBank.OpenAccount(Abdalle, "A05");//
             myBank.OpenAccount(Lisa, "A02");
             myBank.OpenAccount(Rolf, "A03");
-            myBank.OpenAccount(Abdalle, "A04");//
+           
 
             myBank.Transfer("B01", "A01", 50000);
             myBank.Transfer("B02", "A01", 2000);
@@ -56,7 +50,6 @@ namespace K1_Banken_Team1
                 Console.WriteLine("2. Skapa konto (Ej implementerat)");
                 Console.WriteLine("3. Admin");
                 Console.WriteLine("4. Avsluta");
-                Console.WriteLine("5. Testa user meny (tillfälligt)"); //
 
                 Console.Write("Val: ");
                 string startChoice = Console.ReadLine();
@@ -81,12 +74,12 @@ namespace K1_Banken_Team1
                             Console.WriteLine("Fel namn eller PIN-kod. Försök igen.");
                             Thread.Sleep(2000); // Pausa i 3 sekunder för att användaren ska hinna läsa meddelandet
                         }
-                        Pause();
+                        myBank.Pause(); //myBank.pause
                         break;
 
                     case "2": //Skapa konto (Ej implementerat)
 
-                        Pause();
+                        myBank.Pause();
                         break;
 
                     case "3":
@@ -98,14 +91,10 @@ namespace K1_Banken_Team1
                         running = false;
                         break;
 
-                    case "5":
-                        RunUserMenu(myBank, Abdalle); //
-                        break;
-
                     default:
                         Console.WriteLine("Ogiltigt val. Försök igen.");
                         Console.ReadKey();
-                        Pause();
+                        myBank.Pause();
                         break;
                 }
 
@@ -126,8 +115,7 @@ namespace K1_Banken_Team1
                         Console.WriteLine("3. Visa transaktioner");
                         Console.WriteLine("4. Visa alla mina konton och saldo");
                         Console.WriteLine("5. Logga ut");
-                        Console.WriteLine("6. Tillbaka till huvudmenyn");
-                        Console.WriteLine("7. Avsluta Programmet");
+                        
                         string choice = Console.ReadLine();
 
                         switch (choice)
@@ -143,14 +131,14 @@ namespace K1_Banken_Team1
                                 if (accIn == null)
                                 {
                                     Console.WriteLine("❌Kontot hittades inte.");
-                                    Pause();
+                                    myBank.Pause();
                                     break;
                                 }
                                 Console.WriteLine("belopp: ");
                                 if (!decimal.TryParse(Console.ReadLine(), out decimal depositAmount) || depositAmount <= 0)
                                 {
                                     Console.WriteLine("❌Ogiltigt belopp! ");
-                                    Pause();
+                                    myBank.Pause();
                                     break;
                                 }
                                
@@ -158,7 +146,7 @@ namespace K1_Banken_Team1
                                     Console.WriteLine($"✅{depositAmount} kr insatt på konto {accIn.AccountNumber}.\n" +
                                         $"Nytt saldo: {accIn.Balance} kr.");
 
-                                Pause();
+                                myBank.Pause();
                                 break;
 
                             case "2":
@@ -170,7 +158,7 @@ namespace K1_Banken_Team1
                                 if (accOut == null)
                                 {
                                     Console.WriteLine("❌ Kontot hittades inte.");
-                                    Pause();
+                                    myBank.Pause();
                                     break;
                                 }
 
@@ -178,7 +166,7 @@ namespace K1_Banken_Team1
                                 if (!decimal.TryParse(Console.ReadLine(), out decimal withdrawAmount) || withdrawAmount <= 0)
                                 {
                                     Console.WriteLine("❌ Ogiltigt belopp.");
-                                    Pause();
+                                    myBank.Pause();
                                     break;
                                 }
 
@@ -190,7 +178,7 @@ namespace K1_Banken_Team1
 
                                 accOut.Balance -= withdrawAmount;
                                 Console.WriteLine($"✅ {withdrawAmount} kr uttaget från konto {accOut.AccountNumber}. Nytt saldo: {accOut.Balance} kr.");
-                                Pause();
+                                myBank.Pause();
                                 break;
 
                             case "3": //visa topp 3 transaktioner för valt konto 
@@ -206,7 +194,7 @@ namespace K1_Banken_Team1
                                 if (top3.Count == 0)                    //om inga transaktioner finns
                                 {
                                     Console.WriteLine("ℹ️Inga transaktioner ännu.");
-                                    Pause();
+                                    myBank.Pause();
                                     break;
                                 }
                                 Console.WriteLine("\nTop3 Transaktioner:");
@@ -214,7 +202,7 @@ namespace K1_Banken_Team1
                                 {
                                     Console.WriteLine($"{t.Type} | {t.Amount} kr");
                                 }
-                                Pause();
+                                myBank.Pause();
                                 break;
                                 
 
@@ -227,7 +215,7 @@ namespace K1_Banken_Team1
                                 if (!accounts.Any())
                                 {
                                     Console.WriteLine("ℹ️Du har inga konton.");
-                                    Pause();
+                                    myBank.Pause();
                                     break;
                                 }
                                 Console.WriteLine("\nDina konton och saldo:");
@@ -239,28 +227,17 @@ namespace K1_Banken_Team1
                                 {
                                     Console.WriteLine($"{currentUser.Name,-10} | {acc.AccountNumber,-10} | {acc.Balance,10:0} kr");
                                 }
-                                Pause();
+                                myBank.Pause();
                                 break;
 
                             case "5":
-                                Console.WriteLine($"Du loggas nu ut, {currentUser.Name}...");
-                                Pause();
+                                Console.WriteLine($"Du loggas nu ut, {currentUser.Name}..."); //Gör om
                                 loggedIn = false;
-                                break;
-                            case "6":
-                                Console.WriteLine("Tillbaka till huvudmenyn...");
-                                loggedIn = false;
-                                break;
-
-                            case"7":
-                                Console.WriteLine("Programmet avslutas");
-                                Environment.Exit(0);
-                                break;
-
+                                return;
 
                             default:
                                 Console.WriteLine("⚠Ogiltigt val, försök igen.");
-                                Pause();
+                                myBank.Pause();
                                 break;
 
 

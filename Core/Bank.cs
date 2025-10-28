@@ -369,7 +369,7 @@
             return user.Accounts;
         }
 
-        private void Pause()
+        public void Pause()
         {
             Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
             Console.ReadKey();
