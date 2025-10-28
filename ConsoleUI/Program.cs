@@ -100,6 +100,11 @@ namespace K1_Banken_Team1
                         Console.WriteLine("4. Visa transaktioner");
                         Console.WriteLine("5. Visa saldo");
                         Console.WriteLine("6. Avsluta");
+                        Console.WriteLine("3. Visa transaktioner");
+                        Console.WriteLine("4. Visa saldo");
+                        Console.WriteLine("5. Skapa nytt sparkonto");
+                        Console.WriteLine("6. Ta ett banklån");
+                        Console.WriteLine("7. Avsluta");
                         string choice = Console.ReadLine();
 
                         switch (choice)
@@ -236,6 +241,16 @@ namespace K1_Banken_Team1
                                 break;
 
                             case "6":
+
+                            case "5":
+                                myBank.AddNewSavingsAccount(currentUser);
+                                break;
+
+                            case "6":
+                                myBank.LoanMoney(currentUser);
+                                break;
+
+                            case "7":
                                 Console.WriteLine($"Loggar ut {currentUser.Name}...");
                                 loggedIn = false;
                                 break;

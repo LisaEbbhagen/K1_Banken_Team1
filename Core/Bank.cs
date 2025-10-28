@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Metrics;
+﻿using K1_Banken_Team1.Core;
 
 namespace K1_Banken_Team1
 {
@@ -145,6 +146,21 @@ namespace K1_Banken_Team1
             }
             accounts.TryGetValue(accountNumber, out Account account);
             return account;
+            if (string.IsNullOrWhiteSpace(accountNumber))
+            {
+                Console.WriteLine("Kontonumret får inte vara tomt.");
+                return null;
+            }
+
+            if (accounts.TryGetValue(accountNumber, out Account account))
+            {
+                return account;
+            }
+            else
+            {
+                Console.WriteLine("Konto finns ej.");
+                return null;
+            }
         }
 
         //Alla transaktionstyper samlade i en metod:
@@ -408,6 +424,102 @@ namespace K1_Banken_Team1
             Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
             Console.ReadKey();
             Console.Clear(); // Rensar konsolen för en fräsch meny
+        }
+
+        public void AddNewSavingsAccount(User user)
+        {
+            string accountNumber;
+
+            do
+            {
+                accountNumber = GenerateAccountNumber();
+            }
+            while (accounts.ContainsKey(accountNumber)); //Kollar så att kontonumret inte redan finns
+
+            SavingAccount newSavingsAccount = new SavingAccount(accountNumber, user); //Skapar nytt sparkonto
+            accounts.Add(accountNumber, newSavingsAccount); //Lägger till kontot
+            user.AddAccount(newSavingsAccount);
+
+            Console.WriteLine($"Nytt sparkonto skapat med kontonummer: {accountNumber}");
+            Console.WriteLine("Hur mycket vill du sätta in på ditt nya sparkonto?");
+            if (decimal.TryParse(Console.ReadLine(), out decimal initialDeposit) && initialDeposit > 0)
+            {
+                newSavingsAccount.Deposit(initialDeposit);
+            }
+            else
+            {
+                Console.WriteLine("Ogiltigt belopp. Inget satt in på sparkontot.");
+                return;
+            }
+
+            decimal íntrestRate = 0.02m; //2% ränta
+            decimal yearlyIntrest = initialDeposit * íntrestRate;
+            decimal totalAfterOneYear = initialDeposit + yearlyIntrest;
+
+            Console.WriteLine($"Kontonummer: {accountNumber}");
+            Console.WriteLine($"Insatt belopp: {initialDeposit:C}");
+            Console.WriteLine($"Ränta: {íntrestRate:P}");
+            Console.WriteLine($"Efter 1 år: {totalAfterOneYear:C}");
+        }
+
+        private string GenerateAccountNumber()
+        {
+            Random rnd = new Random();
+            return rnd.Next(1000, 9999).ToString(); //Genererar ett slumpmässigt 4-siffrigt kontonummer
+        }
+
+        public void LoanMoney(User user)
+        {
+            Account selectedAccount;
+            if (user.Accounts.Count == 1) //Om användaren bara har ett konto
+            {
+                selectedAccount = user.Accounts.First();
+                Console.WriteLine($"Lånet sätts automatiskt in på konto {selectedAccount.AccountNumber}.");
+            }
+            else
+            {
+                Console.WriteLine("Välj konto att sätta in lånet på:");
+                int index = 1;
+                foreach (var acc in user.Accounts)
+                {
+                    Console.WriteLine($"{index}. Konto: {acc.AccountNumber}, Saldo: {acc.Balance:C}");
+                    index++;
+                }
+
+                int choice;
+                while (true)
+                {
+                    Console.Write("Ange kontonummer: ");
+                    if (int.TryParse(Console.ReadLine(), out choice) && choice >= 1 && choice <= user.Accounts.Count)
+                    {
+                        break; // giltigt val, bryt loopen
+                    }
+
+                    Console.WriteLine("Ogiltigt val, försök igen.");
+                }
+
+                selectedAccount = user.Accounts.ElementAt(choice - 1);
+            }
+
+            decimal amount;
+            while (true) //Lånebelopp
+            {
+                Console.Write("Ange lånebelopp: ");
+                if (decimal.TryParse(Console.ReadLine(), out amount) && amount > 0)
+                {
+                    break;
+                }
+                Console.WriteLine("Beloppet måste vara större än 0.");
+            }
+
+            decimal interestRate = 0.08m; //8% ränta
+            decimal totalRepayment = amount + (amount * interestRate);
+
+            selectedAccount.Balance += amount; //Sätter in lånet på kontot
+            Console.WriteLine($"\nDu har lånat {amount:C} till konto {selectedAccount.AccountNumber}.");
+            Console.WriteLine($"Ränta: {interestRate:P}");
+            Console.WriteLine($"Totalt att betala tillbaka: {totalRepayment:C}");
+            Console.WriteLine($"Nytt saldo på kontot: {selectedAccount.Balance:C}");
         }
     }
 }
