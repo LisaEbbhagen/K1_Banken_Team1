@@ -1,4 +1,6 @@
-﻿namespace K1_Banken_Team1
+﻿using K1_Banken_Team1.Core;
+
+namespace K1_Banken_Team1
 {
     public class Bank
     {
@@ -394,6 +396,48 @@
             Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
             Console.ReadKey();
             Console.Clear(); // Rensar konsolen för en fräsch meny
+        }
+
+        public void AddNewSavingsAccount(User user)
+        {
+            string accountNumber;
+
+            do
+            {
+                accountNumber = GenerateAccountNumber();
+            }
+            while (accounts.ContainsKey(accountNumber)); //Kollar så att kontonumret inte redan finns
+
+            SavingAccount newSavingsAccount = new SavingAccount(accountNumber, user); //Skapar nytt sparkonto
+            accounts.Add(accountNumber, newSavingsAccount); //Lägger till kontot
+            user.AddAccount(newSavingsAccount);
+
+            Console.WriteLine($"Nytt sparkonto skapat med kontonummer: {accountNumber}");
+            Console.WriteLine("Hur mycket vill du sätta in på ditt nya sparkonto?");
+            if (decimal.TryParse(Console.ReadLine(), out decimal initialDeposit) && initialDeposit > 0)
+            {
+                newSavingsAccount.Deposit(initialDeposit);
+            }
+            else
+            {
+                Console.WriteLine("Ogiltigt belopp. Inget satt in på sparkontot.");
+                return;
+            }
+
+            decimal íntrestRate = 0.02m; //2% ränta
+            decimal yearlyIntrest = initialDeposit * íntrestRate;
+            decimal totalAfterOneYear = initialDeposit + yearlyIntrest;
+
+            Console.WriteLine($"Kontonummer: {accountNumber}");
+            Console.WriteLine($"Insatt belopp: {initialDeposit:C}");
+            Console.WriteLine($"Ränta: {íntrestRate:P}");
+            Console.WriteLine($"Efter 1 år: {totalAfterOneYear:C}");
+        }
+
+        private string GenerateAccountNumber()
+        {
+            Random rnd = new Random();
+            return rnd.Next(1000, 9999).ToString(); //Genererar ett slumpmässigt 4-siffrigt kontonummer
         }
     }
 }
