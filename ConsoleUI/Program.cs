@@ -96,9 +96,10 @@ namespace K1_Banken_Team1
 
                         Console.WriteLine("1. Sätta in pengar");
                         Console.WriteLine("2. Ta ut pengar");
-                        Console.WriteLine("3. Visa transaktioner");
-                        Console.WriteLine("4. Visa saldo");
-                        Console.WriteLine("5. Avsluta");
+                        Console.WriteLine("3. Överför pengar"); 
+                        Console.WriteLine("4. Visa transaktioner");
+                        Console.WriteLine("5. Visa saldo");
+                        Console.WriteLine("6. Avsluta");
                         string choice = Console.ReadLine();
 
                         switch (choice)
@@ -109,7 +110,7 @@ namespace K1_Banken_Team1
                                 Console.WriteLine("Kontonummer: ");
                                 string accNoIn = Console.ReadLine();
 
-                                var accIn = myBank.FindAccount(accNoIn);
+                                var accIn = myBank.FindAccount(accNoIn, currentUser); 
 
                                 if (accIn == null)
                                 {
@@ -138,7 +139,7 @@ namespace K1_Banken_Team1
                                 //ta ut penger på valt konto efter validering
                                 Console.Write("Kontonummer: ");
                                 string accNoOut = Console.ReadLine();
-                                var accOut = myBank.FindAccount(accNoOut);
+                                var accOut = myBank.FindAccount(accNoOut, currentUser);
 
                                 if (accOut == null)
                                 {
@@ -167,10 +168,44 @@ namespace K1_Banken_Team1
                                 }
                                 break;
 
-                            case "3": //Visa transaktioner
+                            case "3": //Överför pengar
+                                Console.Write("Vilket konto vill du överföra pengar från? ");
+                                string fromAccNo = Console.ReadLine();
+                                var fromAccNumber = myBank.FindAccount(fromAccNo, currentUser);
+
+                                Console.Write("Vilket konto vill du överföra pengar till? ");
+                                string toAccNo = Console.ReadLine();
+                                var toAccNumber = myBank.FindAccount(toAccNo);
+
+                                if (fromAccNumber == null )
+                                {
+                                    Console.WriteLine("❌ Kontot du vill överföra pengar från hittades inte.");
+                                    break;
+                                }
+
+                                if (toAccNumber == null)
+                                {
+                                    Console.WriteLine("❌ Kontot du vill överföra pengar till hittades inte.");
+                                    break;
+                                }
+
+                                Console.Write("Vilket belopp vill du överföra? ");
+                                if (!decimal.TryParse(Console.ReadLine(), out decimal transferAmount) || transferAmount <= 0)
+                                {
+                                    Console.WriteLine("\nOgiltigt belopp!");
+                                    break;
+                                }
+
+                                else
+                                {
+                                    myBank.ExecuteTransaction("Transfer", fromAccNo, transferAmount, toAccNo);
+                                }
+                                break;                   
+
+                            case "4": //Visa transaktioner
                                 Console.Write("Kontonummer: ");
                                 string accNo = Console.ReadLine();
-                                var accNumber = myBank.FindAccount(accNo);
+                                var accNumber = myBank.FindAccount(accNo, currentUser);
 
                                 if (accNumber == null)
                                 {
@@ -184,11 +219,11 @@ namespace K1_Banken_Team1
                                 break;
 
                        
-                            case "4":
+                            case "5": //Visa saldo
                                 Console.WriteLine("Kontonummer:"); // frågar om vilket konto saldot ska visas
                                 string accNoBalance = Console.ReadLine();
 
-                                var accBalance = myBank.FindAccount(accNoBalance); //letar upp kontot i banken
+                                var accBalance = myBank.FindAccount(accNoBalance, currentUser); //letar upp kontot i banken
 
                                 if (accBalance == null) // om kontot inte finns
                                 {
@@ -200,7 +235,7 @@ namespace K1_Banken_Team1
                                 Console.WriteLine($"Saldo för konto {accBalance.AccountNumber}: {accBalance.Balance} kr");
                                 break;
 
-                            case "5":
+                            case "6":
                                 Console.WriteLine($"Loggar ut {currentUser.Name}...");
                                 loggedIn = false;
                                 break;
@@ -208,8 +243,6 @@ namespace K1_Banken_Team1
                             default:
                                 Console.WriteLine("Ogiltigt val, försök igen.");
                                 break;
-
-
                         }
                         
                         bool running = true;

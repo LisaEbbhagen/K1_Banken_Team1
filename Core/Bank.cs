@@ -1,4 +1,6 @@
-﻿namespace K1_Banken_Team1
+﻿using System.Diagnostics.Metrics;
+
+namespace K1_Banken_Team1
 {
     public class Bank
     {
@@ -133,8 +135,14 @@
             user.AddAccount(newAccount); //Lägger till kontot i användarens lista
         }
 
-        public Account FindAccount(string accountNumber)//Metod för att hitta konto
+        //Metod för att hitta konto, user tillagd för att kunna modifiera koden utifrån användare eller admin.
+        //Vid användning: om currentUser skickas in kommer programmet endast söka i användarens egna konton, skickas inte den parametern med kan alla konton väljas (exAdmin)
+        public Account FindAccount(string accountNumber, User user = null)
         {
+            if (user != null)
+            {
+                return user.Accounts.FirstOrDefault(a => a.AccountNumber == accountNumber);
+            }
             accounts.TryGetValue(accountNumber, out Account account);
             return account;
         }
@@ -186,21 +194,27 @@
                         Console.WriteLine("Mottagarkontot hittades inte.");
                         return false;
                     }
-
-                    if (!account.Withdraw(amount))
+                    //verbose tystar withdraw metoden och skriver istället ut det vi vill nedan
+                    if (!account.Withdraw(amount, verbose: false))
                     {
                         Console.WriteLine("Överföring misslyckades. Kontrollera saldo.");
                         return false;
                     }
 
-                    toAccount.Deposit(amount);
+                    if (!toAccount.Deposit(amount, verbose: false))
+                    {
+                        account.Deposit(amount, verbose: false);
+                        Console.WriteLine("Överföring misslyckades vid insättning till mottagare.");
+                        return false;
+                    }
 
                     var transFrom = account.Transactions.LastOrDefault(); //Överföringen hämtas från bankens translista
                     var transTo = toAccount.Transactions.LastOrDefault(); //Överföringen hämtas från bankens translista
                     if (transFrom != null) transactions.Add(transFrom); //Om överföringen inte är null läggs den till i från-kontots translista
                     if (transTo != null) transactions.Add(transTo); //Om överföringen inte är null läggs den till i till-kontots translista
 
-                    Console.WriteLine($"Överförde {amount} kr från {accountNumber} till {toAccountNumber}.");
+                    Console.WriteLine($"\nÖverförde {amount} kr från {accountNumber} till {toAccountNumber}.");
+                    Console.WriteLine($"Aktuellt saldo på ditt konto ({accountNumber}) efter överföringen: {account.Balance} kr\n");
                         return true;
 
                 default:
