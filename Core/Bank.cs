@@ -510,14 +510,17 @@ namespace K1_Banken_Team1
             }
 
             decimal amount;
+            decimal totalBalance = user.Accounts.Sum(acc => acc.Balance); //skapar variabel för summering av användarens innehav på banken
             while (true) //Lånebelopp
             {
+                Console.WriteLine($"Ditt totala innehav hos banken är {totalBalance:C}.");
+                Console.WriteLine($"Du kan låna upp till {totalBalance * 5:C}.");
                 Console.Write("Ange lånebelopp: ");
-                if (decimal.TryParse(Console.ReadLine(), out amount) && amount > 0)
+                if (decimal.TryParse(Console.ReadLine(), out amount) && amount > 0 && amount <= totalBalance * 5)
                 {
                     break;
                 }
-                Console.WriteLine("Beloppet måste vara större än 0.");
+                Console.WriteLine($"Beloppet måste vara större än 0kr och får inte överskrida {totalBalance*5:C}..");
             }
 
             decimal interestRate = 0.08m; //8% ränta

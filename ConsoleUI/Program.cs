@@ -271,15 +271,14 @@ namespace K1_Banken_Team1
                                 myBank.Pause();
                                 break;
                             }
-
-                           
+                                                           
                             case "6":
-                                myBank.LoanMoney(currentUser);
+                                myBank.AddNewSavingsAccount(currentUser);
                                 myBank.Pause();
-                                break;
+                                break; 
 
                             case "7":
-                                myBank.AddNewSavingsAccount(currentUser);
+                                myBank.LoanMoney(currentUser);
                                 myBank.Pause();
                                 break;
 
