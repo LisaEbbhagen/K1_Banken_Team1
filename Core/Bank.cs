@@ -32,12 +32,10 @@ namespace K1_Banken_Team1
                         {
                             Console.WriteLine($"Konto: {acc.AccountNumber}, Ägare: {acc.Owner.Name}, Saldo: {acc.Balance} SEK");
                         }
-                        Pause();
                         break;
 
                     case "2":
                         PrintAccountsWithPositivBalance();
-                        Pause();
                         break;
 
                     case "3":
@@ -47,27 +45,22 @@ namespace K1_Banken_Team1
                         {
                             Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount} kr – Konto: {t.AccountNumber}"); //*fixa till utskriften, svenska o engelska blandas
                         }
-                        Pause();
                         break;
 
                     case "4":
                         PrintTotalBalanceAll();
-                        Pause();
                         break;
 
                     case "5":
                         ShowBiggestTransactionPerUser();
-                        Pause();
                         break;
 
                     case "6":
                         ShowUserWithMostTransactions();
-                        Pause();
                         break;
 
                     case "7":
                         SearchAccount();
-                        Pause();
                         break;
 
                     case "8":
@@ -328,7 +321,7 @@ namespace K1_Banken_Team1
         {
             // Gruppera alla konton per ägare (Owner)
             var grouped = accounts
-                 .GroupBy(a => a.Value.Owner)
+                .GroupBy(a => a.Value.Owner)
                  .Select(g => new     // g är varje grupp av konton för en användare
                  {
                      Owner = g.Key,      // användaren
@@ -408,14 +401,15 @@ namespace K1_Banken_Team1
                 return;
             }
 
-            Console.WriteLine("\nResultat:");
+            Console.WriteLine("\nResultat:");  //Kolla denna efter main merge
             Console.WriteLine("--------------------------------------------------");
             Console.WriteLine($"{"Kontonummer",-15} {"Ägare",-20} {"Saldo",10}"); // -15 -20=Vänsterjustera och reservera 15 resp 20 tecken, 10=högerjustera o reservera 10 tecken. :C = formaterar som valuta
             Console.WriteLine("--------------------------------------------------");
 
             foreach (var acc in results)
-            {
-                Console.WriteLine($"{acc.AccountNumber,-15} {acc.Owner.Name,-20} {acc.Balance,10:C}");
+            {           
+                Console.WriteLine("\nResultat:");
+                Console.WriteLine($"{acc.AccountNumber} {acc.Owner.Name} {acc.Balance} kr");
             }
         }
         public IEnumerable<Account> ListAccounts(User user)

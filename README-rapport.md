@@ -1,3 +1,36 @@
+v.44 rapportör: Lisa
+
+Deltagare (närvaro): Lisa, Rolf
+Sprintmål (veckans DoD): Fortsätte arbetet med Backlog.
+
+Vad vi gjorde:
+Arbetade utifrån vår nya uppgiftslista/backlog i notion. 
+Lisa begränsade våra metoder så användaren inte kan hantera andra än sina egna konton. La till menyval och logik för att användare ska kunna överföra pengar från något av sina konton till någon annans konto. 
+Rolf gjorde en ny metod för att kunna låna pengar. Samt la till felhantering direkt i FindAccount metoden så man slipper skriva in felhantering varje gång.
+
+Problem/hinder:
+Lisa: Tampades lite med utskriften som ville skivas ut flera gånger pga metoderna som inkluderades (withdraw o deposit) löste det genom att lägga till en bool verbose som ger oss möjligheten att tysta withdraw o deposit metoderna om det är så att vi vill ha andra utskrifter när vi kallar på metoderna.
+Rolf: Upptäckte efter arbetet med ny lånmetod var klar att han suttit o jobbat i dev. Vid försök att flytta över detta till en annan branch så stod det att det gick bra MEN ändå inte vilket var nytt så förlorade allt han gjort. Som tur var gick det rätt snabbt att skriva om allt.
+
+___________________________________________________________________________________________________________________________
+
+
+v.43 rapportör: Abdalle
+
+Deltagare (närvaro): Lisa, Abdalle
+Sprintmål (veckans DoD): Bygga vidare från föregående vecka och färdigställa menyvalen för insättning, uttag, visning av transaktioner samt saldo.
+
+Vad vi gjorde:
+Lisa och Abdalle gick igenom det senaste från föregående vecka. Abdalle implementerade funktioner för insättning, uttag och visning av senaste transaktioner.
+
+Problem/hinder:
+Abdalle hade problem med dev-branchen som visade fel version och inte gick att uppdatera. Efter att ha klonat om projektet kunde han fortsätta, men fick därefter merge-konflikter i pull requesten.
+Lisa la då in Abdalles kod i menyvalen, vilket visade på ett bra samarbete i gruppen när något strular.
+När arbetet skulle mergas skedde en felaktig merge till main, vilket gjorde det svårt att hitta tillbaka och orsakade ytterligare förseningar. Eftersom Rolf inte deltog denna vecka blev arbetet mer intensivt för Lisa och Abdalle.
+
+
+___________________________________________________________________________________________________________________________
+
 v.42 rapportör: Lisa
 Deltagare (närvaro): Lisa, Rolf, Abdalle
 Sprintmål (veckans DoD): Menygränssnitt (ConsoleUI) för inloggning: enkel loopad meny, se till att val för användaren endast visas i inloggat läge
