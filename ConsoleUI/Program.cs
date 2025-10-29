@@ -110,12 +110,10 @@ namespace K1_Banken_Team1
                         Console.WriteLine("2. Ta ut pengar");
                         Console.WriteLine("3. Visa transaktioner");
                         Console.WriteLine("4. Visa alla mina konton och saldo");
-                        Console.WriteLine("5. Logga ut");
-                        
-                        Console.WriteLine("4. Visa saldo");
                         Console.WriteLine("5. Skapa nytt sparkonto");
                         Console.WriteLine("6. Ta ett banklån");
                         Console.WriteLine("7. Avsluta");
+
                         string choice = Console.ReadLine();
 
                         switch (choice)
@@ -207,22 +205,13 @@ namespace K1_Banken_Team1
                                     myBank.Pause();
                                     break;
                                 }
-                              
-                                var top3 = myBank.LatestTransactions(accNo); //Hämtar top3 för kontot
-                                if (!top3.Any())
+
+                                else
                                 {
-                                     Console.WriteLine("ℹ️ Inga transaktioner ännu.");
-                                     myBank.Pause();
-                                     break;
+                                    myBank.LatestTransactions(accNo); //Kontonumret skickas till metoden 
                                 }
-                            
-                                Console.WriteLine("\nTop3 transactioner:");
-                                foreach (var t in top3)
-                                     {
-                                         Console.WriteLine($"{t.Type} | {t.Amount} kr");
-                                     }
-                                myBank.Pause();
-                                break;
+                                    myBank.Pause();
+                                    break;
                             }
 
                             case "4":
@@ -251,18 +240,21 @@ namespace K1_Banken_Team1
                                 break;
                             }
 
-
                             case "5":
                             {
-                                Console.WriteLine($"🔒Du loggas nu ut, {currentUser.Name}..."); 
                                 myBank.AddNewSavingsAccount(currentUser);
+                                myBank.Pause();
                                 break;
-
+                            }
                             case "6":
+                            {
                                 myBank.LoanMoney(currentUser);
+                                myBank.Pause();
                                 break;
-
+                            }
+                               
                             case "7":
+                            { 
                                 Console.WriteLine($"Loggar ut {currentUser.Name}...");
                                 loggedIn = false;
                                 return;
@@ -274,8 +266,6 @@ namespace K1_Banken_Team1
                                 myBank.Pause();
                                 break;
                             }
-
-
                         }
                     }
                 }
