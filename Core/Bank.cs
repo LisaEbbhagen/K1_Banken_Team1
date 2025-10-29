@@ -140,22 +140,22 @@ namespace K1_Banken_Team1
         //Vid användning: om currentUser skickas in kommer programmet endast söka i användarens egna konton, skickas inte den parametern med kan alla konton väljas (exAdmin)
         public Account FindAccount(string accountNumber, User user = null)
         {
-            if (user != null)
-            {
-                return user.Accounts.FirstOrDefault(a => a.AccountNumber == accountNumber);
-            }
-            accounts.TryGetValue(accountNumber, out Account account);
-            return account;
             if (string.IsNullOrWhiteSpace(accountNumber))
             {
                 Console.WriteLine("Kontonumret får inte vara tomt.");
                 return null;
             }
 
+            if (user != null)
+            {
+                return user.Accounts.FirstOrDefault(a => a.AccountNumber == accountNumber);
+            }
+
             if (accounts.TryGetValue(accountNumber, out Account account))
             {
                 return account;
             }
+
             else
             {
                 Console.WriteLine("Konto finns ej.");
