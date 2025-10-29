@@ -418,8 +418,16 @@ namespace K1_Banken_Team1
                 Console.WriteLine($"{acc.AccountNumber,-15} {acc.Owner.Name,-20} {acc.Balance,10:C}");
             }
         }
+        public IEnumerable<Account> ListAccounts(User user)
+        {
+            if (user == null)
+            {
+                return new List<Account>();
+            }
+            return user.Accounts;
+        }
 
-        private void Pause()
+        public void Pause()
         {
             Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
             Console.ReadKey();
