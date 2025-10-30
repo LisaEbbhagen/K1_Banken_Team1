@@ -8,7 +8,14 @@ namespace K1_Banken_Team1.Presentation.Menus
 {
     public class UserMenu
     {
-        public void RunUserMenu(Bank myBank, User currentUser)
+        private readonly Bank _myBank;
+
+        public UserMenu(Bank myBank)
+        {
+            _myBank = myBank;
+        }
+
+        public void RunUserMenu(User currentUser)
         {
             bool loggedIn = true;
             Account userAccount = currentUser.Accounts.First(); // enkel version: varje användare har ett konto
@@ -39,23 +46,23 @@ namespace K1_Banken_Team1.Presentation.Menus
                             Console.WriteLine("Kontonummer: ");
                             string accNoIn = Console.ReadLine();
 
-                            var accIn = myBank.FindAccount(accNoIn, currentUser);
+                            var accIn = _myBank.FindAccount(accNoIn, currentUser);
 
                             if (accIn == null)
                             {
                                 Console.WriteLine("❌Kontot hittades inte.");
-                                myBank.Pause();
+                                _myBank.Pause();
                                 break;
                             }
                             Console.WriteLine("belopp: ");
                             if (!decimal.TryParse(Console.ReadLine(), out decimal depositAmount) || depositAmount <= 0)
                             {
                                 Console.WriteLine("❌Ogiltigt belopp! ");
-                                myBank.Pause();
+                                _myBank.Pause();
                                 break;
                             }
 
-                            if (myBank.ExecuteTransaction("Deposit", accIn.AccountNumber, depositAmount))
+                            if (_myBank.ExecuteTransaction("Deposit", accIn.AccountNumber, depositAmount))
                             {
                                 Console.WriteLine($"{depositAmount} kr insatt på konto {accIn.AccountNumber}." +
                                     $"Nytt saldo: {accIn.Balance} kr.");
@@ -64,7 +71,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                             {
                                 Console.WriteLine("Insättning misslyckades.");
                             }
-                            myBank.Pause();
+                            _myBank.Pause();
                             break;
                         }
 
@@ -73,12 +80,12 @@ namespace K1_Banken_Team1.Presentation.Menus
                             //ta ut pengar från valt konto efter validering
                             Console.Write("Kontonummer: ");
                             string accNoOut = Console.ReadLine();
-                            var accOut = myBank.FindAccount(accNoOut, currentUser);
+                            var accOut = _myBank.FindAccount(accNoOut, currentUser);
 
                             if (accOut == null)
                             {
                                 Console.WriteLine("❌ Kontot hittades inte.");
-                                myBank.Pause();
+                                _myBank.Pause();
                                 break;
                             }
 
@@ -86,16 +93,16 @@ namespace K1_Banken_Team1.Presentation.Menus
                             if (!decimal.TryParse(Console.ReadLine(), out decimal withdrawAmount) || withdrawAmount <= 0)
                             {
                                 Console.WriteLine("❌ Ogiltigt belopp.");
-                                myBank.Pause();
+                                _myBank.Pause();
                                 break;
                             }
                             if (withdrawAmount > accOut.Balance)
                             {
                                 Console.WriteLine("❌ För lite pengar på kontot.");
-                                myBank.Pause();
+                                _myBank.Pause();
                                 break;
                             }
-                            if (myBank.ExecuteTransaction("Withdraw", accOut.AccountNumber, withdrawAmount))
+                            if (_myBank.ExecuteTransaction("Withdraw", accOut.AccountNumber, withdrawAmount))
                             {
                                 Console.WriteLine($"✅ {withdrawAmount} kr uttaget från konto {accOut.AccountNumber}. Nytt saldo: {accOut.Balance} kr.");
                             }
@@ -103,18 +110,18 @@ namespace K1_Banken_Team1.Presentation.Menus
                             {
                                 Console.WriteLine("Uttag misslyckades.");
                             }
-                            myBank.Pause();
+                            _myBank.Pause();
                             break;
                         }
 
                     case "3": //Överför pengar
                         Console.Write("Vilket konto vill du överföra pengar från? ");
                         string fromAccNo = Console.ReadLine();
-                        var fromAccNumber = myBank.FindAccount(fromAccNo, currentUser);
+                        var fromAccNumber = _myBank.FindAccount(fromAccNo, currentUser);
 
                         Console.Write("Vilket konto vill du överföra pengar till? ");
                         string toAccNo = Console.ReadLine();
-                        var toAccNumber = myBank.FindAccount(toAccNo);
+                        var toAccNumber = _myBank.FindAccount(toAccNo);
 
                         if (fromAccNumber == null)
                         {
@@ -137,39 +144,39 @@ namespace K1_Banken_Team1.Presentation.Menus
 
                         else
                         {
-                            myBank.ExecuteTransaction("Transfer", fromAccNo, transferAmount, toAccNo);
+                            _myBank.ExecuteTransaction("Transfer", fromAccNo, transferAmount, toAccNo);
                         }
-                        myBank.Pause();
+                        _myBank.Pause();
                         break;
 
                     case "4": //Visa transaktioner
                         Console.Write("Kontonummer: ");
                         string accNo = Console.ReadLine();
-                        var accNumber = myBank.FindAccount(accNo, currentUser);
+                        var accNumber = _myBank.FindAccount(accNo, currentUser);
 
                         if (accNumber == null)
                         {
                             Console.WriteLine("❌ Kontot hittades inte.");
-                            myBank.Pause();
+                            _myBank.Pause();
                             break;
                         }
                         else
                         {
-                            myBank.LatestTransactions(accNo); //Kontonumret skickas till metoden 
+                            _myBank.LatestTransactions(accNo); //Kontonumret skickas till metoden 
                         }
-                        myBank.Pause();
+                        _myBank.Pause();
                         break;
 
                     case "5":
                         {
                             //visa alla konton + saldo
-                            var accounts = myBank.ListAccounts(currentUser);
+                            var accounts = _myBank.ListAccounts(currentUser);
 
                             //Om inga konto finns
                             if (accounts == null || !accounts.Any())
                             {
                                 Console.WriteLine("ℹ️Du har inga konton.");
-                                myBank.Pause();
+                                _myBank.Pause();
                                 break;
                             }
                             Console.WriteLine("\nDina konton och saldo:");
@@ -182,18 +189,18 @@ namespace K1_Banken_Team1.Presentation.Menus
                             {
                                 Console.WriteLine($"{currentUser.Name,-10} | {acc.AccountNumber,-10} | {acc.Balance,10:0} kr");
                             }
-                            myBank.Pause();
+                            _myBank.Pause();
                             break;
                         }
 
                     case "6":
-                        myBank.AddNewSavingsAccount(currentUser);
-                        myBank.Pause();
+                        _myBank.AddNewSavingsAccount(currentUser);
+                        _myBank.Pause();
                         break;
 
                     case "7":
-                        myBank.LoanMoney(currentUser);
-                        myBank.Pause();
+                        _myBank.LoanMoney(currentUser);
+                        _myBank.Pause();
                         break;
 
                     case "8":

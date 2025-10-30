@@ -471,7 +471,7 @@ namespace K1_Banken_Team1
         }
 
 
-        private void SearchAccount()
+        public void SearchAccount()
         {
             Console.WriteLine("\nAnge kontonummer eller namn:");
             string input = Console.ReadLine().ToLower();
@@ -644,6 +644,50 @@ namespace K1_Banken_Team1
             }
 
             Console.WriteLine("Växelkurser uppdaterade!");
+        }
+
+        public User LoginUser()
+        {
+            Console.Write("Ange namn: ");
+            string name = Console.ReadLine();
+
+            var user = users.FirstOrDefault(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            if (user == null)
+            {
+                Console.WriteLine("❌ Okänt namn.");
+                Pause();
+                return null;
+            }
+
+            if (user.IsLocked)
+            {
+                Console.WriteLine("🔒 Kontot är låst.");
+                Pause();
+                return null;
+            }
+
+            int attempts = 0;
+            while (attempts < 3)
+            {
+                Console.Write("Ange PIN: ");
+                string pin = Console.ReadLine();
+
+                if (user.Pin == pin)
+                {
+                    Console.WriteLine($"✅ Inloggad som {user.Name}!");
+                    return user;
+                }
+                else
+                {
+                    attempts++;
+                    Console.WriteLine($"❌ Fel PIN ({attempts}/3)");
+                }
+            }
+
+            user.IsLocked = true;
+            Console.WriteLine("🚫 Kontot är nu låst.");
+            Pause();
+            return null;
         }
     }
 }

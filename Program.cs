@@ -1,7 +1,6 @@
-﻿using System.Diagnostics;
-
-
-using K1_Banken_Team1.Presentation;
+﻿using K1_Banken_Team1.Presentation;
+using K1_Banken_Team1.Presentation.Menus;
+using System.Diagnostics;
 namespace K1_Banken_Team1
 {
     internal class Program
@@ -36,8 +35,13 @@ namespace K1_Banken_Team1
             myBank.ExecuteTransaction("Deposit", "A03", 25000);
             myBank.ExecuteTransaction("Withdraw", "A03", 500);
 
+            var mainMenu = new MainMenu(myBank); // Skapa MainMenu-instans
+            var adminMenu = new AdminMenu(myBank);
+            var userMenu = new UserMenu(myBank);
 
-            bool running = true;
+            var menuHandler = new MenuHandler(myBank, adminMenu, mainMenu, userMenu); // Skapa MenuHandler-instans
+
+            menuHandler.Start(); // Starta menyhanteraren
 
             //while (running)   //När running är true så körs meny loppen
             //{
@@ -134,7 +138,7 @@ namespace K1_Banken_Team1
 
             //        while (loggedIn)
             //        {
-                        
+
             //            Console.WriteLine("\n=== Meny ===");
             //            Console.WriteLine("\nVälkommen till K1 Banken!\n");
             //            Console.WriteLine("Välj ett av följande alternativ!");
@@ -173,7 +177,7 @@ namespace K1_Banken_Team1
             //                        myBank.Pause();
             //                        break;
             //                    }
-                           
+
             //                    if (myBank.ExecuteTransaction("Deposit", accIn.AccountNumber, depositAmount))
             //                    {
             //                        Console.WriteLine($"{depositAmount} kr insatt på konto {accIn.AccountNumber}." +
@@ -278,7 +282,7 @@ namespace K1_Banken_Team1
             //                    }
             //                    myBank.Pause();
             //                    break;
-                                                   
+
             //                case "5":
             //                {
             //                    //visa alla konton + saldo
@@ -296,7 +300,7 @@ namespace K1_Banken_Team1
 
             //                    //Rubriker med justering
             //                    Console.WriteLine($"{"Namn",-10} | {"Konto",-10} | {"Saldo",10}");
-                            
+
             //                    foreach (var acc in accounts)
             //                    {
             //                        Console.WriteLine($"{currentUser.Name,-10} | {acc.AccountNumber,-10} | {acc.Balance,10:0} kr");
@@ -304,7 +308,7 @@ namespace K1_Banken_Team1
             //                    myBank.Pause();
             //                    break;
             //                }
-                                    
+
             //                case "6":
             //                    myBank.AddNewSavingsAccount(currentUser);
             //                    myBank.Pause();
@@ -319,14 +323,12 @@ namespace K1_Banken_Team1
             //                    Console.WriteLine($"🔒Du loggas nu ut, {currentUser.Name}...");
             //                    loggedIn = false;
             //                    return;                                
-                            
+
             //                default:
             //                    Console.WriteLine("Ogiltigt val, försök igen.");
             //                    break;
-            //            }
-                    }
-                }
-            }
+
+
         }
     }
 }
