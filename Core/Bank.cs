@@ -1,3 +1,4 @@
+﻿using System.Diagnostics.Metrics;
 ﻿using K1_Banken_Team1.Core;
 
 namespace K1_Banken_Team1
@@ -32,12 +33,10 @@ namespace K1_Banken_Team1
                         {
                             Console.WriteLine($"Konto: {acc.AccountNumber}, Ägare: {acc.Owner.Name}, Saldo: {acc.Balance} SEK");
                         }
-                        Pause();
                         break;
 
                     case "2":
                         PrintAccountsWithPositivBalance();
-                        Pause();
                         break;
 
                     case "3":
@@ -47,27 +46,22 @@ namespace K1_Banken_Team1
                         {
                             Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount} kr – Konto: {t.AccountNumber}"); //*fixa till utskriften, svenska o engelska blandas
                         }
-                        Pause();
                         break;
 
                     case "4":
                         PrintTotalBalanceAll();
-                        Pause();
                         break;
 
                     case "5":
                         ShowBiggestTransactionPerUser();
-                        Pause();
                         break;
 
                     case "6":
                         ShowUserWithMostTransactions();
-                        Pause();
                         break;
 
                     case "7":
                         SearchAccount();
-                        Pause();
                         break;
 
                     case "8":
@@ -183,6 +177,9 @@ namespace K1_Banken_Team1
         }
 
         public Account FindAccount(string accountNumber)//Metod för att hitta konto
+        //Metod för att hitta konto, user tillagd för att kunna modifiera koden utifrån användare eller admin.
+        //Vid användning: om currentUser skickas in kommer programmet endast söka i användarens egna konton, skickas inte den parametern med kan alla konton väljas (exAdmin)
+        public Account FindAccount(string accountNumber, User user = null)
         {
             if (string.IsNullOrWhiteSpace(accountNumber))
             {
@@ -190,10 +187,16 @@ namespace K1_Banken_Team1
                 return null;
             }
 
+            if (user != null)
+            {
+                return user.Accounts.FirstOrDefault(a => a.AccountNumber == accountNumber);
+            }
+
             if (accounts.TryGetValue(accountNumber, out Account account))
             {
                 return account;
             }
+
             else
             {
                 Console.WriteLine("Konto finns ej.");
@@ -248,21 +251,27 @@ namespace K1_Banken_Team1
                         Console.WriteLine("Mottagarkontot hittades inte.");
                         return false;
                     }
-
-                    if (!account.Withdraw(amount))
+                    //verbose tystar withdraw metoden och skriver istället ut det vi vill nedan
+                    if (!account.Withdraw(amount, verbose: false))
                     {
                         Console.WriteLine("Överföring misslyckades. Kontrollera saldo.");
                         return false;
                     }
 
-                    toAccount.Deposit(amount);
+                    if (!toAccount.Deposit(amount, verbose: false))
+                    {
+                        account.Deposit(amount, verbose: false);
+                        Console.WriteLine("Överföring misslyckades vid insättning till mottagare.");
+                        return false;
+                    }
 
                     var transFrom = account.Transactions.LastOrDefault(); //Överföringen hämtas från bankens translista
                     var transTo = toAccount.Transactions.LastOrDefault(); //Överföringen hämtas från bankens translista
                     if (transFrom != null) transactions.Add(transFrom); //Om överföringen inte är null läggs den till i från-kontots translista
                     if (transTo != null) transactions.Add(transTo); //Om överföringen inte är null läggs den till i till-kontots translista
 
-                    Console.WriteLine($"Överförde {amount} kr från {accountNumber} till {toAccountNumber}.");
+                    Console.WriteLine($"\nÖverförde {amount} kr från {accountNumber} till {toAccountNumber}.");
+                    Console.WriteLine($"Aktuellt saldo på ditt konto ({accountNumber}) efter överföringen: {account.Balance} kr\n");
                         return true;
 
                 default:
@@ -360,7 +369,7 @@ namespace K1_Banken_Team1
         {
             // Gruppera alla konton per ägare (Owner)
             var grouped = accounts
-                 .GroupBy(a => a.Value.Owner)
+                .GroupBy(a => a.Value.Owner)
                  .Select(g => new     // g är varje grupp av konton för en användare
                  {
                      Owner = g.Key,      // användaren
@@ -440,14 +449,15 @@ namespace K1_Banken_Team1
                 return;
             }
 
-            Console.WriteLine("\nResultat:");
+            Console.WriteLine("\nResultat:");  //Kolla denna efter main merge
             Console.WriteLine("--------------------------------------------------");
             Console.WriteLine($"{"Kontonummer",-15} {"Ägare",-20} {"Saldo",10}"); // -15 -20=Vänsterjustera och reservera 15 resp 20 tecken, 10=högerjustera o reservera 10 tecken. :C = formaterar som valuta
             Console.WriteLine("--------------------------------------------------");
 
             foreach (var acc in results)
-            {
-                Console.WriteLine($"{acc.AccountNumber,-15} {acc.Owner.Name,-20} {acc.Balance,10:C}");
+            {           
+                Console.WriteLine("\nResultat:");
+                Console.WriteLine($"{acc.AccountNumber} {acc.Owner.Name} {acc.Balance} kr");
             }
         }
         public IEnumerable<Account> ListAccounts(User user)
@@ -542,14 +552,17 @@ namespace K1_Banken_Team1
             }
 
             decimal amount;
+            decimal totalBalance = user.Accounts.Sum(acc => acc.Balance); //skapar variabel för summering av användarens innehav på banken
             while (true) //Lånebelopp
             {
+                Console.WriteLine($"Ditt totala innehav hos banken är {totalBalance:C}.");
+                Console.WriteLine($"Du kan låna upp till {totalBalance * 5:C}.");
                 Console.Write("Ange lånebelopp: ");
-                if (decimal.TryParse(Console.ReadLine(), out amount) && amount > 0)
+                if (decimal.TryParse(Console.ReadLine(), out amount) && amount > 0 && amount <= totalBalance * 5)
                 {
                     break;
                 }
-                Console.WriteLine("Beloppet måste vara större än 0.");
+                Console.WriteLine($"Beloppet måste vara större än 0kr och får inte överskrida {totalBalance*5:C}..");
             }
 
             decimal interestRate = 0.08m; //8% ränta
