@@ -22,9 +22,9 @@ namespace K1_Banken_Team1
             myBank.AddUser(Lisa);
             myBank.AddUser(Rolf);
 
-            myBank.OpenAccount(Abdalle, "A01");
-            myBank.OpenAccount(Lisa, "A02");
-            myBank.OpenAccount(Rolf, "A03");
+            myBank.OpenAccount(Abdalle, "A01", "SEK"); //fix för att inte behöva välja valuta varje gång
+            myBank.OpenAccount(Lisa, "A02", "SEK");
+            myBank.OpenAccount(Rolf, "A03", "SEK");
            
 
             myBank.ExecuteTransaction("Deposit", "A01", 20000);
