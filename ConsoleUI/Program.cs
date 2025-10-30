@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 
+
+using K1_Banken_Team1.Presentation;
 namespace K1_Banken_Team1
 {
     internal class Program
@@ -302,25 +304,6 @@ namespace K1_Banken_Team1
                                 myBank.Pause();
                                 break;
                             }
-
-
-                            case "5":
-                                {
-                                    Console.WriteLine($"🔒Du loggas nu ut, {currentUser.Name}...");
-                                    myBank.AddNewSavingsAccount(currentUser);
-                                    break;
-                                }
-
-                            case "6":
-                                {
-                                    myBank.LoanMoney(currentUser);
-                                    break;
-                                }
-                                
-
-                            case "7":
-                            { 
-                                Console.WriteLine($"Loggar ut {currentUser.Name}...");
                                                            
                             case "6":
                                 myBank.AddNewSavingsAccount(currentUser);
