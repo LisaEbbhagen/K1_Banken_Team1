@@ -1,4 +1,5 @@
 ﻿using K1_Banken_Team1.Core;
+using System.Collections.Generic;
 
 namespace K1_Banken_Team1
 {
@@ -125,7 +126,7 @@ namespace K1_Banken_Team1
         }
 
         public List<Transaction> transactions { get; private set; } = new List<Transaction>(); //Lista för transaktioner
-        public void OpenAccount(User user, string accountNumber) //Metod för att öppna konto
+        public void OpenAccount(User user, string accountNumber, string currency = null) //Metod för att öppna konto
         {
             if (accounts.ContainsKey(accountNumber)) //Kollar om kontonumret redan finns
             {
@@ -133,13 +134,15 @@ namespace K1_Banken_Team1
                 return;
             }
 
-            Console.WriteLine("Vilken valuta vill du ha på kontot? (SEK, EUR, USD)");
-            string currency = Console.ReadLine()?.ToUpper() ?? "SEK";
-
-            if (currency != "SEK" && currency != "EUR" && currency != "USD")
+            if (currency == null) //Ny valuta om ingen är vald
             {
-                Console.WriteLine("Ogiltig valuta. Standardvaluta (SEK) används.");
-                currency = "SEK";
+                Console.WriteLine("Vilken valuta vill du ha på kontot? (SEK, EUR, USD)");
+                currency = Console.ReadLine()?.ToUpper();
+                if (currency != "SEK" && currency != "EUR" && currency != "USD")
+                {
+                    Console.WriteLine("Ogiltig valuta. Standardvaluta (SEK) används.");
+                    currency = "SEK";
+                }
             }
 
             Account newAccount = new Account(accountNumber, user)
