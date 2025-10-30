@@ -304,7 +304,7 @@ namespace K1_Banken_Team1
                                 myBank.Pause();
                                 break;
                             }
-                                                           
+                                    
                             case "6":
                                 myBank.AddNewSavingsAccount(currentUser);
                                 myBank.Pause();
