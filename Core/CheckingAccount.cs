@@ -11,7 +11,7 @@ namespace K1_Banken_Team1.Core
     {
         public CheckingAccount(string accountNumber, User owner) : base(accountNumber, owner) { }
 
-        public override bool Deposit(decimal amount) //metod för att sätta in pengar.
+        public override bool Deposit(decimal amount, bool verbose = true) //metod för att sätta in pengar.
         {
             if (amount <= 0)
             {
@@ -27,7 +27,7 @@ namespace K1_Banken_Team1.Core
             }
         }
 
-        public override bool Withdraw(decimal amount) //metod för att ta ut pengar.
+        public override bool Withdraw(decimal amount, bool verbose = true) //metod för att ta ut pengar.
         {
             if (amount <= 0 || amount > Balance)
             {

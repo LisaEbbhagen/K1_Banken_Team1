@@ -1,4 +1,7 @@
-﻿namespace K1_Banken_Team1
+﻿using System.Diagnostics.Metrics;
+﻿using K1_Banken_Team1.Core;
+
+namespace K1_Banken_Team1
 {
     public class Bank
     {
@@ -12,10 +15,10 @@
                 Console.WriteLine("\n=== Admin Meny ===");
                 Console.WriteLine("1. Lista alla konton");
                 Console.WriteLine("2. Visa konton med positivt saldo");
-                Console.WriteLine("3. Visa tre största transaktioner");
+                Console.WriteLine("3. Visa de tre största transaktioner");
                 Console.WriteLine("4. Visa total saldo per användare");
-                Console.WriteLine("5. Visa största insättning eller uttag per användare");
-                Console.WriteLine("6. Visa användare med flerst transaktioner");
+                Console.WriteLine("5. Visa största insättning & uttag per användare");
+                Console.WriteLine("6. Visa användare med flest transaktioner");
                 Console.WriteLine("7. Sök konto (kontonummer eller namn)");
                 Console.WriteLine("8. Logga ut");
                 Console.Write("Val: ");
@@ -40,7 +43,7 @@
                         Console.WriteLine("De tre största transaktionerna:");
                         foreach (var t in topThree)
                         {
-                            Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount} kr – Konto: {t.AccountNumber}");
+                            Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount} kr – Konto: {t.AccountNumber}"); //*fixa till utskriften, svenska o engelska blandas
                         }
                         break;
 
@@ -126,54 +129,110 @@
             user.AddAccount(newAccount); //Lägger till kontot i användarens lista
         }
 
-        public Account FindAccount(string accountNumber)//Metod för att hitta konto
+        //Metod för att hitta konto, user tillagd för att kunna modifiera koden utifrån användare eller admin.
+        //Vid användning: om currentUser skickas in kommer programmet endast söka i användarens egna konton, skickas inte den parametern med kan alla konton väljas (exAdmin)
+        public Account FindAccount(string accountNumber, User user = null)
         {
-            accounts.TryGetValue(accountNumber, out Account account);
-            return account;
+            if (string.IsNullOrWhiteSpace(accountNumber))
+            {
+                Console.WriteLine("Kontonumret får inte vara tomt.");
+                return null;
+            }
+
+            if (user != null)
+            {
+                return user.Accounts.FirstOrDefault(a => a.AccountNumber == accountNumber);
+            }
+
+            if (accounts.TryGetValue(accountNumber, out Account account))
+            {
+                return account;
+            }
+
+            else
+            {
+                Console.WriteLine("Konto finns ej.");
+                return null;
+            }
         }
 
-        public bool Transfer(string fromAccountNumber, string toAccountNumber, decimal amount)
-        {
-            Account from = FindAccount(fromAccountNumber);
-            Account to = FindAccount(toAccountNumber);
+        //Alla transaktionstyper samlade i en metod:
+        public bool ExecuteTransaction(string type, string accountNumber, decimal amount, string toAccountNumber = null)
 
-            if (from == null || to == null)
+        {
+            if (amount<=0)
             {
-                Console.WriteLine("Ett eller båda kontonumren är fel");
+                Console.WriteLine("Ogiltigt belopp. Ange ett belopp större än 0.");
                 return false;
             }
 
-            if (amount <= 0)
+            var account = FindAccount(accountNumber);
+            if (account == null)
             {
-                Console.WriteLine("Beloppet måste vara större än noll.");
+                Console.WriteLine("Kontot hittades inte.");
                 return false;
             }
 
-            if (from.Withdraw(amount))
+            switch (type)
             {
-                to.Deposit(amount);
+                case "Deposit":
+                    if (account.Deposit(amount))
+                    {
+                        var transD = account.Transactions.LastOrDefault(); //Transaktionen hämtas från bankens translista
+                        if (transD != null) transactions.Add(transD); //Om transaktionen inte är null läggs den till i kontots translista
+                        Console.WriteLine($"Insättning på {amount} kr till konto {accountNumber} genomförd.");
+                        return true;
+                    }
+                    return false;
 
-                var transaction = new Transaction(
-                    Guid.NewGuid().ToString(),
-                    fromAccountNumber,
-                    amount,
-                    DateTime.Now,
-                    "Transfer");
+                case "Withdraw":
+                    if (account.Withdraw(amount))
+                    {
+                        var transW = account.Transactions.LastOrDefault(); //Transaktionen hämtas från bankens translista
+                        if (transW != null) transactions.Add(transW); //Om transaktionen inte är null läggs den till i kontots translista
+                        Console.WriteLine($"Uttag på {amount} kr från konto {accountNumber} genomförd.");
+                        return true;
+                    }
+                    Console.WriteLine("Uttag misslyckades, kontrollera saldo.");
+                    return false;
 
-                // Lägg till i Bank.transactions
-                transactions.Add(transaction);
+                case "Transfer":
+                    var toAccount = FindAccount(toAccountNumber);
+                    if (toAccount == null)
+                    {
+                        Console.WriteLine("Mottagarkontot hittades inte.");
+                        return false;
+                    }
+                    //verbose tystar withdraw metoden och skriver istället ut det vi vill nedan
+                    if (!account.Withdraw(amount, verbose: false))
+                    {
+                        Console.WriteLine("Överföring misslyckades. Kontrollera saldo.");
+                        return false;
+                    }
 
-                // Lägg till i respektive kontos transaktionslista
-                from.AddTransaction(transaction);
-                to.AddTransaction(transaction);
+                    if (!toAccount.Deposit(amount, verbose: false))
+                    {
+                        account.Deposit(amount, verbose: false);
+                        Console.WriteLine("Överföring misslyckades vid insättning till mottagare.");
+                        return false;
+                    }
 
-                Console.WriteLine($"För över {amount} från {fromAccountNumber} till {toAccountNumber}");
-                return true;
+                    var transFrom = account.Transactions.LastOrDefault(); //Överföringen hämtas från bankens translista
+                    var transTo = toAccount.Transactions.LastOrDefault(); //Överföringen hämtas från bankens translista
+                    if (transFrom != null) transactions.Add(transFrom); //Om överföringen inte är null läggs den till i från-kontots translista
+                    if (transTo != null) transactions.Add(transTo); //Om överföringen inte är null läggs den till i till-kontots translista
+
+                    Console.WriteLine($"\nÖverförde {amount} kr från {accountNumber} till {toAccountNumber}.");
+                    Console.WriteLine($"Aktuellt saldo på ditt konto ({accountNumber}) efter överföringen: {account.Balance} kr\n");
+                        return true;
+
+                default:
+                    Console.WriteLine("Ogiltig transaktionstyp.");
+                    return false;
             }
-
-            Console.WriteLine("Överföring misslyckades.");
-            return false;
         }
+
+            
 
         public void ShowBalance()
         {
@@ -192,7 +251,7 @@
                 .ToList(); //returnerar resultatet till en vanlig lista
         }
 
-        public List<Transaction> LatestTransactions()
+        public List<Transaction> LatestTransactions(string accountNumber)
         {
             Console.WriteLine("Vilken typ av transaktioner vill du se?");
             Console.WriteLine("1. Endast insättningar");
@@ -204,18 +263,12 @@
             string choice = Console.ReadLine();
             IEnumerable<Transaction> filtered = Enumerable.Empty<Transaction>(); //Skapar en tom sekvens av Transaction-objekt, en tom lista som du kan fylla senare. 
 
-
-
-            //return transactions //returnera värden med följande tre metoder i beaktning
-            //   .OrderByDateTime(t => t.Amount) //sorterar listan i fallande ordning (Lambda)
-            //   .Take(10)
-            //   .ToList(); //returnerar resultatet till en vanlig lista
             switch (choice)
             {
                 case "1":
                     Console.WriteLine("Senaste insättningarna:");
                     filtered = transactions
-                        .Where(t => t.Type == "Deposit")
+                        .Where(t => t.Type == "Deposit" && t.AccountNumber == accountNumber)
                         .OrderByDescending(t => t.Timestamp)
                         .Take(10);
                     break;
@@ -223,7 +276,7 @@
                 case "2":
                     Console.WriteLine("Senaste uttagen:");
                     filtered = transactions
-                        .Where(t => t.Type == "Withdraw")
+                        .Where(t => t.Type == "Withdraw" && t.AccountNumber == accountNumber)
                         .OrderByDescending(t => t.Timestamp)
                         .Take(10);
                     break;
@@ -231,16 +284,16 @@
                 case "3":
                     Console.WriteLine("Senaste överföringarna:");
                     filtered = transactions
-                        .Where(t => t.Type == "Transfer")
+                        .Where(t => t.Type == "Transfer" && t.AccountNumber == accountNumber)
                         .OrderByDescending(t => t.Timestamp)
                         .Take(10);
                     break;
 
                 case "4":
-                    Console.WriteLine("Alla senaste transaktioner:");
+                    Console.WriteLine("Alla transaktioner:");
                     filtered = transactions
-                        .OrderByDescending(t => t.Timestamp)
-                        .Take(10);
+                        .Where(t => t.AccountNumber == accountNumber)
+                        .OrderByDescending(t => t.Timestamp);
                     break;
 
                 case "5":
@@ -251,11 +304,16 @@
                     Console.WriteLine("Ogiltigt val, försök igen.");
                     return new List<Transaction>(); // returnerar tom lista vilket gör att vi undviker ev krascher               
             }
-            //Console.WriteLine("\nDe senaste transaktionerna:");
+            //Utskrift i tabellformat
+            Console.WriteLine("-----------------------------------------------------------------------------------------------");
+            Console.WriteLine($"{"Tidstämpel:",-20}  {"Typ:",-12}  {"Summa:",-15}  {"Kontonummer:",-10}");
+            Console.WriteLine("-----------------------------------------------------------------------------------------------");
+           
             foreach (var t in filtered)
             {
-                Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount:C} -Konto: {t.AccountNumber}");
+                Console.WriteLine($"{t.Timestamp,-20} | {t.Type,-12} | {t.Amount,-15:C} | {t.AccountNumber,-10}");
             }
+            Console.WriteLine("-----------------------------------------------------------------------------------------------");
 
             return filtered.ToList();
         }
@@ -268,7 +326,8 @@
                  {
                      Owner = g.Key,      // användaren
                      TotalBalance = g.Sum(a => a.Value.Balance) // summera alla konton i gruppen
-                 });
+                 })
+                 .OrderByDescending(g => g.TotalBalance); //sortera i fallande ordning
 
             Console.WriteLine("Totalt saldo per användare:");
             foreach (var g in grouped)
@@ -342,11 +401,130 @@
                 return;
             }
 
+            Console.WriteLine("\nResultat:");  //Kolla denna efter main merge
+            Console.WriteLine("--------------------------------------------------");
+            Console.WriteLine($"{"Kontonummer",-15} {"Ägare",-20} {"Saldo",10}"); // -15 -20=Vänsterjustera och reservera 15 resp 20 tecken, 10=högerjustera o reservera 10 tecken. :C = formaterar som valuta
+            Console.WriteLine("--------------------------------------------------");
+
             foreach (var acc in results)
             {           
                 Console.WriteLine("\nResultat:");
                 Console.WriteLine($"{acc.AccountNumber} {acc.Owner.Name} {acc.Balance} kr");
             }
+        }
+        public IEnumerable<Account> ListAccounts(User user)
+        {
+            if (user == null)
+            {
+                return new List<Account>();
+            }
+            return user.Accounts;
+        }
+
+        public void Pause()
+        {
+            Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
+            Console.ReadKey();
+            Console.Clear(); // Rensar konsolen för en fräsch meny
+        }
+
+        public void AddNewSavingsAccount(User user)
+        {
+            string accountNumber;
+
+            do
+            {
+                accountNumber = GenerateAccountNumber();
+            }
+            while (accounts.ContainsKey(accountNumber)); //Kollar så att kontonumret inte redan finns
+
+            SavingAccount newSavingsAccount = new SavingAccount(accountNumber, user); //Skapar nytt sparkonto
+            accounts.Add(accountNumber, newSavingsAccount); //Lägger till kontot
+            user.AddAccount(newSavingsAccount);
+
+            Console.WriteLine($"Nytt sparkonto skapat med kontonummer: {accountNumber}");
+            Console.WriteLine("Hur mycket vill du sätta in på ditt nya sparkonto?");
+            if (decimal.TryParse(Console.ReadLine(), out decimal initialDeposit) && initialDeposit > 0)
+            {
+                newSavingsAccount.Deposit(initialDeposit);
+            }
+            else
+            {
+                Console.WriteLine("Ogiltigt belopp. Inget satt in på sparkontot.");
+                return;
+            }
+
+            decimal íntrestRate = 0.02m; //2% ränta
+            decimal yearlyIntrest = initialDeposit * íntrestRate;
+            decimal totalAfterOneYear = initialDeposit + yearlyIntrest;
+
+            Console.WriteLine($"Kontonummer: {accountNumber}");
+            Console.WriteLine($"Insatt belopp: {initialDeposit:C}");
+            Console.WriteLine($"Ränta: {íntrestRate:P}");
+            Console.WriteLine($"Efter 1 år: {totalAfterOneYear:C}");
+        }
+
+        private string GenerateAccountNumber()
+        {
+            Random rnd = new Random();
+            return rnd.Next(1000, 9999).ToString(); //Genererar ett slumpmässigt 4-siffrigt kontonummer
+        }
+
+        public void LoanMoney(User user)
+        {
+            Account selectedAccount;
+            if (user.Accounts.Count == 1) //Om användaren bara har ett konto
+            {
+                selectedAccount = user.Accounts.First();
+                Console.WriteLine($"Lånet sätts automatiskt in på konto {selectedAccount.AccountNumber}.");
+            }
+            else
+            {
+                Console.WriteLine("Välj konto att sätta in lånet på:");
+                int index = 1;
+                foreach (var acc in user.Accounts)
+                {
+                    Console.WriteLine($"{index}. Konto: {acc.AccountNumber}, Saldo: {acc.Balance:C}");
+                    index++;
+                }
+
+                int choice;
+                while (true)
+                {
+                    Console.Write("Ange kontonummer: ");
+                    if (int.TryParse(Console.ReadLine(), out choice) && choice >= 1 && choice <= user.Accounts.Count)
+                    {
+                        break; // giltigt val, bryt loopen
+                    }
+
+                    Console.WriteLine("Ogiltigt val, försök igen.");
+                }
+
+                selectedAccount = user.Accounts.ElementAt(choice - 1);
+            }
+
+            decimal amount;
+            decimal totalBalance = user.Accounts.Sum(acc => acc.Balance); //skapar variabel för summering av användarens innehav på banken
+            while (true) //Lånebelopp
+            {
+                Console.WriteLine($"Ditt totala innehav hos banken är {totalBalance:C}.");
+                Console.WriteLine($"Du kan låna upp till {totalBalance * 5:C}.");
+                Console.Write("Ange lånebelopp: ");
+                if (decimal.TryParse(Console.ReadLine(), out amount) && amount > 0 && amount <= totalBalance * 5)
+                {
+                    break;
+                }
+                Console.WriteLine($"Beloppet måste vara större än 0kr och får inte överskrida {totalBalance*5:C}..");
+            }
+
+            decimal interestRate = 0.08m; //8% ränta
+            decimal totalRepayment = amount + (amount * interestRate);
+
+            selectedAccount.Balance += amount; //Sätter in lånet på kontot
+            Console.WriteLine($"\nDu har lånat {amount:C} till konto {selectedAccount.AccountNumber}.");
+            Console.WriteLine($"Ränta: {interestRate:P}");
+            Console.WriteLine($"Totalt att betala tillbaka: {totalRepayment:C}");
+            Console.WriteLine($"Nytt saldo på kontot: {selectedAccount.Balance:C}");
         }
     }
 }

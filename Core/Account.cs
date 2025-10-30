@@ -10,7 +10,7 @@ namespace K1_Banken_Team1
     {
         public string AccountNumber { get; private set; }
 
-        public decimal Balance { get; protected set; } //För att subklasserna ska komma åt värdet behöver det vara protected
+        public decimal Balance { get; set; } //För att subklasserna ska komma åt värdet behöver det vara protected
         public User Owner { get; private set; } // varje konto har en ägare
 
         List<Transaction> transactions = new List<Transaction>(); // varje konto har en lista med transaktioner
@@ -23,7 +23,9 @@ namespace K1_Banken_Team1
             Balance = 0; // nytt konto har 0 i saldo
         }
 
-        public virtual bool Deposit(decimal amount) //metod för att sätta in pengar.
+        //metod för att sätta in pengar.
+        //bool verbose låter oss bestämma om metoden ska vara tyst eller skriva ut sina meddelanden i konsollen
+        public virtual bool Deposit(decimal amount, bool verbose = true) 
         {
             if (amount <= 0)
             {
@@ -31,9 +33,10 @@ namespace K1_Banken_Team1
                 return false;
             }
 
-                Balance += amount;
-                Console.WriteLine($"Aktuellt saldo efter insättning: {Balance}");
-                var transaction = new Transaction(
+            Balance += amount;
+            if (verbose) Console.WriteLine($"Aktuellt saldo efter insättning: {Balance}");
+                
+            var transaction = new Transaction(
                 Guid.NewGuid().ToString(), // unikt id för transaktionen
                 AccountNumber,
                 amount,
@@ -45,7 +48,7 @@ namespace K1_Banken_Team1
             }
         
 
-        public virtual bool Withdraw(decimal amount) //metod för att ta ut pengar.
+        public virtual bool Withdraw(decimal amount, bool verbose = true) //metod för att ta ut pengar.
         {
             if (amount <= 0 || amount > Balance)
             {
@@ -55,7 +58,7 @@ namespace K1_Banken_Team1
             else
             {
                 Balance -= amount;
-                Console.WriteLine($"Aktuellt saldo efter uttag: {Balance}");
+                if (verbose) Console.WriteLine($"Aktuellt saldo efter uttag: {Balance}");
                 var transaction = new Transaction(
                 Guid.NewGuid().ToString(),
                 AccountNumber,
