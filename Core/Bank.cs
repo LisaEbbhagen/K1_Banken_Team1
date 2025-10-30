@@ -20,7 +20,8 @@ namespace K1_Banken_Team1
                 Console.WriteLine("5. Visa största insättning & uttag per användare");
                 Console.WriteLine("6. Visa användare med flest transaktioner");
                 Console.WriteLine("7. Sök konto (kontonummer eller namn)");
-                Console.WriteLine("8. Logga ut");
+                Console.WriteLine("8. Lås upp användare");
+                Console.WriteLine("9. Logga ut");
                 Console.Write("Val: ");
                 string choice = Console.ReadLine();
 
@@ -64,6 +65,11 @@ namespace K1_Banken_Team1
                         break;
 
                     case "8":
+                        UnLockUserMenu(); //metod som låser upp användare
+                        Pause();
+                        break;
+
+                    case "9":
                         Console.WriteLine("Loggar ut från Admin...");
                         running = false;
                         break;
@@ -129,6 +135,48 @@ namespace K1_Banken_Team1
             user.AddAccount(newAccount); //Lägger till kontot i användarens lista
         }
 
+        public void UnLockUserMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Lås upp användare === \n");
+
+            var lockedUsers = users.Where(u => u.IsLocked).ToList(); //Hämta alla låsta användare
+
+            if (!lockedUsers.Any()) //Om inga låsta användare finns
+            {
+                Console.WriteLine("\nℹ️ Det finns inga låsta användare just nu.");
+                return;
+            }
+
+            while (true)
+            {
+                Console.WriteLine("Låsta användare:");
+                foreach (var u in lockedUsers)
+                {
+                    Console.WriteLine($"-{u.Name}");
+                }
+
+                Console.WriteLine("\nAnge namnet på användaren du vill låsa upp:");
+                string name = Console.ReadLine();
+
+                var userToUnlock = lockedUsers //Hitta användaren
+                    .FirstOrDefault(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+                if (userToUnlock == null) //om användaren inte hittas
+                {
+                    Console.WriteLine("❌ Ingen användare hittades med det namnet. Ange namn igen. \n");
+                    continue;
+                }
+
+                userToUnlock.IsLocked = false; //omanvändaren hittas
+
+                Console.WriteLine($"🔒 Kontot för {userToUnlock.Name} har låsts upp!");
+
+                return;
+            }
+        }
+
+        public Account FindAccount(string accountNumber)//Metod för att hitta konto
         //Metod för att hitta konto, user tillagd för att kunna modifiera koden utifrån användare eller admin.
         //Vid användning: om currentUser skickas in kommer programmet endast söka i användarens egna konton, skickas inte den parametern med kan alla konton väljas (exAdmin)
         public Account FindAccount(string accountNumber, User user = null)
