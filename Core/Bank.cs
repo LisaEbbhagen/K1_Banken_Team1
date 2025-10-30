@@ -176,7 +176,6 @@ namespace K1_Banken_Team1
             }
         }
 
-        public Account FindAccount(string accountNumber)//Metod för att hitta konto
         //Metod för att hitta konto, user tillagd för att kunna modifiera koden utifrån användare eller admin.
         //Vid användning: om currentUser skickas in kommer programmet endast söka i användarens egna konton, skickas inte den parametern med kan alla konton väljas (exAdmin)
         public Account FindAccount(string accountNumber, User user = null)
