@@ -31,5 +31,9 @@ namespace K1_Banken_Team1
             }
 
         }
+
+        //metoden anger om användarens konto är låst 
+        
+        public bool IsLocked { get; set; } = false;
     }
 }
