@@ -53,25 +53,56 @@ namespace K1_Banken_Team1
                 switch (startChoice)
                 {
                     case "1":
-                        Console.Write("Ange namn: ");
-                        string name = Console.ReadLine();
-
-                        Console.Write("Ange PIN-kod: ");
-                        string pin = Console.ReadLine();
-
-                        User currentUser = myBank.users.FirstOrDefault(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && u.Pin == pin);
-                        if (currentUser != null)
                         {
-                            Console.WriteLine($"\nInloggad som {currentUser.Name}!");
-                            RunUserMenu(myBank, currentUser); // gå till huvudmenyn
+                            int failedAttempts = 0; //Räknare för misslyckade försök
+                            Console.Write("Ange namn: ");
+                            string name = Console.ReadLine();
+
+                            var user = myBank.users  //kontrollera om kontot finns 
+                                    .FirstOrDefault(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+                            if (user == null)
+                            {
+                                Console.WriteLine("❌ Okänt namn. Försök igen.");
+                                myBank.Pause();
+                                break;
+                            }
+                            if (user.IsLocked) // om kontot finns - kolla om det redan är låst
+                            {
+                                Console.WriteLine("🔒 Ditt konto är låst. Kontakta en administratör för att låsa upp det.");
+                                myBank.Pause();
+                                break;
+                            }
+
+                            while (failedAttempts < 3) // frågar efter PIN-kod
+                            {
+                                Console.WriteLine("Ange PIN-kod: ");
+                                string pin = Console.ReadLine();
+                                if (user.Pin == pin)
+                                {
+                                    Console.WriteLine($"\n✅ Inloggad som {user.Name}!");
+                                    RunUserMenu(myBank, user); //gå vidare till användarmenyn
+                                    break;
+                                }
+                                else
+                                {
+                                    failedAttempts++; //öka misslyckade försök
+
+                                    if (failedAttempts < 3)
+                                    {
+                                        Console.WriteLine($"❌ Fel PIN-kod. Försök igen. ({failedAttempts}/3)");
+                                    }
+                                    else
+                                    {
+                                        user.IsLocked = true; //efter tredje försök- lås kontot
+                                        Console.WriteLine("🚫 3 misslyckade fel PIN-kod. Kontot är Låst."
+                                            + "Kontakta en administratör för att låsa upp ditt konto");
+                                    }
+                                }
+                            }
+                            myBank.Pause();
+                            break;
                         }
-                        else
-                        {
-                            Console.WriteLine("Fel namn eller PIN-kod. Försök igen.");
-                            Thread.Sleep(2000); // Pausa i 3 sekunder för att användaren ska hinna läsa meddelandet
-                        }
-                        myBank.Pause(); //myBank.pause
-                        break;
 
                     case "2": //Skapa konto (Ej implementerat)
 
@@ -271,6 +302,25 @@ namespace K1_Banken_Team1
                                 myBank.Pause();
                                 break;
                             }
+
+
+                            case "5":
+                                {
+                                    Console.WriteLine($"🔒Du loggas nu ut, {currentUser.Name}...");
+                                    myBank.AddNewSavingsAccount(currentUser);
+                                    break;
+                                }
+
+                            case "6":
+                                {
+                                    myBank.LoanMoney(currentUser);
+                                    break;
+                                }
+                                
+
+                            case "7":
+                            { 
+                                Console.WriteLine($"Loggar ut {currentUser.Name}...");
                                                            
                             case "6":
                                 myBank.AddNewSavingsAccount(currentUser);
