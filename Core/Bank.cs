@@ -1,4 +1,3 @@
-﻿using System.Diagnostics.Metrics;
 ﻿using K1_Banken_Team1.Core;
 
 namespace K1_Banken_Team1
@@ -20,7 +19,8 @@ namespace K1_Banken_Team1
                 Console.WriteLine("5. Visa största insättning & uttag per användare");
                 Console.WriteLine("6. Visa användare med flest transaktioner");
                 Console.WriteLine("7. Sök konto (kontonummer eller namn)");
-                Console.WriteLine("8. Logga ut");
+                Console.WriteLine("8. Uppdatera växelkurser");
+                Console.WriteLine("9. Logga ut");
                 Console.Write("Val: ");
                 string choice = Console.ReadLine();
 
@@ -64,6 +64,10 @@ namespace K1_Banken_Team1
                         break;
 
                     case "8":
+                        UpdateExchangeRates();
+                        break;
+
+                    case "9":
                         Console.WriteLine("Loggar ut från Admin...");
                         running = false;
                         break;
@@ -75,7 +79,12 @@ namespace K1_Banken_Team1
             }
         }
 
-
+        public Dictionary<string, decimal> ExchangeRates { get; private set; } = new Dictionary<string, decimal>
+        {
+            { "SEK", 1m },
+            { "EUR", 10.92m },
+            { "USD", 9.40m }
+        };
 
         public List<User> users { get; private set; } = new List<User>(); //Lista för användare
 
@@ -124,9 +133,24 @@ namespace K1_Banken_Team1
                 return;
             }
 
-            Account newAccount = new Account(accountNumber, user); //Skapar nytt konto
-            accounts.Add(accountNumber, newAccount); //Lägger till kontot
-            user.AddAccount(newAccount); //Lägger till kontot i användarens lista
+            Console.WriteLine("Vilken valuta vill du ha på kontot? (SEK, EUR, USD)");
+            string currency = Console.ReadLine()?.ToUpper() ?? "SEK";
+
+            if (currency != "SEK" && currency != "EUR" && currency != "USD")
+            {
+                Console.WriteLine("Ogiltig valuta. Standardvaluta (SEK) används.");
+                currency = "SEK";
+            }
+
+            Account newAccount = new Account(accountNumber, user)
+            {
+                Currency = currency
+            };
+
+            accounts.Add(accountNumber, newAccount);
+            user.AddAccount(newAccount);
+
+            Console.WriteLine($"Nytt konto öppnat med kontonummer: {accountNumber} ({currency}).");
         }
 
         //Metod för att hitta konto, user tillagd för att kunna modifiera koden utifrån användare eller admin.
@@ -160,7 +184,7 @@ namespace K1_Banken_Team1
         public bool ExecuteTransaction(string type, string accountNumber, decimal amount, string toAccountNumber = null)
 
         {
-            if (amount<=0)
+            if (amount <= 0)
             {
                 Console.WriteLine("Ogiltigt belopp. Ange ett belopp större än 0.");
                 return false;
@@ -203,6 +227,21 @@ namespace K1_Banken_Team1
                         Console.WriteLine("Mottagarkontot hittades inte.");
                         return false;
                     }
+
+                    decimal finalAmount = amount;
+                    if(account.Currency != toAccount.Currency) //Växling om kontona har olika valutor
+                    {
+                        if(!ExchangeRates.ContainsKey(account.Currency) || !ExchangeRates.ContainsKey(toAccount.Currency))
+                        {
+                            Console.WriteLine("Växelkurs saknas för en av valutorna.");
+                            return false;
+                        }
+                        
+                        decimal amountInSEK = amount * ExchangeRates[account.Currency]; //Omvandla till SEK först
+                        finalAmount = amountInSEK / ExchangeRates[toAccount.Currency]; //Omvandla till mottagarens valuta
+
+                        Console.WriteLine($"Växlar {amount} {account.Currency} till {finalAmount:F2} {toAccount.Currency} enligt aktuell kurs.");
+                    }
                     //verbose tystar withdraw metoden och skriver istället ut det vi vill nedan
                     if (!account.Withdraw(amount, verbose: false))
                     {
@@ -222,9 +261,9 @@ namespace K1_Banken_Team1
                     if (transFrom != null) transactions.Add(transFrom); //Om överföringen inte är null läggs den till i från-kontots translista
                     if (transTo != null) transactions.Add(transTo); //Om överföringen inte är null läggs den till i till-kontots translista
 
-                    Console.WriteLine($"\nÖverförde {amount} kr från {accountNumber} till {toAccountNumber}.");
-                    Console.WriteLine($"Aktuellt saldo på ditt konto ({accountNumber}) efter överföringen: {account.Balance} kr\n");
-                        return true;
+                    Console.WriteLine($"\nÖverförde {amount} {account.Currency} ({finalAmount:F2} {toAccount.Currency}) från {accountNumber} till {toAccountNumber}.");
+                    Console.WriteLine($"Aktuellt saldo på ditt konto ({accountNumber}): {account.Balance} {account.Currency}\n");
+                    return true;
 
                 default:
                     Console.WriteLine("Ogiltig transaktionstyp.");
@@ -232,7 +271,7 @@ namespace K1_Banken_Team1
             }
         }
 
-            
+
 
         public void ShowBalance()
         {
@@ -308,7 +347,7 @@ namespace K1_Banken_Team1
             Console.WriteLine("-----------------------------------------------------------------------------------------------");
             Console.WriteLine($"{"Tidstämpel:",-20}  {"Typ:",-12}  {"Summa:",-15}  {"Kontonummer:",-10}");
             Console.WriteLine("-----------------------------------------------------------------------------------------------");
-           
+
             foreach (var t in filtered)
             {
                 Console.WriteLine($"{t.Timestamp,-20} | {t.Type,-12} | {t.Amount,-15:C} | {t.AccountNumber,-10}");
@@ -407,7 +446,7 @@ namespace K1_Banken_Team1
             Console.WriteLine("--------------------------------------------------");
 
             foreach (var acc in results)
-            {           
+            {
                 Console.WriteLine("\nResultat:");
                 Console.WriteLine($"{acc.AccountNumber} {acc.Owner.Name} {acc.Balance} kr");
             }
@@ -438,11 +477,24 @@ namespace K1_Banken_Team1
             }
             while (accounts.ContainsKey(accountNumber)); //Kollar så att kontonumret inte redan finns
 
-            SavingAccount newSavingsAccount = new SavingAccount(accountNumber, user); //Skapar nytt sparkonto
+            Console.WriteLine("Vilken valuta vill du ha på kontot? (SEK, EUR, USD)"); //Val av valuta
+            string currency = Console.ReadLine()?.ToUpper();
+
+            if (currency != "SEK" && currency != "EUR" && currency != "USD")
+            {
+                Console.WriteLine("Ogiltig valuta, standardvalutan SEK används.");
+                currency = "SEK";
+            }
+
+            SavingAccount newSavingsAccount = new SavingAccount(accountNumber, user) //Skapar nytt sparkonto med vald valuta
+            {
+                Currency = currency
+            };
+            
             accounts.Add(accountNumber, newSavingsAccount); //Lägger till kontot
             user.AddAccount(newSavingsAccount);
 
-            Console.WriteLine($"Nytt sparkonto skapat med kontonummer: {accountNumber}");
+            Console.WriteLine($"Nytt sparkonto skapat med kontonummer: {accountNumber} ({currency})");
             Console.WriteLine("Hur mycket vill du sätta in på ditt nya sparkonto?");
             if (decimal.TryParse(Console.ReadLine(), out decimal initialDeposit) && initialDeposit > 0)
             {
@@ -459,6 +511,7 @@ namespace K1_Banken_Team1
             decimal totalAfterOneYear = initialDeposit + yearlyIntrest;
 
             Console.WriteLine($"Kontonummer: {accountNumber}");
+            Console.WriteLine($"Valuta: {currency}");
             Console.WriteLine($"Insatt belopp: {initialDeposit:C}");
             Console.WriteLine($"Ränta: {íntrestRate:P}");
             Console.WriteLine($"Efter 1 år: {totalAfterOneYear:C}");
@@ -514,7 +567,7 @@ namespace K1_Banken_Team1
                 {
                     break;
                 }
-                Console.WriteLine($"Beloppet måste vara större än 0kr och får inte överskrida {totalBalance*5:C}..");
+                Console.WriteLine($"Beloppet måste vara större än 0kr och får inte överskrida {totalBalance * 5:C}..");
             }
 
             decimal interestRate = 0.08m; //8% ränta
@@ -525,6 +578,25 @@ namespace K1_Banken_Team1
             Console.WriteLine($"Ränta: {interestRate:P}");
             Console.WriteLine($"Totalt att betala tillbaka: {totalRepayment:C}");
             Console.WriteLine($"Nytt saldo på kontot: {selectedAccount.Balance:C}");
+        }
+
+        public void UpdateExchangeRates()
+        {
+            Console.WriteLine("\n=== Uppdatera växelkurser ===");
+            foreach (var key in ExchangeRates.Keys.ToList())
+            {
+                Console.Write($"Ange ny växelkurs för {key} (nuvarande: {ExchangeRates[key]}): ");
+                if (decimal.TryParse(Console.ReadLine(), out decimal rate) && rate > 0)
+                {
+                    ExchangeRates[key] = rate;
+                }
+                else
+                {
+                    Console.WriteLine("Ogiltig växelkurs, försök igen.");
+                }              
+            }
+
+            Console.WriteLine("Växelkurser uppdaterade!");
         }
     }
 }

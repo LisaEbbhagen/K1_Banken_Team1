@@ -15,6 +15,7 @@ namespace K1_Banken_Team1
 
         List<Transaction> transactions = new List<Transaction>(); // varje konto har en lista med transaktioner
         public IReadOnlyList<Transaction> Transactions => transactions.AsReadOnly(); // gör listan med transaktioner read-only
+        public string Currency { get; set; } = "SEK"; // Standard
 
         public Account(string accountNumber, User owner)
         {
