@@ -1,4 +1,5 @@
-﻿using System;
+﻿using K1_Banken_Team1.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,76 +43,16 @@ namespace K1_Banken_Team1.Presentation.Menus
 
                     case "1":
                         {
-                            //Sätter in penger på valt konto efter validering
-                            Console.WriteLine("Kontonummer: ");
-                            string accNoIn = Console.ReadLine();
-
-                            var accIn = _myBank.FindAccount(accNoIn, currentUser);
-
-                            if (accIn == null)
-                            {
-                                Console.WriteLine("❌Kontot hittades inte.");
-                                _myBank.Pause();
-                                break;
-                            }
-                            Console.WriteLine("belopp: ");
-                            if (!decimal.TryParse(Console.ReadLine(), out decimal depositAmount) || depositAmount <= 0)
-                            {
-                                Console.WriteLine("❌Ogiltigt belopp! ");
-                                _myBank.Pause();
-                                break;
-                            }
-
-                            if (_myBank.ExecuteTransaction("Deposit", accIn.AccountNumber, depositAmount))
-                            {
-                                Console.WriteLine($"{depositAmount} kr insatt på konto {accIn.AccountNumber}." +
-                                    $"Nytt saldo: {accIn.Balance} kr.");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Insättning misslyckades.");
-                            }
+                            _myBank.DepositMoney(currentUser);
                             _myBank.Pause();
                             break;
                         }
 
                     case "2":
                         {
-                            //ta ut pengar från valt konto efter validering
-                            Console.Write("Kontonummer: ");
-                            string accNoOut = Console.ReadLine();
-                            var accOut = _myBank.FindAccount(accNoOut, currentUser);
-
-                            if (accOut == null)
-                            {
-                                Console.WriteLine("❌ Kontot hittades inte.");
-                                _myBank.Pause();
-                                break;
-                            }
-
-                            Console.Write("Belopp: ");
-                            if (!decimal.TryParse(Console.ReadLine(), out decimal withdrawAmount) || withdrawAmount <= 0)
-                            {
-                                Console.WriteLine("❌ Ogiltigt belopp.");
-                                _myBank.Pause();
-                                break;
-                            }
-                            if (withdrawAmount > accOut.Balance)
-                            {
-                                Console.WriteLine("❌ För lite pengar på kontot.");
-                                _myBank.Pause();
-                                break;
-                            }
-                            if (_myBank.ExecuteTransaction("Withdraw", accOut.AccountNumber, withdrawAmount))
-                            {
-                                Console.WriteLine($"✅ {withdrawAmount} kr uttaget från konto {accOut.AccountNumber}. Nytt saldo: {accOut.Balance} kr.");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Uttag misslyckades.");
-                            }
+                            _myBank.WithdrawMoney(currentUser);
                             _myBank.Pause();
-                            break;
+                            break;                          
                         }
 
                     case "3": //Överför pengar

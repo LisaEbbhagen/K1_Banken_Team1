@@ -1,88 +1,9 @@
-﻿using K1_Banken_Team1.Core;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace K1_Banken_Team1
+namespace K1_Banken_Team1.Domain
 {
     public class Bank
     {
-        //public void AdminMenu()
-        //{
-        //    bool running = true;
-
-        //    while (running)
-        //    {
-
-        //        Console.WriteLine("\n=== Admin Meny ===");
-        //        Console.WriteLine("1. Lista alla konton");
-        //        Console.WriteLine("2. Visa konton med positivt saldo");
-        //        Console.WriteLine("3. Visa de tre största transaktioner");
-        //        Console.WriteLine("4. Visa total saldo per användare");
-        //        Console.WriteLine("5. Visa största insättning & uttag per användare");
-        //        Console.WriteLine("6. Visa användare med flest transaktioner");
-        //        Console.WriteLine("7. Sök konto (kontonummer eller namn)");
-        //        Console.WriteLine("8. Uppdatera växelkurser");
-        //        Console.WriteLine("8. Lås upp användare");
-        //        Console.WriteLine("9. Logga ut");
-        //        Console.Write("Val: ");
-        //        string choice = Console.ReadLine();
-
-        //        switch (choice)
-        //        {
-        //            case "1":
-        //                Console.WriteLine("Alla konton:");
-        //                foreach (var acc in accounts.Values)
-        //                {
-        //                    Console.WriteLine($"Konto: {acc.AccountNumber}, Ägare: {acc.Owner.Name}, Saldo: {acc.Balance} SEK");
-        //                }
-        //                break;
-
-        //            case "2":
-        //                PrintAccountsWithPositivBalance();
-        //                break;
-
-        //            case "3":
-        //                var topThree = threeBiggestAmount();
-        //                Console.WriteLine("De tre största transaktionerna:");
-        //                foreach (var t in topThree)
-        //                {
-        //                    Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount} kr – Konto: {t.AccountNumber}"); //*fixa till utskriften, svenska o engelska blandas
-        //                }
-        //                break;
-
-        //            case "4":
-        //                PrintTotalBalanceAll();
-        //                break;
-
-        //            case "5":
-        //                ShowBiggestTransactionPerUser();
-        //                break;
-
-        //            case "6":
-        //                ShowUserWithMostTransactions();
-        //                break;
-
-        //            case "7":
-        //                SearchAccount();
-        //                break;
-
-        //            case "8":
-        //                UpdateExchangeRates();
-        //                UnLockUserMenu(); //metod som låser upp användare
-        //                Pause();
-        //                break;
-
-        //            case "9":
-        //                Console.WriteLine("Loggar ut från Admin...");
-        //                running = false;
-        //                break;
-
-        //            default:
-        //                Console.WriteLine("Ogiltigt val, försök igen.");
-        //                break;
-        //        }
-        //    }
-        //}
-
         public Dictionary<string, decimal> ExchangeRates { get; private set; } = new Dictionary<string, decimal>
         {
             { "SEK", 1m },
@@ -112,6 +33,14 @@ namespace K1_Banken_Team1
             return accounts.Values.Where(accounts => accounts.Balance > 0).ToList();
         }
 
+        public void ListAllAccounts()
+        {
+            Console.WriteLine("Alla konton:");
+            foreach (var acc in accounts.Values)
+            {
+                Console.WriteLine($"Konto: {acc.AccountNumber}, Ägare: {acc.Owner.Name}, Saldo: {acc.Balance} SEK");
+            }
+        }
         public void PrintAccountsWithPositivBalance() //Metod för att skriva ut konton med positivt saldo
         {
             var positivAccounts = AccountsWithPositivBalance();
@@ -276,14 +205,14 @@ namespace K1_Banken_Team1
                     }
 
                     decimal finalAmount = amount;
-                    if(account.Currency != toAccount.Currency) //Växling om kontona har olika valutor
+                    if (account.Currency != toAccount.Currency) //Växling om kontona har olika valutor
                     {
-                        if(!ExchangeRates.ContainsKey(account.Currency) || !ExchangeRates.ContainsKey(toAccount.Currency))
+                        if (!ExchangeRates.ContainsKey(account.Currency) || !ExchangeRates.ContainsKey(toAccount.Currency))
                         {
                             Console.WriteLine("Växelkurs saknas för en av valutorna.");
                             return false;
                         }
-                        
+
                         decimal amountInSEK = amount * ExchangeRates[account.Currency]; //Omvandla till SEK först
                         finalAmount = amountInSEK / ExchangeRates[toAccount.Currency]; //Omvandla till mottagarens valuta
 
@@ -318,8 +247,6 @@ namespace K1_Banken_Team1
             }
         }
 
-
-
         public void ShowBalance()
         {
             foreach (var user in users)
@@ -332,10 +259,21 @@ namespace K1_Banken_Team1
         public List<Transaction> threeBiggestAmount()
         {
             return transactions //returnera värden med följande tre metoder i beaktning
-                .OrderByDescending(t => t.Amount) //sorterar listan i fallande ordning (Lambda)
-                .Take(3)
-                .ToList(); //returnerar resultatet till en vanlig lista
+            .OrderByDescending(t => t.Amount) //sorterar listan i fallande ordning (Lambda)
+            .Take(3)
+            .ToList(); //returnerar resultatet till en vanlig lista
         }
+
+        public void ShowThreeBiggestTransactions()
+        {
+            var topThree = threeBiggestAmount();
+            Console.WriteLine("De tre största transaktionerna:");
+            foreach (var t in topThree)
+            {
+                Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount} kr – Konto: {t.AccountNumber}"); //*fixa till utskriften, svenska o engelska blandas
+            }
+        }
+
 
         public List<Transaction> LatestTransactions(string accountNumber)
         {
@@ -498,6 +436,85 @@ namespace K1_Banken_Team1
                 Console.WriteLine($"{acc.AccountNumber} {acc.Owner.Name} {acc.Balance} kr");
             }
         }
+
+        public void DepositMoney(User user) //Sätter in pengar på valt konto efter validering
+        {
+            Account accIn = null;
+            decimal depositAmount = 0;
+
+            while (true)
+            {
+                Console.WriteLine("Kontonummer: ");
+                string accNoIn = Console.ReadLine();
+                accIn = FindAccount(accNoIn, user);
+
+                if (accIn == null)
+                {
+                    Console.WriteLine("❌Kontot hittades inte. Försök igen");
+                    continue;
+                }
+
+                Console.WriteLine("belopp: ");
+                if (!decimal.TryParse(Console.ReadLine(), out depositAmount) || depositAmount <= 0)
+                {
+                    Console.WriteLine("❌Ogiltigt belopp! ");
+                    continue;
+                }
+                break; //om båda inmatmingarna är OK bryts loopen
+            }
+            
+            if (ExecuteTransaction("Deposit", accIn.AccountNumber, depositAmount))
+            {
+                Console.WriteLine($"{depositAmount} kr insatt på konto {accIn.AccountNumber}." +
+                    $"Nytt saldo: {accIn.Balance} kr.");
+            }
+            else
+            {
+                Console.WriteLine("Insättning misslyckades.");
+            }
+        }
+
+        public void WithdrawMoney(User user) //ta ut pengar från valt konto efter validering
+        {
+            Account accOut = null;
+            decimal withdrawAmount = 0;
+
+            while (true)
+            {
+                Console.Write("Kontonummer: ");
+                string accNoOut = Console.ReadLine();
+                accOut = FindAccount(accNoOut, user);
+
+                if (accOut == null)
+                {
+                    Console.WriteLine("❌ Kontot hittades inte. Försök igen");
+                    continue;
+                }
+
+                Console.Write("Belopp: ");
+                if (!decimal.TryParse(Console.ReadLine(), out withdrawAmount) || withdrawAmount <= 0)
+                {
+                    Console.WriteLine("❌ Ogiltigt belopp. Försök igen");
+                    continue;
+                }
+                if (withdrawAmount > accOut.Balance)
+                {
+                    Console.WriteLine("❌ För lite pengar på kontot.");
+                    continue;
+                }
+                break;
+            }
+
+                if (ExecuteTransaction("Withdraw", accOut.AccountNumber, withdrawAmount))
+                {
+                    Console.WriteLine($"✅ {withdrawAmount} kr uttaget från konto {accOut.AccountNumber}. Nytt saldo: {accOut.Balance} kr.");
+                }
+                else
+                {
+                    Console.WriteLine("Uttag misslyckades.");
+                }
+        }
+
         public IEnumerable<Account> ListAccounts(User user)
         {
             if (user == null)
@@ -618,7 +635,7 @@ namespace K1_Banken_Team1
             }
 
             decimal interestRate = 0.08m; //8% ränta
-            decimal totalRepayment = amount + (amount * interestRate);
+            decimal totalRepayment = amount + amount * interestRate;
 
             selectedAccount.Balance += amount; //Sätter in lånet på kontot
             Console.WriteLine($"\nDu har lånat {amount:C} till konto {selectedAccount.AccountNumber}.");

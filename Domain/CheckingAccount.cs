@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace K1_Banken_Team1.Core
+namespace K1_Banken_Team1.Domain
 {
-    public class SavingAccount : Account
+    public class CheckingAccount : Account
     {
-         public SavingAccount(string accountNumber, User owner) : base(accountNumber, owner) { }
+        public CheckingAccount(string accountNumber, User owner) : base(accountNumber, owner) { }
 
         public override bool Deposit(decimal amount, bool verbose = true) //metod för att sätta in pengar.
         {
@@ -35,11 +36,10 @@ namespace K1_Banken_Team1.Core
             }
             else
             {
-                Balance -= amount -= 50;
+                Balance -= amount;
                 Console.WriteLine($"Aktuellt saldo efter uttag: {Balance}");
                 return true;
             }
         }
     }
 }
-
