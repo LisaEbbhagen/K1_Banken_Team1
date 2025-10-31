@@ -1,4 +1,5 @@
-﻿using System;
+﻿using K1_Banken_Team1.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,11 +39,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                 switch (choice)
                 {
                     case "1":
-                        Console.WriteLine("Alla konton:");
-                        foreach (var acc in myBank.accounts.Values)
-                        {
-                            Console.WriteLine($"Konto: {acc.AccountNumber}, Ägare: {acc.Owner.Name}, Saldo: {acc.Balance} SEK");
-                        }
+                        myBank.ListAllAccounts();
                         break;
 
                     case "2":
@@ -50,12 +47,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                         break;
 
                     case "3":
-                        var topThree = myBank.threeBiggestAmount();
-                        Console.WriteLine("De tre största transaktionerna:");
-                        foreach (var t in topThree)
-                        {
-                            Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount} kr – Konto: {t.AccountNumber}"); //*fixa till utskriften, svenska o engelska blandas
-                        }
+                        myBank.ShowThreeBiggestTransactions();
                         break;
 
                     case "4":
