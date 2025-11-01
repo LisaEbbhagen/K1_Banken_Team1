@@ -33,14 +33,101 @@ namespace K1_Banken_Team1.Domain
             return accounts.Values.Where(accounts => accounts.Balance > 0).ToList();
         }
 
-        public void ListAllAccounts()
+        public void CreateUser()
         {
-            Console.WriteLine("Alla konton:");
+            Console.Clear();
+            Console.WriteLine("🧑‍💻 Skapa ny användare\n");
+
+            string name;
+            while (true)
+            {
+                Console.WriteLine("Ange namn: ");
+                name = Console.ReadLine();
+
+                if (users.Any(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase))) //kontrollera om namnet finns
+                {
+                    Console.WriteLine($"❌ Det finns redan en användare registrerad med namnet '{name}'. Välj ett annat namn.\n");
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    Console.WriteLine("❌ Namn får inte vara tomt.\n");
+                    continue;
+                }
+                break; // namn är ok. gå vidare
+            }
+
+            string pin;
+            while (true)
+            {
+                Console.WriteLine("Ange PIN (4 siffror): ");
+                pin = Console.ReadLine();
+
+                if (pin.Length == 4 && pin.All(char.IsDigit))
+                {
+                    break; // pin ok
+                }
+                Console.WriteLine("❌ Ogiltig PIN. Ange exakt 4 siffror.\n");
+
+            }
+
+            string id;
+            while(true)
+            {
+                Console.WriteLine("Ange ID");
+                id = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    Console.WriteLine("❌ ID får inte vara tomt.\n ");
+                    continue;
+                }
+
+                if (users.Any(u => u.Id.Equals(id, StringComparison.OrdinalIgnoreCase)))
+                {
+                    Console.WriteLine($"❌ ID '{id}' andvänds redan. välj ett annat ID.");
+                    continue;
+                }
+                break;
+            }
+
+            var newUser = new User(name, pin, id); //användaren skapas 
+            AddUser(newUser);                     // användaren läggs till listan
+
+            Console.WriteLine($"✅ Användaren'{name}' har skapats och lagts till i systemet!");
+            Pause();
+
+        }
+
+        public void ListAllAccounts() //listar alla Konton, ägare, Saldo som är registrerad hos banken
+        {
+            Console.Clear();
+            Console.WriteLine("Alla konton i banken \n");
+            Console.WriteLine($"{"Konto",-15} {"Ägare",-10} {"Saldo",-10}");
+            Console.WriteLine(new string('-', 40));
+               
             foreach (var acc in accounts.Values)
             {
-                Console.WriteLine($"Konto: {acc.AccountNumber}, Ägare: {acc.Owner.Name}, Saldo: {acc.Balance} SEK");
+                Console.WriteLine($"{acc.AccountNumber, -15} {acc.Owner.Name, -10} {acc.Balance, -10}");
             }
+            Pause();
         }
+
+        public void ShowAllUsers()
+        {
+            Console.Clear();
+            Console.WriteLine("👥 Alla användare i systemet \n");
+            Console.WriteLine($"{"Name", -15} {"Id",-10}");
+            Console.WriteLine(new string('-',30));
+
+            foreach (var user in users)
+            {
+                Console.WriteLine($"{user.Name,-15} {user.Id,-10}");
+            }
+            Pause();
+        }
+
         public void PrintAccountsWithPositivBalance() //Metod för att skriva ut konton med positivt saldo
         {
             var positivAccounts = AccountsWithPositivBalance();
