@@ -100,18 +100,30 @@ namespace K1_Banken_Team1.Domain
 
         }
 
+        public void ListAllAccounts() //listar alla Konton, ägare, Saldo som är registrerad hos banken
+        {
+            Console.Clear();
+            Console.WriteLine("Alla konton i banken \n");
+            Console.WriteLine($"{"Konto",-15} {"Ägare",-10} {"Saldo",-10}");
+            Console.WriteLine(new string('-', 40));
+               
+            foreach (var acc in accounts.Values)
+            {
+                Console.WriteLine($"{acc.AccountNumber, -15} {acc.Owner.Name, -10} {acc.Balance, -10}");
+            }
+            Pause();
+        }
+
         public void ShowAllUsers()
         {
             Console.Clear();
             Console.WriteLine("👥 Alla användare i systemet \n");
-            Console.WriteLine($"{"Name",-15} {"Id",-10} {"Pin",-6}");
-            Console.WriteLine(new string('-', 35));
-               
-
+            Console.WriteLine($"{"Name", -15} {"Id",-10}");
+            Console.WriteLine(new string('-',30));
 
             foreach (var user in users)
             {
-                Console.WriteLine($"{user.Name, -15} {user.Id, -10} {user.Pin, -6}");
+                Console.WriteLine($"{user.Name,-15} {user.Id,-10}");
             }
             Pause();
         }
