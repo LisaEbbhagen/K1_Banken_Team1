@@ -608,7 +608,7 @@ namespace K1_Banken_Team1.Domain
             Account accIn = null;
             decimal depositAmount = 0;
 
-            while (true)
+            while (accIn == null)
             {
                 Console.WriteLine("Kontonummer: ");
                 string accNoIn = Console.ReadLine();
@@ -617,16 +617,16 @@ namespace K1_Banken_Team1.Domain
                 if (accIn == null)
                 {
                     Console.WriteLine("❌Kontot hittades inte. Försök igen");
-                    continue;
                 }
+            }
 
+            while (depositAmount <= 0)
+            {
                 Console.WriteLine("belopp: ");
                 if (!decimal.TryParse(Console.ReadLine(), out depositAmount) || depositAmount <= 0)
                 {
-                    Console.WriteLine("❌Ogiltigt belopp! ");
-                    continue;
+                    Console.WriteLine("❌Ogiltigt belopp! Ange ett positivt tal.");
                 }
-                break; //om båda inmatmingarna är OK bryts loopen
             }
             
             if (ExecuteTransaction("Deposit", accIn.AccountNumber, depositAmount))
@@ -645,7 +645,7 @@ namespace K1_Banken_Team1.Domain
             Account accOut = null;
             decimal withdrawAmount = 0;
 
-            while (true)
+            while (accOut == null)
             {
                 Console.Write("Kontonummer: ");
                 string accNoOut = Console.ReadLine();
@@ -654,31 +654,116 @@ namespace K1_Banken_Team1.Domain
                 if (accOut == null)
                 {
                     Console.WriteLine("❌ Kontot hittades inte. Försök igen");
-                    continue;
                 }
+            }
 
+            while (withdrawAmount <= 0 || withdrawAmount > accOut.Balance)
+            {
                 Console.Write("Belopp: ");
                 if (!decimal.TryParse(Console.ReadLine(), out withdrawAmount) || withdrawAmount <= 0)
                 {
                     Console.WriteLine("❌ Ogiltigt belopp. Försök igen");
-                    continue;
                 }
+
                 if (withdrawAmount > accOut.Balance)
                 {
-                    Console.WriteLine("❌ För lite pengar på kontot.");
+                    Console.WriteLine("❌ För lite pengar på kontot. Försök igen.");
+                }
+            }
+
+            if (ExecuteTransaction("Withdraw", accOut.AccountNumber, withdrawAmount))
+            {
+                Console.WriteLine($"✅ {withdrawAmount} kr uttaget från konto {accOut.AccountNumber}. Nytt saldo: {accOut.Balance} kr.");
+            }
+            else
+            {
+                Console.WriteLine("Uttag misslyckades.");
+            }
+        }
+
+        public void TransferMoney(User user) //**Kontrollera utskrifter, dubletter + hämtar felaktiga utskrifter från andra metoder
+        {
+            decimal transferAmount = 0;
+            string fromAccNo = "", toAccNo = "";
+            Account fromAccNumber = null, toAccNumber = null;
+
+            while (fromAccNumber == null)
+            {
+                Console.Write("Vilket konto vill du överföra pengar från? ");
+                fromAccNo = Console.ReadLine();
+                fromAccNumber = FindAccount(fromAccNo, user);
+
+                if (fromAccNumber == null)
+                {
+                    Console.WriteLine("❌ Kontot hittades inte. Försök igen");
+                }
+            }
+
+            while (toAccNumber == null)
+            {
+                Console.Write("Vilket konto vill du överföra pengar till? ");
+                toAccNo = Console.ReadLine();
+                toAccNumber = FindAccount(toAccNo);
+
+                if (toAccNumber == null)
+                {
+                    Console.WriteLine("❌ Kontot hittades inte.Försök igen");
+                }
+            }
+            
+            while (true)
+            {
+                Console.Write("Vilket belopp vill du överföra? ");
+                if (!decimal.TryParse(Console.ReadLine(), out transferAmount) || transferAmount <= 0)
+                {
+                    Console.WriteLine("\nOgiltigt belopp! Ange ett positivt tal.");
                     continue;
                 }
                 break;
             }
+            
+            ExecuteTransaction("Transfer", fromAccNo, transferAmount, toAccNo);
+        }
 
-                if (ExecuteTransaction("Withdraw", accOut.AccountNumber, withdrawAmount))
+        public void ShowAllTransactions(User user)
+        {
+            string accNo = "";
+            Account accNumber = null;
+
+            while (accNumber == null)
+            {
+                Console.Write("Kontonummer: ");
+                accNo = Console.ReadLine();
+                accNumber = FindAccount(accNo, user);
+                
+                if (accNumber == null)
                 {
-                    Console.WriteLine($"✅ {withdrawAmount} kr uttaget från konto {accOut.AccountNumber}. Nytt saldo: {accOut.Balance} kr.");
+                    Console.WriteLine("❌ Kontot hittades inte. Försök igen.");
                 }
-                else
-                {
-                    Console.WriteLine("Uttag misslyckades.");
-                }
+            }
+               
+            LatestTransactions(accNo); //Kontonumret skickas till metoden
+        }
+
+        public void ShowAllMyAccountsAndMoney(User user)
+        {
+            var accounts = ListAccounts(user);
+
+            //Om inga konto finns
+            if (accounts == null || !accounts.Any())
+            {
+                Console.WriteLine("ℹ️Du har inga konton.");
+            }
+            Console.WriteLine("\nDina konton och saldo:");
+            Console.WriteLine("--------------------");
+
+            //Rubriker med justering
+            Console.WriteLine($"{"Namn",-10} | {"Konto",-10} | {"Saldo",10}");
+
+            foreach (var acc in accounts)
+            {
+                Console.WriteLine($"{user.Name,-10} | {acc.AccountNumber,-10} | {acc.Balance,10:0} kr");
+            }
         }
 
         public IEnumerable<Account> ListAccounts(User user)

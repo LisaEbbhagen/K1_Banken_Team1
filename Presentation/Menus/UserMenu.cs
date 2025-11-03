@@ -53,121 +53,42 @@ namespace K1_Banken_Team1.Presentation.Menus
                 {
 
                     case "1":
-                        {
                             _myBank.DepositMoney(currentUser);
                             _myBank.Pause();
                             break;
-                        }
 
                     case "2":
-                        {
                             _myBank.WithdrawMoney(currentUser);
                             _myBank.Pause();
                             break;                          
-                        }
 
-                    case "3": //Överför pengar
-                        Console.Write("Vilket konto vill du överföra pengar från? ");
-                        string fromAccNo = Console.ReadLine();
-                        var fromAccNumber = _myBank.FindAccount(fromAccNo, currentUser);
+                    case "3": 
+                            _myBank.TransferMoney(currentUser);
+                            _myBank.Pause();
+                            break;                   
 
-                        Console.Write("Vilket konto vill du överföra pengar till? ");
-                        string toAccNo = Console.ReadLine();
-                        var toAccNumber = _myBank.FindAccount(toAccNo);
+                    case "4": //Visa transaktioner
+                        Console.Write("Kontonummer: ");
+                        string accNo = Console.ReadLine();
+                        var accNumber = _myBank.FindAccount(accNo, currentUser);
 
-                        if (fromAccNumber == null)
+                        if (accNumber == null)
                         {
-                            Console.WriteLine("❌ Kontot du vill överföra pengar från hittades inte.");
-                            break;
-                        }
-
-                        if (toAccNumber == null)
-                        {
-                            Console.WriteLine("❌ Kontot du vill överföra pengar till hittades inte.");
-                            break;
-                        }
-
-                        Console.Write("Vilket belopp vill du överföra? ");
-                        if (!decimal.TryParse(Console.ReadLine(), out decimal transferAmount) || transferAmount <= 0)
-                        {
-                            Console.WriteLine("\nOgiltigt belopp!");
-                            break;
-                        }
-
-                        else
-                        {
-                            _myBank.ExecuteTransaction("Transfer", fromAccNo, transferAmount, toAccNo);
-                        }
-                        _myBank.Pause();
-                        break;
-
-                    case "4":
-                        Console.Clear();
-                        Console.WriteLine("== Transaktioner ==\n");
-
-                        var accNo = userAccount.AccountNumber; 
-
-                        var allTx = _myBank.GetAllTransactions() // hämta alla transaktioner för konto Äldst - nyast
-                                           .Where(t => t.AccountNumber == accNo)
-                                           .OrderBy(t => t.Timestamp)   // nyast längst ner
-                                           .ToList();
-
-                        //Skriver rubriker
-                        Console.WriteLine(
-                            "Typ".PadRight(12) +
-                            "Belopp".PadRight(12) +
-                            "Från".PadRight(10) +
-                            "Till".PadRight(10) +
-                            "Saldo".PadRight(10)
-                        );
-                        Console.WriteLine(new string('-', 58));
-
-                        foreach (var tx in allTx) //skriv varje trasaktion rad för rad
-                        {
-                            string toText = tx.Type == "Transfer" ? (tx.ToAccountNumber ?? "-") : "-"; //visar motagar konto vid transfer
-
-                            Console.WriteLine(
-                                tx.Type.PadRight(12) +
-                                ($"{tx.Amount} kr").PadRight(12) +
-                                tx.AccountNumber.PadRight(10) +
-                                toText.PadRight(10) +
-                                tx.BalanceAfter.ToString().PadRight(10) //saldot efter transaktion
-                            );
-                        }
-
-                        Console.WriteLine();
-                        _myBank.Pause();
-                        break;
-
-                        Console.WriteLine();
-                        _myBank.Pause();
-                        break;
-
-                    case "5":
-                        {
-                            //visa alla konton + saldo
-                            var accounts = _myBank.ListAccounts(currentUser);
-
-                            //Om inga konto finns
-                            if (accounts == null || !accounts.Any())
-                            {
-                                Console.WriteLine("ℹ️Du har inga konton.");
-                                _myBank.Pause();
-                                break;
-                            }
-                            Console.WriteLine("\nDina konton och saldo:");
-                            Console.WriteLine("--------------------");
-
-                            //Rubriker med justering
-                            Console.WriteLine($"{"Namn",-10} | {"Konto",-10} | {"Saldo",10}");
-
-                            foreach (var acc in accounts)
-                            {
-                                Console.WriteLine($"{currentUser.Name,-10} | {acc.AccountNumber,-10} | {acc.Balance,10:0} kr");
-                            }
+                            Console.WriteLine("❌ Kontot hittades inte.");
                             _myBank.Pause();
                             break;
                         }
+                        else
+                        {
+                            _myBank.LatestTransactions(accNo); //Kontonumret skickas till metoden 
+                        }
+                        _myBank.Pause();
+                        break;
+
+                    case "5": 
+                            _myBank.ShowAllMyAccountsAndMoney(currentUser);
+                            _myBank.Pause();
+                            break;
 
                     case "6":
                         _myBank.AddNewSavingsAccount(currentUser);
