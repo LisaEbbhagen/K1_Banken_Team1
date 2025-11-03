@@ -20,8 +20,7 @@ To meet the project requirements, the application includes:
 - Transactions: deposit, withdrawal, transfer, and open new account
 - Error handling with try/catch blocks and custom exceptions
 - Logging of key operations and errors
-- ((Menu-based user interface for intuitive navigation)) -**ej implementerat
-
+  
 ### Architecture & Design
 - Main method only handles program startup – no business logic
 - SOLID principles applied across services and models
@@ -41,4 +40,5 @@ To meet the project requirements, the application includes:
 .....IN PROGRESS.. 
 
 ### Authors
-Rolf Andersson, Abdalle Abdulkadir & Lisa Ebbhagen 
+
+RoffeRuff42, Abdalle-Abdulkadir, LisaEbbhagen
