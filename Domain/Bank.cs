@@ -41,7 +41,7 @@ namespace K1_Banken_Team1.Domain
             string name;
             while (true)
             {
-                Console.WriteLine("Ange namn: ");
+                Console.Write("Ange namn: ");
                 name = Console.ReadLine();
 
                 if (users.Any(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase))) //kontrollera om namnet finns
@@ -61,7 +61,7 @@ namespace K1_Banken_Team1.Domain
             string pin;
             while (true)
             {
-                Console.WriteLine("Ange PIN (4 siffror): ");
+                Console.Write("Ange PIN (4 siffror): ");
                 pin = Console.ReadLine();
 
                 if (pin.Length == 4 && pin.All(char.IsDigit))
@@ -75,7 +75,7 @@ namespace K1_Banken_Team1.Domain
             string id;
             while(true)
             {
-                Console.WriteLine("Ange ID");
+                Console.Write("Ange ID");
                 id = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(id))
@@ -155,7 +155,7 @@ namespace K1_Banken_Team1.Domain
 
             if (currency == null) //Ny valuta om ingen är vald
             {
-                Console.WriteLine("Vilken valuta vill du ha på kontot? (SEK, EUR, USD)");
+                Console.Write("Vilken valuta vill du ha på kontot? (SEK, EUR, USD)");
                 currency = Console.ReadLine()?.ToUpper();
                 if (currency != "SEK" && currency != "EUR" && currency != "USD")
                 {
@@ -196,7 +196,7 @@ namespace K1_Banken_Team1.Domain
                     Console.WriteLine($"-{u.Name}");
                 }
 
-                Console.WriteLine("\nAnge namnet på användaren du vill låsa upp:");
+                Console.Write("\nAnge namnet på användaren du vill låsa upp:");
                 string name = Console.ReadLine();
 
                 var userToUnlock = lockedUsers //Hitta användaren
@@ -305,16 +305,16 @@ namespace K1_Banken_Team1.Domain
 
                         Console.WriteLine($"Växlar {amount} {account.Currency} till {finalAmount:F2} {toAccount.Currency} enligt aktuell kurs.");
                     }
-                    //verbose tystar withdraw metoden och skriver istället ut det vi vill nedan
-                    if (!account.Withdraw(amount, verbose: false))
+
+                    if (!account.Withdraw(amount))
                     {
                         Console.WriteLine("Överföring misslyckades. Kontrollera saldo.");
                         return false;
                     }
 
-                    if (!toAccount.Deposit(amount, verbose: false))
+                    if (!toAccount.Deposit(amount))
                     {
-                        account.Deposit(amount, verbose: false);
+                        account.Deposit(amount);
                         Console.WriteLine("Överföring misslyckades vid insättning till mottagare.");
                         return false;
                     }
@@ -498,7 +498,7 @@ namespace K1_Banken_Team1.Domain
 
         public void SearchAccount()
         {
-            Console.WriteLine("\nAnge kontonummer eller namn:");
+            Console.Write("\nAnge kontonummer eller namn:");
             string input = Console.ReadLine().ToLower();
 
             var results = accounts.Values
@@ -531,7 +531,7 @@ namespace K1_Banken_Team1.Domain
 
             while (accIn == null)
             {
-                Console.WriteLine("Kontonummer: ");
+                Console.Write("Kontonummer: ");
                 string accNoIn = Console.ReadLine();
                 accIn = FindAccount(accNoIn, user);
 
@@ -543,7 +543,7 @@ namespace K1_Banken_Team1.Domain
 
             while (depositAmount <= 0)
             {
-                Console.WriteLine("belopp: ");
+                Console.Write("belopp: ");
                 if (!decimal.TryParse(Console.ReadLine(), out depositAmount) || depositAmount <= 0)
                 {
                     Console.WriteLine("❌Ogiltigt belopp! Ange ett positivt tal.");
@@ -713,7 +713,7 @@ namespace K1_Banken_Team1.Domain
             }
             while (accounts.ContainsKey(accountNumber)); //Kollar så att kontonumret inte redan finns
 
-            Console.WriteLine("Vilken valuta vill du ha på kontot? (SEK, EUR, USD)"); //Val av valuta
+            Console.Write("Vilken valuta vill du ha på kontot? (SEK, EUR, USD)"); //Val av valuta
             string currency = Console.ReadLine()?.ToUpper();
 
             if (currency != "SEK" && currency != "EUR" && currency != "USD")
@@ -731,7 +731,7 @@ namespace K1_Banken_Team1.Domain
             user.AddAccount(newSavingsAccount);
 
             Console.WriteLine($"Nytt sparkonto skapat med kontonummer: {accountNumber} ({currency})");
-            Console.WriteLine("Hur mycket vill du sätta in på ditt nya sparkonto?");
+            Console.Write("Hur mycket vill du sätta in på ditt nya sparkonto?");
             if (decimal.TryParse(Console.ReadLine(), out decimal initialDeposit) && initialDeposit > 0)
             {
                 newSavingsAccount.Deposit(initialDeposit);

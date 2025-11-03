@@ -10,11 +10,13 @@ namespace K1_Banken_Team1.Domain
     {
         public string AccountNumber { get; private set; }
 
-        public decimal Balance { get; set; } //För att subklasserna ska komma åt värdet behöver det vara protected
+        public decimal Balance { get; set; }
         public User Owner { get; private set; } // varje konto har en ägare
 
         List<Transaction> transactions = new List<Transaction>(); // varje konto har en lista med transaktioner
+        
         public IReadOnlyList<Transaction> Transactions => transactions.AsReadOnly(); // gör listan med transaktioner read-only
+        
         public string Currency { get; set; } = "SEK"; // Standard
 
         public Account(string accountNumber, User owner)
@@ -25,18 +27,12 @@ namespace K1_Banken_Team1.Domain
         }
 
         //metod för att sätta in pengar.
-        //bool verbose låter oss bestämma om metoden ska vara tyst eller skriva ut sina meddelanden i konsollen
-        public virtual bool Deposit(decimal amount, bool verbose = true) 
+        public virtual bool Deposit(decimal amount)
         {
-            if (amount <= 0)
-            {
-                Console.WriteLine("Error: Summan du väljer att sätta in måste vara mer än 0kr.");
-                return false;
-            }
-
+            if (amount <= 0) return false;
+           
             Balance += amount;
-            if (verbose) Console.WriteLine($"Aktuellt saldo efter insättning: {Balance}");
-                
+
             var transaction = new Transaction(
                 Guid.NewGuid().ToString(), // unikt id för transaktionen
                 AccountNumber,
@@ -44,22 +40,16 @@ namespace K1_Banken_Team1.Domain
                 DateTime.Now,
                 "Deposit");
 
-                transactions.Add(transaction);
-                return true;
-            }
-        
+            transactions.Add(transaction);
+            return true;
+        }
 
-        public virtual bool Withdraw(decimal amount, bool verbose = true) //metod för att ta ut pengar.
+
+        public virtual bool Withdraw(decimal amount) //metod för att ta ut pengar.
         {
-            if (amount <= 0 || amount > Balance)
-            {
-                Console.WriteLine("Error: Summan du väljer att sätta in måste vara mer än 0kr.");
-                return false;
-            }
-            else
-            {
+            if (amount <= 0 || amount > Balance) return false;
+     
                 Balance -= amount;
-                if (verbose) Console.WriteLine($"Aktuellt saldo efter uttag: {Balance}");
                 var transaction = new Transaction(
                 Guid.NewGuid().ToString(),
                 AccountNumber,
@@ -68,28 +58,7 @@ namespace K1_Banken_Team1.Domain
                 "Withdraw");
 
                 transactions.Add(transaction);
-                return true; 
-            }
-        }
-
-        public void AddTransaction(Transaction transaction)
-        {
-            transactions.Add(transaction);
-        }
-
-        public void PrintTransactions() //metod för att skriva ut transaktioner
-        {
-            Console.WriteLine($"\nTransaktioner för konto {AccountNumber}:");
-            if (transactions.Count == 0)
-            {
-                Console.WriteLine("Inga transaktioner ännu.");
-                return;
-            }
-
-            foreach (var t in transactions)
-            {
-                Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount} kr");
-            }
-        }
+                return true;
+        }     
     }
 }
