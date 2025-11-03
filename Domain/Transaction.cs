@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace K1_Banken_Team1
+namespace K1_Banken_Team1.Domain
 {
     public class Transaction
     {

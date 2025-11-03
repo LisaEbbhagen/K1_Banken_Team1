@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace K1_Banken_Team1
+namespace K1_Banken_Team1.Domain
 {
     public class User
     {
@@ -33,7 +33,6 @@ namespace K1_Banken_Team1
         }
 
         //metoden anger om användarens konto är låst 
-        
         public bool IsLocked { get; set; } = false;
     }
 }
