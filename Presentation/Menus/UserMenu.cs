@@ -21,6 +21,17 @@ namespace K1_Banken_Team1.Presentation.Menus
             bool loggedIn = true;
             Account userAccount = currentUser.Accounts.First(); // enkel version: varje användare har ett konto
 
+            // starta bakgrundsjobb som kör pending var 15:e minut
+            _ = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(15));
+                    _myBank.ProcessPendingTransactions();
+                }
+            });
+
+
             while (loggedIn)
             {
 
@@ -90,21 +101,45 @@ namespace K1_Banken_Team1.Presentation.Menus
                         _myBank.Pause();
                         break;
 
-                    case "4": //Visa transaktioner
-                        Console.Write("Kontonummer: ");
-                        string accNo = Console.ReadLine();
-                        var accNumber = _myBank.FindAccount(accNo, currentUser);
+                    case "4":
+                        Console.Clear();
+                        Console.WriteLine("== Transaktioner ==\n");
 
-                        if (accNumber == null)
+                        var accNo = userAccount.AccountNumber; 
+
+                        var allTx = _myBank.GetAllTransactions() // hämta alla transaktioner för konto Äldst - nyast
+                                           .Where(t => t.AccountNumber == accNo)
+                                           .OrderBy(t => t.Timestamp)   // nyast längst ner
+                                           .ToList();
+
+                        //Skriver rubriker
+                        Console.WriteLine(
+                            "Typ".PadRight(12) +
+                            "Belopp".PadRight(12) +
+                            "Från".PadRight(10) +
+                            "Till".PadRight(10) +
+                            "Saldo".PadRight(10)
+                        );
+                        Console.WriteLine(new string('-', 58));
+
+                        foreach (var tx in allTx) //skriv varje trasaktion rad för rad
                         {
-                            Console.WriteLine("❌ Kontot hittades inte.");
-                            _myBank.Pause();
-                            break;
+                            string toText = tx.Type == "Transfer" ? (tx.ToAccountNumber ?? "-") : "-"; //visar motagar konto vid transfer
+
+                            Console.WriteLine(
+                                tx.Type.PadRight(12) +
+                                ($"{tx.Amount} kr").PadRight(12) +
+                                tx.AccountNumber.PadRight(10) +
+                                toText.PadRight(10) +
+                                tx.BalanceAfter.ToString().PadRight(10) //saldot efter transaktion
+                            );
                         }
-                        else
-                        {
-                            _myBank.LatestTransactions(accNo); //Kontonumret skickas till metoden 
-                        }
+
+                        Console.WriteLine();
+                        _myBank.Pause();
+                        break;
+
+                        Console.WriteLine();
                         _myBank.Pause();
                         break;
 
