@@ -32,6 +32,8 @@ namespace K1_Banken_Team1.Presentation.Menus
                 Console.WriteLine("7. Sök konto (kontonummer eller namn)");
                 Console.WriteLine("8. Uppdatera växelkurser");
                 Console.WriteLine("9. Lås upp användare");
+                Console.WriteLine("10. Skapa ny användare");
+                Console.WriteLine("11. Visa alla användare");
                 Console.WriteLine("0. Logga ut");
                 Console.Write("Val: ");
                 string choice = Console.ReadLine();
@@ -73,6 +75,14 @@ namespace K1_Banken_Team1.Presentation.Menus
                     case "9":
                         myBank.UnLockUserMenu(); //metod som låser upp användare
                         myBank.Pause();
+                        break;
+
+                    case "10":
+                        myBank.CreateUser(); //Skapa användare
+                        break;
+
+                    case "11":
+                        myBank.ShowAllUsers(); //visa alla registrerade användare
                         break;
 
                     case "0":
