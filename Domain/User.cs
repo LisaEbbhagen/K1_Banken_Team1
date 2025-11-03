@@ -33,7 +33,6 @@ namespace K1_Banken_Team1.Domain
         }
 
         //metoden anger om användarens konto är låst 
-        
         public bool IsLocked { get; set; } = false;
     }
 }

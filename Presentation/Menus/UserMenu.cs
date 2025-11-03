@@ -26,7 +26,7 @@ namespace K1_Banken_Team1.Presentation.Menus
             {
                 while (true)
                 {
-                    await Task.Delay(TimeSpan.FromMinutes(15));
+                    await Task.Delay(TimeSpan.FromMinutes(1));
                     _myBank.ProcessPendingTransactions();
                 }
             });
@@ -53,37 +53,62 @@ namespace K1_Banken_Team1.Presentation.Menus
                 {
 
                     case "1":
-                            _myBank.DepositMoney(currentUser);
+                            _myBank.ExecuteTransaction("Deposit", null, 0, null);
                             _myBank.Pause();
                             break;
 
                     case "2":
-                            _myBank.WithdrawMoney(currentUser);
-                            _myBank.Pause();
+                        _myBank.ExecuteTransaction("Withdraw", null, 0, null); 
+                        _myBank.Pause();
                             break;                          
 
-                    case "3": 
-                            _myBank.TransferMoney(currentUser);
-                            _myBank.Pause();
-                            break;                   
-
-                    case "4": //Visa transaktioner
-                        Console.Write("Kontonummer: ");
-                        string accNo = Console.ReadLine();
-                        var accNumber = _myBank.FindAccount(accNo, currentUser);
-
-                        if (accNumber == null)
-                        {
-                            Console.WriteLine("❌ Kontot hittades inte.");
-                            _myBank.Pause();
+                    case "3":
+                        _myBank.ExecuteTransaction("Transfer", null, 0, null);
+                        _myBank.Pause();
                             break;
-                        }
-                        else
+
+                    case "4":
+                        Console.Clear();
+                        Console.WriteLine("== Transaktioner ==\n");
+
+                        _myBank.ProcessPendingTransactions(verbose: true); //Run pending transactions silently only runs if something runs
+
+                        var accNo = userAccount.AccountNumber; // get current user account numer
+                        var allTx = _myBank.GetAllTransactions()
+                            .Where(t => t.AccountNumber == accNo)
+                            .OrderBy(t => t.Timestamp)
+                            .ToList();
+
+                        Console.WriteLine(            //table headers
+                            "Typ".PadRight(12) +
+                            "Belopp".PadRight(12) +
+                            "Från".PadRight(10) +
+                            "Till".PadRight(10) +
+                            "Saldo".PadRight(12) +
+                            "Status".PadRight(12)
+                        );
+                        Console.WriteLine(new string('-', 70));
+
+                        foreach (var tx in allTx)      //Print each transaction in one line
                         {
-                            _myBank.LatestTransactions(accNo); //Kontonumret skickas till metoden 
+                            string toText = tx.Type == "Transfer" ? (tx.ToAccountNumber ?? "-") : "-";
+                            string statusTxt = tx.Status == "Completed" ? "✅ Completed" : "⏳ Pending";
+
+                            Console.WriteLine(
+                                tx.Type.PadRight(12) +
+                                ($"{tx.Amount} kr").PadRight(12) +
+                                tx.AccountNumber.PadRight(10) +
+                                toText.PadRight(10) +
+                                tx.BalanceAfter.ToString().PadRight(12) +
+                                statusTxt.PadRight(12)
+                            );
                         }
+
+                        Console.WriteLine();
                         _myBank.Pause();
                         break;
+
+
 
                     case "5": 
                             _myBank.ShowAllMyAccountsAndMoney(currentUser);
