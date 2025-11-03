@@ -42,97 +42,29 @@ namespace K1_Banken_Team1.Presentation.Menus
                 {
 
                     case "1":
-                        {
                             _myBank.DepositMoney(currentUser);
                             _myBank.Pause();
                             break;
-                        }
 
                     case "2":
-                        {
                             _myBank.WithdrawMoney(currentUser);
                             _myBank.Pause();
                             break;                          
-                        }
 
-                    case "3": //Överför pengar
-                        Console.Write("Vilket konto vill du överföra pengar från? ");
-                        string fromAccNo = Console.ReadLine();
-                        var fromAccNumber = _myBank.FindAccount(fromAccNo, currentUser);
+                    case "3": 
+                            _myBank.TransferMoney(currentUser);
+                            _myBank.Pause();
+                            break;                   
 
-                        Console.Write("Vilket konto vill du överföra pengar till? ");
-                        string toAccNo = Console.ReadLine();
-                        var toAccNumber = _myBank.FindAccount(toAccNo);
+                    case "4": 
+                            _myBank.ShowAllTransactions(currentUser);
+                            _myBank.Pause();
+                            break;                   
 
-                        if (fromAccNumber == null)
-                        {
-                            Console.WriteLine("❌ Kontot du vill överföra pengar från hittades inte.");
-                            break;
-                        }
-
-                        if (toAccNumber == null)
-                        {
-                            Console.WriteLine("❌ Kontot du vill överföra pengar till hittades inte.");
-                            break;
-                        }
-
-                        Console.Write("Vilket belopp vill du överföra? ");
-                        if (!decimal.TryParse(Console.ReadLine(), out decimal transferAmount) || transferAmount <= 0)
-                        {
-                            Console.WriteLine("\nOgiltigt belopp!");
-                            break;
-                        }
-
-                        else
-                        {
-                            _myBank.ExecuteTransaction("Transfer", fromAccNo, transferAmount, toAccNo);
-                        }
-                        _myBank.Pause();
-                        break;
-
-                    case "4": //Visa transaktioner
-                        Console.Write("Kontonummer: ");
-                        string accNo = Console.ReadLine();
-                        var accNumber = _myBank.FindAccount(accNo, currentUser);
-
-                        if (accNumber == null)
-                        {
-                            Console.WriteLine("❌ Kontot hittades inte.");
+                    case "5": 
+                            _myBank.ShowAllMyAccountsAndMoney(currentUser);
                             _myBank.Pause();
                             break;
-                        }
-                        else
-                        {
-                            _myBank.LatestTransactions(accNo); //Kontonumret skickas till metoden 
-                        }
-                        _myBank.Pause();
-                        break;
-
-                    case "5":
-                        {
-                            //visa alla konton + saldo
-                            var accounts = _myBank.ListAccounts(currentUser);
-
-                            //Om inga konto finns
-                            if (accounts == null || !accounts.Any())
-                            {
-                                Console.WriteLine("ℹ️Du har inga konton.");
-                                _myBank.Pause();
-                                break;
-                            }
-                            Console.WriteLine("\nDina konton och saldo:");
-                            Console.WriteLine("--------------------");
-
-                            //Rubriker med justering
-                            Console.WriteLine($"{"Namn",-10} | {"Konto",-10} | {"Saldo",10}");
-
-                            foreach (var acc in accounts)
-                            {
-                                Console.WriteLine($"{currentUser.Name,-10} | {acc.AccountNumber,-10} | {acc.Balance,10:0} kr");
-                            }
-                            _myBank.Pause();
-                            break;
-                        }
 
                     case "6":
                         _myBank.AddNewSavingsAccount(currentUser);
