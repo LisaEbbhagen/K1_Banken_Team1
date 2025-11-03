@@ -11,22 +11,22 @@ namespace K1_Banken_Team1.Domain
         public string AccountNumber { get; private set; }
 
         public decimal Balance { get; set; }
-        public User Owner { get; private set; } // varje konto har en ägare
+        public User Owner { get; private set; } // Each account has an owner.
 
-        List<Transaction> transactions = new List<Transaction>(); // varje konto har en lista med transaktioner
-        
-        public IReadOnlyList<Transaction> Transactions => transactions.AsReadOnly(); // gör listan med transaktioner read-only
-        
-        public string Currency { get; set; } = "SEK"; // Standard
+        List<Transaction> transactions = new List<Transaction>(); // Each account has a list of transactions.
+
+        public IReadOnlyList<Transaction> Transactions => transactions.AsReadOnly(); // make the transactions list read-only.
+
+        public string Currency { get; set; } = "SEK"; // Standard currency is SEK.
 
         public Account(string accountNumber, User owner)
         {
             AccountNumber = accountNumber;
             Owner = owner;
-            Balance = 0; // nytt konto har 0 i saldo
+            Balance = 0; // New accounts start with a balance of 0.
         }
 
-        //metod för att sätta in pengar.
+        //metod for deposit money.
         public virtual bool Deposit(decimal amount)
         {
             if (amount <= 0) return false;
@@ -34,7 +34,7 @@ namespace K1_Banken_Team1.Domain
             Balance += amount;
 
             var transaction = new Transaction(
-                Guid.NewGuid().ToString(), // unikt id för transaktionen
+                Guid.NewGuid().ToString(), // unique id for the transaction
                 AccountNumber,
                 amount,
                 DateTime.Now,
@@ -45,7 +45,7 @@ namespace K1_Banken_Team1.Domain
         }
 
 
-        public virtual bool Withdraw(decimal amount) //metod för att ta ut pengar.
+        public virtual bool Withdraw(decimal amount) //method to take out money.
         {
             if (amount <= 0 || amount > Balance) return false;
      
@@ -53,7 +53,7 @@ namespace K1_Banken_Team1.Domain
                 var transaction = new Transaction(
                 Guid.NewGuid().ToString(),
                 AccountNumber,
-                -amount, // negativt belopp för uttag
+                -amount, // negative amount for withdrawal
                 DateTime.Now,
                 "Withdraw");
 

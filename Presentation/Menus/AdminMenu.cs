@@ -73,16 +73,16 @@ namespace K1_Banken_Team1.Presentation.Menus
                         break;
 
                     case "9":
-                        myBank.UnLockUserMenu(); //metod som låser upp användare
+                        myBank.UnLockUserMenu(); //method that unlocks user accounts
                         myBank.Pause();
                         break;
 
                     case "10":
-                        myBank.CreateUser(); //Skapa användare
+                        myBank.CreateUser(); //Create new user
                         break;
 
                     case "11":
-                        myBank.ShowAllUsers(); //visa alla registrerade användare
+                        myBank.ShowAllUsers(); //Show all users
                         break;
 
                     case "0":

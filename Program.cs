@@ -25,9 +25,9 @@ namespace K1_Banken_Team1
             myBank.AddUser(Lisa);
             myBank.AddUser(Rolf);
 
-            myBank.OpenAccount(Abdalle, "A01", "SEK"); //fix för att inte behöva välja valuta varje gång
-            myBank.OpenAccount(Lisa, "A02", "SEK");
-            myBank.OpenAccount(Rolf, "A03", "SEK");
+            myBank.OpenAccount(Abdalle, "A01", "spar", "SEK"); //fix för att inte behöva välja valuta varje gång
+            myBank.OpenAccount(Lisa, "A02", "spar", "SEK");
+            myBank.OpenAccount(Rolf, "A03", "spar", "SEK");
            
 
             myBank.ExecuteTransaction("Deposit", "A01", 20000);
@@ -43,7 +43,7 @@ namespace K1_Banken_Team1
 
             var menuHandler = new MenuHandler(myBank, adminMenu, mainMenu, userMenu); // Skapa MenuHandler-instans
 
-            menuHandler.Start(); // Starta menyhanteraren   
+            menuHandler.Start(); // Start program.   
 
         }
     }
