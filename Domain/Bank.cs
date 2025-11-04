@@ -45,7 +45,7 @@ namespace K1_Banken_Team1.Domain
                 Console.Write("Ange namn: ");
                 name = Console.ReadLine();
 
-                if (users.Any(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase))) //kontrollera om namnet finns
+                if (users.Any(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase))) //Name Validataion  (if existed)
                 {
                     Console.WriteLine($"❌ Det finns redan en användare registrerad med namnet '{name}'. Välj ett annat namn.\n");
                     continue;
@@ -56,7 +56,7 @@ namespace K1_Banken_Team1.Domain
                     Console.WriteLine("❌ Namn får inte vara tomt.\n");
                     continue;
                 }
-                break; // namn är ok. gå vidare
+                break; // name is Ok, next step
             }
 
             string pin;
@@ -67,7 +67,7 @@ namespace K1_Banken_Team1.Domain
 
                 if (pin.Length == 4 && pin.All(char.IsDigit))
                 {
-                    break; // pin ok
+                    break; // PIN ok, next step
                 }
                 Console.WriteLine("❌ Ogiltig PIN. Ange exakt 4 siffror.\n");
 
@@ -85,21 +85,21 @@ namespace K1_Banken_Team1.Domain
                     continue;
                 }
 
-                if (users.Any(u => u.Id.Equals(id, StringComparison.OrdinalIgnoreCase)))
+                if (users.Any(u => u.Id.Equals(id, StringComparison.OrdinalIgnoreCase))) //if Id is used
                 {
                     Console.WriteLine($"❌ ID '{id}' andvänds redan. välj ett annat ID.");
                     continue;
                 }
-                break;
+                break; //Id ok
             }
 
-            var newUser = new User(name, pin, id); //användaren skapas 
-            AddUser(newUser);                     // användaren läggs till listan
+            var newUser = new User(name, pin, id); //create User
+            AddUser(newUser);                     //User added to the List  
 
             Console.WriteLine($"✅ Användaren'{name}' har skapats och lagts till i systemet!");
         }
 
-        public void ListAllAccounts() //List all accounts, owner, balance that are registerd.
+        public void ListAllAccounts() //List all accounts, owner, balance that are registered.
         {
             Console.Clear();
             Console.WriteLine("Alla konton i banken \n");
@@ -221,9 +221,9 @@ namespace K1_Banken_Team1.Domain
             Console.Clear();
             Console.WriteLine("=== Lås upp användare === \n");
 
-            var lockedUsers = users.Where(u => u.IsLocked).ToList(); //Hämta alla låsta användare
+            var lockedUsers = users.Where(u => u.IsLocked).ToList(); //List all locked users
 
-            if (!lockedUsers.Any()) //Om inga låsta användare finns
+            if (!lockedUsers.Any()) //if there is no locked users
             {
                 Console.WriteLine("\nℹ️ Det finns inga låsta användare just nu.");
                 return;
@@ -240,16 +240,16 @@ namespace K1_Banken_Team1.Domain
                 Console.Write("\nAnge namnet på användaren du vill låsa upp:");
                 string name = Console.ReadLine();
 
-                var userToUnlock = lockedUsers //Hitta användaren
+                var userToUnlock = lockedUsers //find userUser
                     .FirstOrDefault(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
-                if (userToUnlock == null) //om användaren inte hittas
+                if (userToUnlock == null) //if User is not existed
                 {
                     Console.WriteLine("❌ Ingen användare hittades med det namnet. Ange namn igen. \n");
                     continue;
                 }
 
-                userToUnlock.IsLocked = false; //om användaren hittas
+                userToUnlock.IsLocked = false; //if User is locked
 
                 Console.WriteLine($"🔒 Kontot för {userToUnlock.Name} har låsts upp!");
                 return;
@@ -284,52 +284,56 @@ namespace K1_Banken_Team1.Domain
         }
 
         //All transactiontypes in one method:
-        public bool ExecuteTransaction(string type, string accountNumber, decimal amount, string toAccountNumber = null)
+        public bool ExecuteTransaction(string type, User currentUser)
         {
             Console.Clear();
             Console.WriteLine($"\n-- {type.ToUpper()} --");
 
-            
-            if (string.IsNullOrEmpty(accountNumber)) //Accountnumber with validation
-            {
-                Console.Write("Ange kontonummer: ");
-                accountNumber = Console.ReadLine();
-            }
+
+            Console.Write("Ange kontonummer: ");
+            string accountNumber = Console.ReadLine(); //should be the inlogged user
 
             var fromAcc = FindAccount(accountNumber);
-            while (fromAcc == null)
+            while (fromAcc == null || fromAcc.Owner != currentUser)
             {
-                Console.WriteLine($"❌ Konto {accountNumber} hittades inte. Försök igen.");
-                Console.Write("Ange kontonummer: ");
+                Console.WriteLine($"❌ fel Konto {accountNumber}  Försök igen.");
+                Console.Write("Ange ditt kontonummer: ");
                 accountNumber = Console.ReadLine();
                 fromAcc = FindAccount(accountNumber);
             }
 
-           
-            Account toAcc = null; //when transfer - ask for reciever account validation
+
+            string toAccountNumber = null;
+            Account toAcc = null;   //when transfer - ask for reciever account validation
             if (type == "Transfer")
             {
-                if (string.IsNullOrEmpty(toAccountNumber))
-                {
-                    Console.Write("Ange mottagarkonto: ");
-                    toAccountNumber = Console.ReadLine();
-                }
-
+                Console.Write("Ange mottagarkonto: ");
+                toAccountNumber = Console.ReadLine();
                 toAcc = FindAccount(toAccountNumber);
-                while (toAcc == null)
+
+                //not null or your own account
+                while (toAcc == null || toAcc.Owner == currentUser || toAccountNumber == accountNumber)
                 {
-                    Console.WriteLine($"❌ Mottagarkonto {toAccountNumber} hittades inte. Försök igen.");
+                    if (toAcc == null)
+                    {
+                        Console.WriteLine($"❌ Mottagarkonto {toAccountNumber} hittades inte. Försök igen.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"❌ Du kan inte överföra till ditt eget konto. Försök igen.");
+                    }
                     Console.Write("Ange mottagarkonto: ");
                     toAccountNumber = Console.ReadLine();
                     toAcc = FindAccount(toAccountNumber);
                 }
             }
 
-            
-            if (amount <= 0)  //amount + validation
+
+
+            Console.Write("Ange belopp: ");
+            string input = Console.ReadLine();
+            if (!decimal.TryParse(input, out decimal amount) || amount <= 0)  //amount + validation
             {
-                Console.Write("Ange belopp: ");
-                string input = Console.ReadLine();
                 while (!decimal.TryParse(input, out amount) || amount <= 0)
                 {
                     Console.WriteLine("❌ Ogiltigt belopp. Ange en giltig siffra större än 0.");
@@ -337,7 +341,7 @@ namespace K1_Banken_Team1.Domain
                     input = Console.ReadLine();
                 }
             }
-
+                
             if ((type == "Withdraw" || type == "Transfer") && fromAcc.Balance < amount) //check balance for withdraw or transfer
             {
                 Console.WriteLine($"❌ Otillräckligt saldo ({fromAcc.Balance} kr). Ange ett lägre belopp.");
@@ -380,7 +384,7 @@ namespace K1_Banken_Team1.Domain
         {
             var ready = transactions     //find transactions ready to be processed
                 .Where(t => t.Status == "Pending" &&
-                            DateTime.Now - t.Timestamp >= TimeSpan.FromMinutes(15))
+                            DateTime.Now - t.Timestamp >= TimeSpan.FromMinutes(1))
                 .ToList();
 
             if (ready.Count == 0) return; // Stop if no transaction are ready
