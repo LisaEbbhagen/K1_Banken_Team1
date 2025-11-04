@@ -11,7 +11,7 @@ namespace K1_Banken_Team1.Domain
             { "USD", 9.40m }
         };
 
-        public List<User> users { get; private set; } = new List<User>(); //Lista för användare
+        public List<User> users { get; private set; } = new List<User>(); //List for users.
 
 
         public void AddUser(User user)
@@ -27,9 +27,9 @@ namespace K1_Banken_Team1.Domain
             }
         }
 
-        public Dictionary<string, Account> accounts = new Dictionary<string, Account>(); //Dictionary för konton
+        public Dictionary<string, Account> accounts = new Dictionary<string, Account>(); //Dictionary for accounts.
 
-        public List<Account> AccountsWithPositivBalance() //LINQ för konton med positivt saldo
+        public List<Account> AccountsWithPositivBalance() //LINQ for accounts with positve balance.
         {
             return accounts.Values.Where(accounts => accounts.Balance > 0).ToList();
         }
@@ -97,11 +97,9 @@ namespace K1_Banken_Team1.Domain
             AddUser(newUser);                     // användaren läggs till listan
 
             Console.WriteLine($"✅ Användaren'{name}' har skapats och lagts till i systemet!");
-            Pause();
-
         }
 
-        public void ListAllAccounts() //listar alla Konton, ägare, Saldo som är registrerad hos banken
+        public void ListAllAccounts() //List all accounts, owner, balance that are registerd.
         {
             Console.Clear();
             Console.WriteLine("Alla konton i banken \n");
@@ -112,7 +110,6 @@ namespace K1_Banken_Team1.Domain
             {
                 Console.WriteLine($"{acc.AccountNumber, -15} {acc.Owner.Name, -10} {acc.Balance, -10}");
             }
-            Pause();
         }
 
         public void ShowAllUsers()
@@ -126,10 +123,9 @@ namespace K1_Banken_Team1.Domain
             {
                 Console.WriteLine($"{user.Name,-15} {user.Id,-10}");
             }
-            Pause();
         }
 
-        public void PrintAccountsWithPositivBalance() //Metod för att skriva ut konton med positivt saldo
+        public void PrintAccountsWithPositivBalance() //Method for printing accounts with positve balance.
         {
             var positivAccounts = AccountsWithPositivBalance();
             if (positivAccounts.Count == 0)
@@ -141,39 +137,83 @@ namespace K1_Banken_Team1.Domain
             Console.WriteLine("Konton med positivt saldo:");
             foreach (var account in positivAccounts)
             {
-                Console.WriteLine($"Konto: {account.AccountNumber}, Saldo: {account.Balance}SEK.");
+                Console.WriteLine($"Konto: {account.AccountNumber}, Saldo: {account.Balance} kr.");
             }
         }
 
-        public List<Transaction> transactions { get; private set; } = new List<Transaction>(); //Lista för transaktioner
-        public void OpenAccount(User user, string accountNumber, string currency = null) //Metod för att öppna konto
+        public List<Transaction> transactions { get; private set; } = new List<Transaction>(); //List for transactions.
+
+        public void OpenAccount(User user, string accountNumber, string accountType = null, string currency = null) //Method to open new account.
         {
-            if (accounts.ContainsKey(accountNumber)) //Kollar om kontonumret redan finns
+            if (accounts.ContainsKey(accountNumber)) //Check if account number already exists
             {
                 Console.WriteLine("Kontonumret finns redan.");
                 return;
             }
 
-            if (currency == null) //Ny valuta om ingen är vald
+            while (true)
             {
-                Console.Write("Vilken valuta vill du ha på kontot? (SEK, EUR, USD)");
-                currency = Console.ReadLine()?.ToUpper();
-                if (currency != "SEK" && currency != "EUR" && currency != "USD")
+                if (string.IsNullOrWhiteSpace(accountType))
                 {
-                    Console.WriteLine("Ogiltig valuta. Standardvaluta (SEK) används.");
-                    currency = "SEK";
+                    Console.WriteLine("Vilken typ av konto vill du skapa?");
+                    Console.WriteLine("1. Sparkonto");
+                    Console.WriteLine("2. Checkkonto");
+                    string choice = Console.ReadLine();
+
+                    if (choice == "1")
+                        accountType = "spar";
+
+                    else if (choice == "2")
+                        accountType = "checking";
+
+                    else
+                    {
+                        Console.WriteLine("Ogiltigt val, försök igen.");
+                        continue;
+                    }
                 }
+                break;
             }
 
-            Account newAccount = new Account(accountNumber, user)
+            while (true)
             {
-                Currency = currency
-            };
+                if (string.IsNullOrWhiteSpace(currency))
+                {
+                    Console.Write("Vilken valuta vill du ha på kontot? (SEK, EUR, USD): ");
+                    currency = Console.ReadLine()?.ToUpper();
+                }
+
+                if (currency == "SEK" || currency == "EUR" || currency == "USD")
+                    break;
+
+                Console.WriteLine("Ogiltig valuta, försök igen.");
+                currency = null;
+            }
+
+            Account newAccount;
+
+            switch (accountType.ToLower())
+            {
+                case "spar":
+                case "sparkonto":
+                    newAccount = new SavingAccount(accountNumber, user);
+                    break;
+                case "checking":
+                case "checkkonto":
+                    newAccount = new CheckingAccount(accountNumber, user);
+                    break;
+                default:
+                    Console.WriteLine("Ogiltig kontotyp. Skapar sparkonto som standard.");
+                    newAccount = new SavingAccount(accountNumber, user);
+                    break;
+            }
+
+            newAccount.Currency = currency;
 
             accounts.Add(accountNumber, newAccount);
             user.AddAccount(newAccount);
 
-            Console.WriteLine($"Nytt konto öppnat med kontonummer: {accountNumber} ({currency}).");
+            Console.WriteLine($"Nytt {accountType}-konto öppnat med kontonummer: {accountNumber} ({currency}).");
         }
 
         public void UnLockUserMenu()
@@ -212,13 +252,12 @@ namespace K1_Banken_Team1.Domain
                 userToUnlock.IsLocked = false; //om användaren hittas
 
                 Console.WriteLine($"🔒 Kontot för {userToUnlock.Name} har låsts upp!");
-
                 return;
             }
         }
 
-        //Metod för att hitta konto, user tillagd för att kunna modifiera koden utifrån användare eller admin.
-        //Vid användning: om currentUser skickas in kommer programmet endast söka i användarens egna konton, skickas inte den parametern med kan alla konton väljas (exAdmin)
+        // Method for finding an account. 'currentUser' was added so the code can be adjusted depending on whether it's a user or an admin.
+        // Usage: if currentUser is passed in the program will only search that user's own accounts. If the parameter is not provided, any account can be chosen (e.g. admin).
         public Account FindAccount(string accountNumber, User user = null)
         {
             if (string.IsNullOrWhiteSpace(accountNumber))
@@ -244,7 +283,7 @@ namespace K1_Banken_Team1.Domain
             }
         }
 
-        //All transactions gathered in one method
+        //All transactiontypes in one method:
         public bool ExecuteTransaction(string type, string accountNumber, decimal amount, string toAccountNumber = null)
         {
             Console.Clear();
@@ -381,6 +420,47 @@ namespace K1_Banken_Team1.Domain
             }
         }
 
+        public void Transactions(User currentUser)
+        {
+            Console.Clear();
+            Console.WriteLine("== Transaktioner ==\n");
+
+            
+            ProcessPendingTransactions(verbose: true); //Run pending transactions silently aftr 15 min
+
+            var accNo = currentUser.Accounts.First().AccountNumber; //get currentuser account number
+            var allTx = GetAllTransactions()
+                .Where(t => t.AccountNumber == accNo)
+                .OrderBy(t => t.Timestamp)
+                .ToList();
+
+            // Tabellhuvud
+            Console.WriteLine("Typ".PadRight(12) +                //Table headers
+                              "Belopp".PadRight(12) +
+                              "Från".PadRight(10) +
+                              "Till".PadRight(10) +
+                              "Saldo".PadRight(12) +
+                              "Status".PadRight(12));
+            Console.WriteLine(new string('-', 70));
+
+            
+            foreach (var tx in allTx)                 //show each transaction in one line
+            {
+                string toText = tx.Type == "Transfer" ? tx.ToAccountNumber ?? "-" : "-";
+                string status = tx.Status == "Completed" ? "✅ Completed" : "⏳ Pending";
+
+                Console.WriteLine(tx.Type.PadRight(12) +
+                                  $"{tx.Amount} kr".PadRight(12) +
+                                  tx.AccountNumber.PadRight(10) +
+                                  toText.PadRight(10) +
+                                  tx.BalanceAfter.ToString().PadRight(12) +
+                                  status.PadRight(12));
+            }
+
+            Console.WriteLine();
+            Pause();
+        }
+
 
 
         public void ShowBalance()
@@ -388,7 +468,7 @@ namespace K1_Banken_Team1.Domain
             foreach (var user in users)
             {
                 decimal total = user.Accounts.Sum(a => a.Balance);
-                Console.WriteLine($"{user.Name} {user.Id} - {total}SEK");
+                Console.WriteLine($"{user.Name} {user.Id} - {total} kr");
             }
         }
 
@@ -492,7 +572,7 @@ namespace K1_Banken_Team1.Domain
             Console.WriteLine("Totalt saldo per användare:");
             foreach (var g in grouped)
             {
-                Console.WriteLine($"{g.Owner.Name} - {g.TotalBalance} SEK");
+                Console.WriteLine($"{g.Owner.Name} - {g.TotalBalance} kr");
             }
         }
 
@@ -630,7 +710,7 @@ namespace K1_Banken_Team1.Domain
             Console.Clear(); // Rensar konsolen för en fräsch meny
         }
 
-        public void AddNewSavingsAccount(User user)
+        public void AddNewAccount(User user)
         {
             string accountNumber;
 
@@ -638,46 +718,61 @@ namespace K1_Banken_Team1.Domain
             {
                 accountNumber = GenerateAccountNumber();
             }
-            while (accounts.ContainsKey(accountNumber)); //Kollar så att kontonumret inte redan finns
+            while (accounts.ContainsKey(accountNumber)); //Check if account number already exists
 
-            Console.Write("Vilken valuta vill du ha på kontot? (SEK, EUR, USD)"); //Val av valuta
-            string currency = Console.ReadLine()?.ToUpper();
-
-            if (currency != "SEK" && currency != "EUR" && currency != "USD")
+            string accountType = null;
+            while (true)
             {
-                Console.WriteLine("Ogiltig valuta, standardvalutan SEK används.");
-                currency = "SEK";
+                Console.WriteLine("Vilken typ av konto vill du skapa?");
+                Console.WriteLine("1. Sparkonto");
+                Console.WriteLine("2. Checkkonto");
+                string choice = Console.ReadLine();
+
+                if (choice == "1") accountType = "spar";
+                else if (choice == "2") accountType = "checking";
+                else
+                {
+                    Console.WriteLine("Ogiltigt val, försök igen.");
+                    continue;
+                }
+                break;
             }
 
-            SavingAccount newSavingsAccount = new SavingAccount(accountNumber, user) //Skapar nytt sparkonto med vald valuta
+            string currency = null; //Currency selection
+            while (true)
             {
-                Currency = currency
-            };
-            
-            accounts.Add(accountNumber, newSavingsAccount); //Lägger till kontot
-            user.AddAccount(newSavingsAccount);
-
-            Console.WriteLine($"Nytt sparkonto skapat med kontonummer: {accountNumber} ({currency})");
-            Console.Write("Hur mycket vill du sätta in på ditt nya sparkonto?");
-            if (decimal.TryParse(Console.ReadLine(), out decimal initialDeposit) && initialDeposit > 0)
-            {
-                newSavingsAccount.Deposit(initialDeposit);
-            }
-            else
-            {
-                Console.WriteLine("Ogiltigt belopp. Inget satt in på sparkontot.");
-                return;
+                Console.Write("Vilken valuta vill du ha på kontot? (SEK, EUR, USD): ");
+                currency = Console.ReadLine()?.ToUpper();
+                if (currency == "SEK" || currency == "EUR" || currency == "USD") break;
+                Console.WriteLine("Ogiltig valuta, försök igen.");
             }
 
-            decimal íntrestRate = 0.02m; //2% ränta
-            decimal yearlyIntrest = initialDeposit * íntrestRate;
-            decimal totalAfterOneYear = initialDeposit + yearlyIntrest;
+            Account newAccount; //Create account based on type
+            if (accountType == "spar") newAccount = new SavingAccount(accountNumber, user);
+            else newAccount = new CheckingAccount(accountNumber, user);
 
-            Console.WriteLine($"Kontonummer: {accountNumber}");
-            Console.WriteLine($"Valuta: {currency}");
-            Console.WriteLine($"Insatt belopp: {initialDeposit:C}");
-            Console.WriteLine($"Ränta: {íntrestRate:P}");
-            Console.WriteLine($"Efter 1 år: {totalAfterOneYear:C}");
+            newAccount.Currency = currency;
+
+            accounts.Add(accountNumber, newAccount);
+            user.AddAccount(newAccount);
+
+            Console.WriteLine($"Nytt {accountType}-konto öppnat med kontonummer: {accountNumber} ({currency}).");
+
+            if (accountType == "spar") //If saving account, ask for initial deposit
+            {
+                Console.Write("Hur mycket vill du sätta in på ditt nya sparkonto? ");
+                if (decimal.TryParse(Console.ReadLine(), out decimal initialDeposit) && initialDeposit > 0)
+                {
+                    newAccount.Deposit(initialDeposit);
+                    decimal interestRate = 0.02m; // 2% intrest rate
+                    decimal totalAfterOneYear = initialDeposit * (1 + interestRate);
+                    Console.WriteLine($"Insatt: {initialDeposit:C}, Ränta: {interestRate:P}, Efter 1 år: {totalAfterOneYear:C}");
+                }
+                else
+                {
+                    Console.WriteLine("Ogiltigt belopp. Ingen insättning gjord.");
+                }
+            }
         }
 
         private string GenerateAccountNumber()
@@ -700,7 +795,7 @@ namespace K1_Banken_Team1.Domain
                 int index = 1;
                 foreach (var acc in user.Accounts)
                 {
-                    Console.WriteLine($"{index}. Konto: {acc.AccountNumber}, Saldo: {acc.Balance:C}");
+                    Console.WriteLine($"{index}. Konto: {acc.AccountNumber}, Saldo: {acc.Balance} kr");
                     index++;
                 }
 
@@ -723,14 +818,14 @@ namespace K1_Banken_Team1.Domain
             decimal totalBalance = user.Accounts.Sum(acc => acc.Balance); //skapar variabel för summering av användarens innehav på banken
             while (true) //Lånebelopp
             {
-                Console.WriteLine($"Ditt totala innehav hos banken är {totalBalance:C}.");
-                Console.WriteLine($"Du kan låna upp till {totalBalance * 5:C}.");
+                Console.WriteLine($"Ditt totala innehav hos banken är {totalBalance} kr.");
+                Console.WriteLine($"Du kan låna upp till {totalBalance * 5} kr.");
                 Console.Write("Ange lånebelopp: ");
                 if (decimal.TryParse(Console.ReadLine(), out amount) && amount > 0 && amount <= totalBalance * 5)
                 {
                     break;
                 }
-                Console.WriteLine($"Beloppet måste vara större än 0kr och får inte överskrida {totalBalance * 5:C}..");
+                Console.WriteLine($"Beloppet måste vara större än 0kr och får inte överskrida {totalBalance * 5} kr.");
             }
 
             decimal interestRate = 0.08m; //8% ränta
@@ -739,8 +834,8 @@ namespace K1_Banken_Team1.Domain
             selectedAccount.Balance += amount; //Sätter in lånet på kontot
             Console.WriteLine($"\nDu har lånat {amount:C} till konto {selectedAccount.AccountNumber}.");
             Console.WriteLine($"Ränta: {interestRate:P}");
-            Console.WriteLine($"Totalt att betala tillbaka: {totalRepayment:C}");
-            Console.WriteLine($"Nytt saldo på kontot: {selectedAccount.Balance:C}");
+            Console.WriteLine($"Totalt att betala tillbaka: {totalRepayment} kr");
+            Console.WriteLine($"Nytt saldo på kontot: {selectedAccount.Balance} kr");
         }
 
         public void UpdateExchangeRates()
@@ -777,7 +872,7 @@ namespace K1_Banken_Team1.Domain
 
             if (user.IsLocked)
             {
-                Console.WriteLine("🔒 Kontot är låst.");
+                Console.WriteLine("🔒 Kontot är låst. Kontakta admin");
                 Pause();
                 return null;
             }
@@ -801,7 +896,7 @@ namespace K1_Banken_Team1.Domain
             }
 
             user.IsLocked = true;
-            Console.WriteLine("🚫 Kontot är nu låst.");
+            Console.WriteLine("🚫 Kontot är nu låst. Kontakta admin");
             Pause();
             return null;
         }
