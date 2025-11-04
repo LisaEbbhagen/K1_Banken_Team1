@@ -25,8 +25,8 @@ namespace K1_Banken_Team1.Presentation.Menus
                 Console.WriteLine("\n=== Admin Meny ===");
                 Console.WriteLine("1. Lista alla konton");
                 Console.WriteLine("2. Visa konton med positivt saldo");
-                Console.WriteLine("3. Visa de tre största transaktioner");
-                Console.WriteLine("4. Visa total saldo per användare");
+                Console.WriteLine("3. Visa de tre största transaktionerna");
+                Console.WriteLine("4. Visa totalt saldo per användare");
                 Console.WriteLine("5. Visa största insättning & uttag per användare");
                 Console.WriteLine("6. Visa användare med flest transaktioner");
                 Console.WriteLine("7. Sök konto (kontonummer eller namn)");
