@@ -54,27 +54,19 @@ namespace K1_Banken_Team1.Presentation.Menus
      \__|                                                                                                            \__|
 ";
 
-                foreach (char c in logo)   // Print logo with colors
-                {
-                    if (c == '$')
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                    else
-                        Console.ForegroundColor = ConsoleColor.White;
 
-                    Console.Write(c);
-                }
+                ColorHelper.ShowColoredLogo(logo);
 
                 logo = string.Join("\n", logo
                               .Split('\n')
                                .Where(line => !string.IsNullOrEmpty(line)));  //Remove empty lines to make logo look better
 
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("                                               === Välkommen till R.A.L Banken ==="); //Rough version to make menu more appealing/centerd
-                Console.WriteLine("                                                         1. Logga in");
-                Console.WriteLine("                                                         2. Admin");
-                Console.WriteLine("                                                         3. Avsluta");
-
-                Console.Write("                                                            Val: ");
+                ColorHelper.ShowTitle("                                               === Välkommen till R.A.L Banken ==="); //Rough version to make menu more appealing/centerd
+                ColorHelper.ShowMenuChoice("                                                         1. Logga in");
+                ColorHelper.ShowMenuChoice("                                                         2. Admin");
+                ColorHelper.ShowInputPrompt("                                                         3. Avsluta");
+                Console.WriteLine();
+                Console.Write("                                                         Val: ");
                 string startChoice = Console.ReadLine();
 
                 switch (startChoice)
