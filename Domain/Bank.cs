@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace K1_Banken_Team1.Domain
 {
@@ -101,31 +102,36 @@ namespace K1_Banken_Team1.Domain
         public void ListAllAccounts() //List all accounts, owner, balance that are registerd.
         {
             Console.Clear();
-            Console.WriteLine("Alla konton i banken \n");
-            Console.WriteLine($"{"Konto",-15} {"Ägare",-10} {"Saldo",-10}");
-            Console.WriteLine(new string('-', 40));
-               
+            Console.WriteLine("Alla konton i banken: \n");
+            Console.WriteLine(new string('-', 50)); 
+            Console.WriteLine($"{"Ägare:",-15}  {"Kontonummer:",-10} {"Saldo:",16}");
+            Console.WriteLine(new string('-', 50));
+
             foreach (var acc in accounts.Values)
             {
-                Console.WriteLine($"{acc.AccountNumber, -15} {acc.Owner.Name, -10} {acc.Balance, -10}");
+                Console.WriteLine($"{acc.Owner.Name,-15} | {acc.AccountNumber,-10} | {acc.Balance,15:C}");
             }
+            Console.WriteLine(new string('-', 50));
         }
 
         public void ShowAllUsers()
         {
             Console.Clear();
-            Console.WriteLine("👥 Alla användare i systemet \n");
-            Console.WriteLine($"{"Name", -15} {"Id",-10}");
-            Console.WriteLine(new string('-',30));
+            Console.WriteLine("👥 Alla användare i systemet: \n");
+            Console.WriteLine(new string('-', 30));
+            Console.WriteLine($"{"Användarnamn:",-15}  {"Id:",-10}");
+            Console.WriteLine(new string('-', 30));
 
             foreach (var user in users)
             {
-                Console.WriteLine($"{user.Name,-15} {user.Id,-10}");
+                Console.WriteLine($"{user.Name,-15} | {user.Id,-10}");
             }
+            Console.WriteLine(new string('-', 30));
         }
 
         public void PrintAccountsWithPositivBalance() //Method for printing accounts with positve balance.
         {
+            Console.Clear();
             var positivAccounts = AccountsWithPositivBalance();
             if (positivAccounts.Count == 0)
             {
@@ -133,17 +139,23 @@ namespace K1_Banken_Team1.Domain
                 return;
             }
 
-            Console.WriteLine("Konton med positivt saldo:");
-            foreach (var account in positivAccounts)
+            Console.WriteLine("Konton med positivt saldo:\n");
+            Console.WriteLine(new string('-', 50));
+            Console.WriteLine($"{"Ägare:",-15}  {"Kontonummer:",-10} {"Saldo:",16}");
+            Console.WriteLine(new string('-', 50));
+
+            foreach (var acc in positivAccounts)
             {
-                Console.WriteLine($"Konto: {account.AccountNumber}, Saldo: {account.Balance} kr.");
+                Console.WriteLine($"{acc.Owner.Name,-15} | {acc.AccountNumber,-10} | {acc.Balance,15:C}");
             }
+            Console.WriteLine(new string('-', 50));
         }
 
         public List<Transaction> transactions { get; private set; } = new List<Transaction>(); //List for transactions.
 
         public void OpenAccount(User user, string accountNumber, string accountType = null, string currency = null) //Method to open new account.
         {
+            Console.Clear();
             if (accounts.ContainsKey(accountNumber)) //Check if account number already exists
             {
                 Console.WriteLine("Kontonumret finns redan.");
@@ -259,6 +271,7 @@ namespace K1_Banken_Team1.Domain
         // Usage: if currentUser is passed in the program will only search that user's own accounts. If the parameter is not provided, any account can be chosen (e.g. admin).
         public Account FindAccount(string accountNumber, User user = null)
         {
+            Console.Clear();
             if (string.IsNullOrWhiteSpace(accountNumber))
             {
                 Console.WriteLine("Kontonumret får inte vara tomt.");
@@ -392,12 +405,18 @@ namespace K1_Banken_Team1.Domain
 
         public void ShowThreeBiggestTransactions()
         {
+            Console.Clear();
             var topThree = threeBiggestAmount();
-            Console.WriteLine("De tre största transaktionerna:");
+            Console.WriteLine("De tre största transaktionerna:\n");
+            Console.WriteLine(new string('-', 70));
+            Console.WriteLine($"{"Tidstämpel:",-20}  {"Kontonummer:",-10} {"Typ:",-15} {"Summa:",15}");
+            Console.WriteLine(new string('-', 70));
+
             foreach (var t in topThree)
             {
-                Console.WriteLine($"{t.Timestamp}: {t.Type} {t.Amount} kr – Konto: {t.AccountNumber}"); //*fixa till utskriften, svenska o engelska blandas
+                Console.WriteLine($"{t.Timestamp,-20} | {t.AccountNumber,-10} | {t.Type,-15:C} | {t.Amount,15:C}");
             }
+            Console.WriteLine(new string('-', 70));
         }
 
 
@@ -455,20 +474,21 @@ namespace K1_Banken_Team1.Domain
                     return new List<Transaction>(); // returnerar tom lista vilket gör att vi undviker ev krascher               
             }
             //Utskrift i tabellformat
-            Console.WriteLine("-----------------------------------------------------------------------------------------------");
-            Console.WriteLine($"{"Tidstämpel:",-20}  {"Typ:",-12}  {"Summa:",-15}  {"Kontonummer:",-10}");
-            Console.WriteLine("-----------------------------------------------------------------------------------------------");
+            Console.WriteLine(new string('-', 55));
+            Console.WriteLine($"{"Tidstämpel:",-20}  {"Typ:",-12}  {"Kontonummer:",-10} {"Summa:",15}");
+            Console.WriteLine(new string('-', 55));
 
             foreach (var t in filtered)
             {
-                Console.WriteLine($"{t.Timestamp,-20} | {t.Type,-12} | {t.Amount,-15:C} | {t.AccountNumber,-10}");
+                Console.WriteLine($"{t.Timestamp,-20} | {t.Type,-12} | {t.AccountNumber,-10} | {t.Amount,15:C}");
             }
-            Console.WriteLine("-----------------------------------------------------------------------------------------------");
+            Console.WriteLine(new string('-', 55));
 
             return filtered.ToList();
         }
         public void PrintTotalBalanceAll()
         {
+            Console.Clear();
             // Gruppera alla konton per ägare (Owner)
             var grouped = accounts
                 .GroupBy(a => a.Value.Owner)
@@ -479,16 +499,22 @@ namespace K1_Banken_Team1.Domain
                  })
                  .OrderByDescending(g => g.TotalBalance); //sortera i fallande ordning
 
-            Console.WriteLine("Totalt saldo per användare:");
+            Console.WriteLine("Totalt saldo per användare:\n");
+            Console.WriteLine(new string('-', 50));
+            Console.WriteLine($"{"Användarnamn:",-20} {"Summa:",15}");
+            Console.WriteLine(new string('-', 50));
+
             foreach (var g in grouped)
             {
-                Console.WriteLine($"{g.Owner.Name} - {g.TotalBalance} kr");
+                Console.WriteLine($"{g.Owner.Name,-20} | {g.TotalBalance,15:C}");
             }
+            Console.WriteLine(new string('-', 50));
         }
 
         public void ShowBiggestTransactionPerUser()
         {
-            Console.WriteLine("Största insättning eller uttag per användare:");
+            Console.Clear();
+            Console.WriteLine("Största insättning & uttag per användare:\n");
 
             var groupedByUser = accounts.Values
                                         .GroupBy(a => a.Owner.Name);
@@ -505,15 +531,17 @@ namespace K1_Banken_Team1.Domain
                                             .OrderBy(t => t.Amount) // mest negativt
                                             .FirstOrDefault();
 
+                Console.WriteLine(new string('-', 40));
                 Console.WriteLine($"\nAnvändare: {group.Key}");
                 Console.WriteLine($"  Största insättning: {(biggestDeposit != null ? biggestDeposit.Amount + " kr" : "Ingen")}");
-                Console.WriteLine($"  Största uttag: {(biggestWithdraw != null ? biggestWithdraw.Amount + " kr" : "Ingen")}");
+                Console.WriteLine($"  Största uttag: {(biggestWithdraw != null ? biggestWithdraw.Amount + " kr" : "Ingen")}\n");
             }
-
+            Console.WriteLine(new string('-', 40));
         }
 
         public void ShowUserWithMostTransactions()
         {
+            Console.Clear();
             var userWithMost = transactions
                 .GroupBy(t => FindAccount(t.AccountNumber).Owner.Name)
                 .Select(g => new
@@ -526,7 +554,7 @@ namespace K1_Banken_Team1.Domain
 
             if (userWithMost != null)
             {
-                Console.WriteLine($"\nAnvändare med flest transaktioner: {userWithMost.User} med {userWithMost.Count} st.");
+                Console.WriteLine($"\nAnvändare med flest transaktioner: \n{userWithMost.User} med {userWithMost.Count} st.");
             }
             else
             {
@@ -537,7 +565,8 @@ namespace K1_Banken_Team1.Domain
 
         public void SearchAccount()
         {
-            Console.Write("\nAnge kontonummer eller namn:");
+            Console.Clear();
+            Console.Write("Ange kontonummer eller namn: ");
             string input = Console.ReadLine().ToLower();
 
             var results = accounts.Values
@@ -551,20 +580,21 @@ namespace K1_Banken_Team1.Domain
                 return;
             }
 
-            Console.WriteLine("\nResultat:");  //Kolla denna efter main merge
-            Console.WriteLine("--------------------------------------------------");
-            Console.WriteLine($"{"Kontonummer",-15} {"Ägare",-20} {"Saldo",10}"); // -15 -20=Vänsterjustera och reservera 15 resp 20 tecken, 10=högerjustera o reservera 10 tecken. :C = formaterar som valuta
-            Console.WriteLine("--------------------------------------------------");
+            Console.WriteLine("\nResultat:\n");
+            Console.WriteLine(new string('-', 60));
+            Console.WriteLine($"{"Användarnamn:",-20} {"Kontonummer",-15}  {"Saldo:",15}");
+            Console.WriteLine(new string('-', 60));
 
             foreach (var acc in results)
             {
-                Console.WriteLine("\nResultat:");
-                Console.WriteLine($"{acc.AccountNumber} {acc.Owner.Name} {acc.Balance} kr");
+                Console.WriteLine($"{acc.Owner.Name,-20} | {acc.AccountNumber,-15} | {acc.Balance,15:C}");
             }
+            Console.WriteLine(new string('-', 60));
         }
 
         public void DepositMoney(User user) //Deposit money after validation.
         {
+            Console.Clear();
             Account accIn = null;
             decimal depositAmount = 0;
 
@@ -602,6 +632,7 @@ namespace K1_Banken_Team1.Domain
 
         public void WithdrawMoney(User user) //Withdraw money after validation.
         {
+            Console.Clear();
             Account accOut = null;
             decimal withdrawAmount = 0;
 
@@ -643,6 +674,7 @@ namespace K1_Banken_Team1.Domain
 
         public void TransferMoney(User user) //** Check outputs, duplicates, and retrieve incorrect output from other methods.
         {
+            Console.Clear();
             decimal transferAmount = 0;
             string fromAccNo = "", toAccNo = "";
             Account fromAccNumber = null, toAccNumber = null;
@@ -687,6 +719,7 @@ namespace K1_Banken_Team1.Domain
 
         public void ShowAllTransactions(User user)
         {
+            Console.Clear();
             string accNo = "";
             Account accNumber = null;
 
@@ -707,6 +740,7 @@ namespace K1_Banken_Team1.Domain
 
         public void ShowAllMyAccountsAndMoney(User user)
         {
+            Console.Clear();
             var accounts = ListAccounts(user);
 
             //Om inga konto finns
@@ -714,16 +748,18 @@ namespace K1_Banken_Team1.Domain
             {
                 Console.WriteLine("ℹ️Du har inga konton.");
             }
-            Console.WriteLine("\nDina konton och saldo:");
-            Console.WriteLine("--------------------");
 
-            //Rubriker med justering
-            Console.WriteLine($"{"Namn",-10} | {"Konto",-10} | {"Saldo",10}");
+            //Utskrift i tabellformat
+            Console.WriteLine("Dina konton och saldo:\n");
+            Console.WriteLine(new string('-', 45));
+            Console.WriteLine($"{"Användarnamn:",-15}  {"Kontonummer:",-10} {"Saldo:",10}");
+            Console.WriteLine(new string('-', 45));
 
             foreach (var acc in accounts)
             {
-                Console.WriteLine($"{user.Name,-10} | {acc.AccountNumber,-10} | {acc.Balance,10:0} kr");
+                Console.WriteLine($"{user.Name,-15} | {acc.AccountNumber,-10} | {acc.Balance,10:C}");
             }
+            Console.WriteLine(new string('-', 45));
         }
 
         public IEnumerable<Account> ListAccounts(User user)
@@ -744,6 +780,7 @@ namespace K1_Banken_Team1.Domain
 
         public void AddNewAccount(User user)
         {
+            Console.Clear();
             string accountNumber;
 
             do
@@ -815,6 +852,7 @@ namespace K1_Banken_Team1.Domain
 
         public void LoanMoney(User user)
         {
+            Console.Clear();
             Account selectedAccount;
             if (user.Accounts.Count == 1) //Om användaren bara har ett konto
             {
@@ -872,6 +910,7 @@ namespace K1_Banken_Team1.Domain
 
         public void UpdateExchangeRates()
         {
+            Console.Clear();
             Console.WriteLine("\n=== Uppdatera växelkurser ===");
             foreach (var key in ExchangeRates.Keys.ToList())
             {

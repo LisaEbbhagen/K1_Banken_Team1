@@ -25,7 +25,7 @@ namespace K1_Banken_Team1.Presentation.Menus
 
                 Console.WriteLine("\n=== Meny ===");
                 Console.WriteLine("\nVälkommen till K1 Banken!\n");
-                Console.WriteLine("Välj ett av följande alternativ!");
+                Console.WriteLine("Välj ett av följande alternativ:");
 
                 Console.WriteLine("1. Sätta in pengar");
                 Console.WriteLine("2. Ta ut pengar");
