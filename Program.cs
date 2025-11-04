@@ -30,12 +30,12 @@ namespace K1_Banken_Team1
             myBank.OpenAccount(Rolf, "A03", "spar", "SEK");
            
 
-            myBank.ExecuteTransaction("Deposit", "A01", 20000);
-            myBank.ExecuteTransaction("Withdraw", "A01", 5000);
-            myBank.ExecuteTransaction("Deposit", "A02", 15000);
-            myBank.ExecuteTransaction("Withdraw", "A02", 7000);
-            myBank.ExecuteTransaction("Deposit", "A03", 25000);
-            myBank.ExecuteTransaction("Withdraw", "A03", 500);
+            //myBank.ExecuteTransaction("Deposit", "A01", 20000);
+            //myBank.ExecuteTransaction("Withdraw", "A01", 5000);
+            //myBank.ExecuteTransaction("Deposit", "A02", 15000);
+            //myBank.ExecuteTransaction("Withdraw", "A02", 7000);
+            //myBank.ExecuteTransaction("Deposit", "A03", 25000);
+            //myBank.ExecuteTransaction("Withdraw", "A03", 500);
 
             var mainMenu = new MainMenu(myBank); // Skapa MainMenu-instans
             var adminMenu = new AdminMenu(myBank); // Skapa AdminMenu-instans
