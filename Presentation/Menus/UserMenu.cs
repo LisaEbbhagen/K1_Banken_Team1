@@ -19,7 +19,18 @@ namespace K1_Banken_Team1.Presentation.Menus
         public void RunUserMenu(User currentUser)
         {
             bool loggedIn = true;
-            Account userAccount = currentUser.Accounts.First(); // simple version: get the first account of the user.
+            Account userAccount = currentUser.Accounts.First(); // // simple version: get the first account of the user.
+
+            
+            _ = Task.Run(async () =>  // starts backgrounds activity that runs pending transactions every 15 minutes.
+            {
+                while (true)
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(1));
+                    _myBank.ProcessPendingTransactions();
+                }
+            });
+
             while (loggedIn)
             {
 
@@ -41,24 +52,23 @@ namespace K1_Banken_Team1.Presentation.Menus
                 {
 
                     case "1":
-                        _myBank.DepositMoney(currentUser);
-                        _myBank.Pause();
-                        break;
+                            _myBank.ExecuteTransaction("Deposit", null, 0, null);
+                            _myBank.Pause();
+                            break;
 
                     case "2":
-                        _myBank.WithdrawMoney(currentUser);
+                        _myBank.ExecuteTransaction("Withdraw", null, 0, null); 
                         _myBank.Pause();
-                        break;                          
+                            break;                          
 
-                    case "3": 
-                        _myBank.TransferMoney(currentUser);
+                    case "3":
+                        _myBank.ExecuteTransaction("Transfer", null, 0, null);
                         _myBank.Pause();
-                        break;                   
+                            break;
 
-                    case "4": 
-                        _myBank.ShowAllTransactions(currentUser);
-                        _myBank.Pause();
-                        break;                   
+                    case "4":
+                        _myBank.Transactions(currentUser);
+                        break;
 
                     case "5": 
                         _myBank.ShowAllMyAccountsAndMoney(currentUser);
