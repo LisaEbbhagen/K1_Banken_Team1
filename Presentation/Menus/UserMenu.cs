@@ -26,7 +26,7 @@ namespace K1_Banken_Team1.Presentation.Menus
             {
                 while (true)
                 {
-                    await Task.Delay(TimeSpan.FromMinutes(1));
+                    await Task.Delay(TimeSpan.FromMinutes(15));
                     _myBank.ProcessPendingTransactions();
                 }
             });
