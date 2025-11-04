@@ -42,34 +42,42 @@ namespace K1_Banken_Team1.Presentation.Menus
                 {
                     case "1":
                         myBank.ListAllAccounts();
+                        myBank.Pause();
                         break;
 
                     case "2":
                         myBank.PrintAccountsWithPositivBalance();
+                        myBank.Pause();
                         break;
 
                     case "3":
                         myBank.ShowThreeBiggestTransactions();
+                        myBank.Pause();
                         break;
 
                     case "4":
                         myBank.PrintTotalBalanceAll();
+                        myBank.Pause();
                         break;
 
                     case "5":
                         myBank.ShowBiggestTransactionPerUser();
+                        myBank.Pause();
                         break;
 
                     case "6":
                         myBank.ShowUserWithMostTransactions();
+                        myBank.Pause();
                         break;
 
                     case "7":
                         myBank.SearchAccount();
+                        myBank.Pause();
                         break;
 
                     case "8":
                         myBank.UpdateExchangeRates();
+                        myBank.Pause();
                         break;
 
                     case "9":
@@ -79,10 +87,13 @@ namespace K1_Banken_Team1.Presentation.Menus
 
                     case "10":
                         myBank.CreateUser(); //Create new user
+                        myBank.Pause();
                         break;
 
                     case "11":
                         myBank.ShowAllUsers(); //Show all users
+                        myBank.Pause();
+
                         break;
 
                     case "0":

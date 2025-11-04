@@ -96,8 +96,6 @@ namespace K1_Banken_Team1.Domain
             AddUser(newUser);                     // användaren läggs till listan
 
             Console.WriteLine($"✅ Användaren'{name}' har skapats och lagts till i systemet!");
-            Pause();
-
         }
 
         public void ListAllAccounts() //List all accounts, owner, balance that are registerd.
@@ -111,7 +109,6 @@ namespace K1_Banken_Team1.Domain
             {
                 Console.WriteLine($"{acc.AccountNumber, -15} {acc.Owner.Name, -10} {acc.Balance, -10}");
             }
-            Pause();
         }
 
         public void ShowAllUsers()
@@ -125,7 +122,6 @@ namespace K1_Banken_Team1.Domain
             {
                 Console.WriteLine($"{user.Name,-15} {user.Id,-10}");
             }
-            Pause();
         }
 
         public void PrintAccountsWithPositivBalance() //Method for printing accounts with positve balance.
@@ -140,7 +136,7 @@ namespace K1_Banken_Team1.Domain
             Console.WriteLine("Konton med positivt saldo:");
             foreach (var account in positivAccounts)
             {
-                Console.WriteLine($"Konto: {account.AccountNumber}, Saldo: {account.Balance}SEK.");
+                Console.WriteLine($"Konto: {account.AccountNumber}, Saldo: {account.Balance} kr.");
             }
         }
 
@@ -255,7 +251,6 @@ namespace K1_Banken_Team1.Domain
                 userToUnlock.IsLocked = false; //omanvändaren hittas
 
                 Console.WriteLine($"🔒 Kontot för {userToUnlock.Name} har låsts upp!");
-
                 return;
             }
         }
@@ -383,7 +378,7 @@ namespace K1_Banken_Team1.Domain
             foreach (var user in users)
             {
                 decimal total = user.Accounts.Sum(a => a.Balance);
-                Console.WriteLine($"{user.Name} {user.Id} - {total}SEK");
+                Console.WriteLine($"{user.Name} {user.Id} - {total} kr");
             }
         }
 
@@ -487,7 +482,7 @@ namespace K1_Banken_Team1.Domain
             Console.WriteLine("Totalt saldo per användare:");
             foreach (var g in grouped)
             {
-                Console.WriteLine($"{g.Owner.Name} - {g.TotalBalance} SEK");
+                Console.WriteLine($"{g.Owner.Name} - {g.TotalBalance} kr");
             }
         }
 
@@ -832,7 +827,7 @@ namespace K1_Banken_Team1.Domain
                 int index = 1;
                 foreach (var acc in user.Accounts)
                 {
-                    Console.WriteLine($"{index}. Konto: {acc.AccountNumber}, Saldo: {acc.Balance:C}");
+                    Console.WriteLine($"{index}. Konto: {acc.AccountNumber}, Saldo: {acc.Balance} kr");
                     index++;
                 }
 
@@ -855,14 +850,14 @@ namespace K1_Banken_Team1.Domain
             decimal totalBalance = user.Accounts.Sum(acc => acc.Balance); //skapar variabel för summering av användarens innehav på banken
             while (true) //Lånebelopp
             {
-                Console.WriteLine($"Ditt totala innehav hos banken är {totalBalance:C}.");
-                Console.WriteLine($"Du kan låna upp till {totalBalance * 5:C}.");
+                Console.WriteLine($"Ditt totala innehav hos banken är {totalBalance} kr.");
+                Console.WriteLine($"Du kan låna upp till {totalBalance * 5} kr.");
                 Console.Write("Ange lånebelopp: ");
                 if (decimal.TryParse(Console.ReadLine(), out amount) && amount > 0 && amount <= totalBalance * 5)
                 {
                     break;
                 }
-                Console.WriteLine($"Beloppet måste vara större än 0kr och får inte överskrida {totalBalance * 5:C}..");
+                Console.WriteLine($"Beloppet måste vara större än 0kr och får inte överskrida {totalBalance * 5} kr.");
             }
 
             decimal interestRate = 0.08m; //8% ränta
@@ -871,8 +866,8 @@ namespace K1_Banken_Team1.Domain
             selectedAccount.Balance += amount; //Sätter in lånet på kontot
             Console.WriteLine($"\nDu har lånat {amount:C} till konto {selectedAccount.AccountNumber}.");
             Console.WriteLine($"Ränta: {interestRate:P}");
-            Console.WriteLine($"Totalt att betala tillbaka: {totalRepayment:C}");
-            Console.WriteLine($"Nytt saldo på kontot: {selectedAccount.Balance:C}");
+            Console.WriteLine($"Totalt att betala tillbaka: {totalRepayment} kr");
+            Console.WriteLine($"Nytt saldo på kontot: {selectedAccount.Balance} kr");
         }
 
         public void UpdateExchangeRates()
@@ -909,7 +904,7 @@ namespace K1_Banken_Team1.Domain
 
             if (user.IsLocked)
             {
-                Console.WriteLine("🔒 Kontot är låst.");
+                Console.WriteLine("🔒 Kontot är låst. Kontakta admin");
                 Pause();
                 return null;
             }
@@ -933,7 +928,7 @@ namespace K1_Banken_Team1.Domain
             }
 
             user.IsLocked = true;
-            Console.WriteLine("🚫 Kontot är nu låst.");
+            Console.WriteLine("🚫 Kontot är nu låst. Kontakta admin");
             Pause();
             return null;
         }
