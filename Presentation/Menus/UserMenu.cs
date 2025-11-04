@@ -42,29 +42,29 @@ namespace K1_Banken_Team1.Presentation.Menus
                 {
 
                     case "1":
-                            _myBank.DepositMoney(currentUser);
-                            _myBank.Pause();
-                            break;
+                        _myBank.DepositMoney(currentUser);
+                        _myBank.Pause();
+                        break;
 
                     case "2":
-                            _myBank.WithdrawMoney(currentUser);
-                            _myBank.Pause();
-                            break;                          
+                        _myBank.WithdrawMoney(currentUser);
+                        _myBank.Pause();
+                        break;                          
 
                     case "3": 
-                            _myBank.TransferMoney(currentUser);
-                            _myBank.Pause();
-                            break;                   
+                        _myBank.TransferMoney(currentUser);
+                        _myBank.Pause();
+                        break;                   
 
                     case "4": 
-                            _myBank.ShowAllTransactions(currentUser);
-                            _myBank.Pause();
-                            break;                   
+                        _myBank.ShowAllTransactions(currentUser);
+                        _myBank.Pause();
+                        break;                   
 
                     case "5": 
-                            _myBank.ShowAllMyAccountsAndMoney(currentUser);
-                            _myBank.Pause();
-                            break;
+                        _myBank.ShowAllMyAccountsAndMoney(currentUser);
+                        _myBank.Pause();
+                        break;
 
                     case "6":
                         _myBank.AddNewSavingsAccount(currentUser);
