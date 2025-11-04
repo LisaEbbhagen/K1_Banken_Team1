@@ -24,9 +24,8 @@ namespace K1_Banken_Team1.Presentation.Menus
                 Console.Clear();
                 Console.WriteLine("=== Välkommen till K1 Banken ===");
                 Console.WriteLine("1. Logga in");
-                Console.WriteLine("2. Skapa konto (Ej implementerat)");
-                Console.WriteLine("3. Admin");
-                Console.WriteLine("4. Avsluta");
+                Console.WriteLine("2. Admin");
+                Console.WriteLine("3. Avsluta");
 
                 Console.Write("Val: ");
                 string startChoice = Console.ReadLine();
@@ -34,12 +33,10 @@ namespace K1_Banken_Team1.Presentation.Menus
                 switch (startChoice)
                 {
                     case "1":
-                        return "UserMenu";    // returnera värdet, kör inte UserMenu här
+                        return "UserMenu";    // Return the value, do not run the UserMenu here, and return the value.
                     case "2":
-                        return "CreateAccount";
+                        return "AdminMenu";  // Return the value.
                     case "3":
-                        return "AdminMenu";  // returnera värdet
-                    case "4":
                         return "Exit";
                     default:
                         Console.WriteLine("Ogiltigt val, försök igen.");

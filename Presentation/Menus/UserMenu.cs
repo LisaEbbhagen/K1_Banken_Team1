@@ -32,6 +32,7 @@ namespace K1_Banken_Team1.Presentation.Menus
             });
 
 
+            Account userAccount = currentUser.Accounts.First(); // simple version: get the first account of the user.
             while (loggedIn)
             {
 
@@ -44,7 +45,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                 Console.WriteLine("3. Överför pengar");
                 Console.WriteLine("4. Visa transaktioner");
                 Console.WriteLine("5. Visa alla mina konton och saldo");
-                Console.WriteLine("6. Skapa nytt sparkonto");
+                Console.WriteLine("6. Skapa nytt spar/checkkonto");
                 Console.WriteLine("7. Ta ett banklån");
                 Console.WriteLine("8. Logga ut");
                 string choice = Console.ReadLine();
@@ -109,14 +110,32 @@ namespace K1_Banken_Team1.Presentation.Menus
                         break;
 
 
+                        _myBank.DepositMoney(currentUser);
+                        _myBank.Pause();
+                        break;
+
+                    case "2":
+                        _myBank.WithdrawMoney(currentUser);
+                        _myBank.Pause();
+                        break;                          
+
+                    case "3": 
+                        _myBank.TransferMoney(currentUser);
+                        _myBank.Pause();
+                        break;                   
+
+                    case "4": 
+                        _myBank.ShowAllTransactions(currentUser);
+                        _myBank.Pause();
+                        break;                   
 
                     case "5": 
-                            _myBank.ShowAllMyAccountsAndMoney(currentUser);
-                            _myBank.Pause();
-                            break;
+                        _myBank.ShowAllMyAccountsAndMoney(currentUser);
+                        _myBank.Pause();
+                        break;
 
                     case "6":
-                        _myBank.AddNewSavingsAccount(currentUser);
+                        _myBank.AddNewAccount(currentUser);
                         _myBank.Pause();
                         break;
 
