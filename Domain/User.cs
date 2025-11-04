@@ -12,7 +12,7 @@ namespace K1_Banken_Team1.Domain
         public string Pin { get; private set; }
         public string Id { get; private set; }
 
-        public HashSet<Account> Accounts { get; private set; }     // Aggregation/komposition → användaren äger sina konton
+        public HashSet<Account> Accounts { get; private set; }     // Aggregation/Composition → The user owns their accounts.
 
 
         public User(string name, string pin, string id)
@@ -20,19 +20,19 @@ namespace K1_Banken_Team1.Domain
             Name = name;
             Pin = pin;
             Id = id;
-            Accounts = new HashSet<Account>(); // viktigt! annars är listan null
+            Accounts = new HashSet<Account>(); // Important! Otherwise the list will be null.
         }
 
         public void AddAccount(Account account)
         {
-            if (!Accounts.Contains(account)) //kollar så att kontot inte redan finns i listan  
+            if (!Accounts.Contains(account)) //Checks if the account is already in the list.
             {
                 Accounts.Add(account);
             }
 
         }
 
-        //metoden anger om användarens konto är låst 
+        //The method indicates whether the user’s account is locked.
         public bool IsLocked { get; set; } = false;
     }
 }

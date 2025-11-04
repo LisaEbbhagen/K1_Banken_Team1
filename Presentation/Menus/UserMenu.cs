@@ -19,8 +19,7 @@ namespace K1_Banken_Team1.Presentation.Menus
         public void RunUserMenu(User currentUser)
         {
             bool loggedIn = true;
-            Account userAccount = currentUser.Accounts.First(); // enkel version: varje användare har ett konto
-
+            Account userAccount = currentUser.Accounts.First(); // simple version: get the first account of the user.
             while (loggedIn)
             {
 
@@ -33,7 +32,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                 Console.WriteLine("3. Överför pengar");
                 Console.WriteLine("4. Visa transaktioner");
                 Console.WriteLine("5. Visa alla mina konton och saldo");
-                Console.WriteLine("6. Skapa nytt sparkonto");
+                Console.WriteLine("6. Skapa nytt spar/checkkonto");
                 Console.WriteLine("7. Ta ett banklån");
                 Console.WriteLine("8. Logga ut");
                 string choice = Console.ReadLine();
@@ -67,7 +66,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                         break;
 
                     case "6":
-                        _myBank.AddNewSavingsAccount(currentUser);
+                        _myBank.AddNewAccount(currentUser);
                         _myBank.Pause();
                         break;
 

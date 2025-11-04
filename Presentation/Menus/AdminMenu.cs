@@ -81,18 +81,19 @@ namespace K1_Banken_Team1.Presentation.Menus
                         break;
 
                     case "9":
-                        myBank.UnLockUserMenu(); 
+                        myBank.UnLockUserMenu(); //method that unlocks user accounts
                         myBank.Pause();
                         break;
 
                     case "10":
-                        myBank.CreateUser();
+                        myBank.CreateUser(); //Create new user
                         myBank.Pause();
                         break;
 
                     case "11":
-                        myBank.ShowAllUsers();
+                        myBank.ShowAllUsers(); //Show all users
                         myBank.Pause();
+
                         break;
 
                     case "0":
