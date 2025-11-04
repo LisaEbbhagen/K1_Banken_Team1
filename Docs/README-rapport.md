@@ -1,5 +1,7 @@
 v.45 rapportör Abdalle
+
 Deltagare (Närvaro): Abdalle, Lisa; Rolf
+
 Sprintmål (veckans DoD): Fortsätte arbetet med Backlog.
 
 Vad vi gjorde
