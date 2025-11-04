@@ -11,6 +11,7 @@ Rolf fixade logga med färg och såg till att den ser bra ut , han gjorde justei
 Hinder:
 vi stötte på några merge-konflikter och kodrader som behövde rättas till i samband med refaktoriseringen.
 I övrigt uppstod inga större problem 
+
 -------------------------------------------------------------------------------------------------------------------------------------------------
 v.44 rapportör: Lisa
 
