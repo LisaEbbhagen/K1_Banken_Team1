@@ -757,11 +757,11 @@ namespace K1_Banken_Team1.Domain
             {
                 Console.WriteLine("Vilken typ av konto vill du skapa?");
                 Console.WriteLine("1. Sparkonto");
-                Console.WriteLine("2. Checkkonto");
+                Console.WriteLine("2. Lönekonto");
                 string choice = Console.ReadLine();
 
                 if (choice == "1") accountType = "spar";
-                else if (choice == "2") accountType = "checking";
+                else if (choice == "2") accountType = "Löning";
                 else
                 {
                     Console.WriteLine("Ogiltigt val, försök igen.");
