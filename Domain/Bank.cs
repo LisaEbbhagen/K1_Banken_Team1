@@ -284,64 +284,78 @@ namespace K1_Banken_Team1.Domain
         }
 
         //All transactiontypes in one method:
-        public bool ExecuteTransaction(string type, string accountNumber, decimal amount, string toAccountNumber = null)
+        public bool ExecuteTransaction(string type, User currentUser)
         {
             Console.Clear();
             Console.WriteLine($"\n-- {type.ToUpper()} --");
 
-            
-            if (string.IsNullOrEmpty(accountNumber)) //Accountnumber with validation
-            {
-                Console.Write("Ange kontonummer: ");
-                accountNumber = Console.ReadLine();
-            }
-
+            Console.Write("Ange kontonummer: ");
+            string accountNumber = Console.ReadLine(); //Should be inlogged user
             var fromAcc = FindAccount(accountNumber);
-            while (fromAcc == null)
+
+            while (fromAcc == null || fromAcc.Owner != currentUser)
             {
-                Console.WriteLine($"❌ Konto {accountNumber} hittades inte. Försök igen.");
-                Console.Write("Ange kontonummer: ");
+                Console.WriteLine($"❌ fel Konto {accountNumber} Försök igen.");
+                Console.Write("Ange DITT kontonummer: ");
                 accountNumber = Console.ReadLine();
                 fromAcc = FindAccount(accountNumber);
             }
 
-           
+
+            string toAccountNumber = null;
             Account toAcc = null; //when transfer - ask for reciever account validation
+
             if (type == "Transfer")
             {
-                if (string.IsNullOrEmpty(toAccountNumber))
-                {
-                    Console.Write("Ange mottagarkonto: ");
-                    toAccountNumber = Console.ReadLine();
-                }
-
+                Console.Write("Ange mottagarkonto: ");
+                toAccountNumber = Console.ReadLine();
                 toAcc = FindAccount(toAccountNumber);
-                while (toAcc == null)
+
+                while (toAcc == null || toAccountNumber == accountNumber) //allows transfer to other accounts, but not the same account
                 {
-                    Console.WriteLine($"❌ Mottagarkonto {toAccountNumber} hittades inte. Försök igen.");
+                    if (toAcc == null)
+                    {
+                        Console.WriteLine($"❌ Mottagarkonto {toAccountNumber} hittades inte. Försök igen.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"❌ Du kan inte överföra till samma konto. Försök igen.");
+                    }
                     Console.Write("Ange mottagarkonto: ");
                     toAccountNumber = Console.ReadLine();
                     toAcc = FindAccount(toAccountNumber);
                 }
             }
 
-            
-            if (amount <= 0)  //amount + validation
+
+            if ((type == "Withdraw" || type == "Transfer") && fromAcc.Balance <= 0)
+            {
+                Console.WriteLine($"❌ Ditt saldon är 0 kr. Du kan inte göra {type.ToLower()}.");
+                Pause();
+                return false; //back to userMenu
+            }
+
+
+            decimal amount;
+            while (true)
             {
                 Console.Write("Ange belopp: ");
                 string input = Console.ReadLine();
-                while (!decimal.TryParse(input, out amount) || amount <= 0)
+
+
+                if (!decimal.TryParse(input, out amount) || amount <= 0)  //amount + validation
                 {
                     Console.WriteLine("❌ Ogiltigt belopp. Ange en giltig siffra större än 0.");
-                    Console.Write("Ange belopp: ");
-                    input = Console.ReadLine();
+                    continue;
                 }
-            }
 
-            if ((type == "Withdraw" || type == "Transfer") && fromAcc.Balance < amount) //check balance for withdraw or transfer
-            {
-                Console.WriteLine($"❌ Otillräckligt saldo ({fromAcc.Balance} kr). Ange ett lägre belopp.");
-                return false;
+                
+                if ((type == "Withdraw" || type == "Transfer") && amount > fromAcc.Balance) //check balance for withdraw or transfer
+                {
+                    Console.WriteLine($"❌ Otillräckligt saldo (Ditt saldo = {fromAcc.Balance} kr). Ange ett lägre belopp.");
+                    continue;
+                }
+                break; //Amount confirmed
             }
 
             
@@ -380,7 +394,7 @@ namespace K1_Banken_Team1.Domain
         {
             var ready = transactions     //find transactions ready to be processed
                 .Where(t => t.Status == "Pending" &&
-                            DateTime.Now - t.Timestamp >= TimeSpan.FromMinutes(15))
+                            DateTime.Now - t.Timestamp >= TimeSpan.FromSeconds(3))
                 .ToList();
 
             if (ready.Count == 0) return; // Stop if no transaction are ready

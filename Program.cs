@@ -28,7 +28,8 @@ namespace K1_Banken_Team1
             myBank.OpenAccount(Abdalle, "A01", "spar", "SEK"); //fix för att inte behöva välja valuta varje gång
             myBank.OpenAccount(Lisa, "A02", "spar", "SEK");
             myBank.OpenAccount(Rolf, "A03", "spar", "SEK");
-           
+            myBank.OpenAccount(Abdalle, "A08", "spar", "SEK");
+
 
             //myBank.ExecuteTransaction("Deposit", "A01", 20000);
             //myBank.ExecuteTransaction("Withdraw", "A01", 5000);

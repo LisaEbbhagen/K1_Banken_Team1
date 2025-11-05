@@ -26,7 +26,7 @@ namespace K1_Banken_Team1.Presentation.Menus
             {
                 while (true)
                 {
-                    await Task.Delay(TimeSpan.FromMinutes(1));
+                    await Task.Delay(TimeSpan.FromSeconds(3));
                     _myBank.ProcessPendingTransactions();
                 }
             });
@@ -52,19 +52,19 @@ namespace K1_Banken_Team1.Presentation.Menus
                 {
 
                     case "1":
-                            _myBank.ExecuteTransaction("Deposit", null, 0, null);
-                            _myBank.Pause();
-                            break;
+                        _myBank.ExecuteTransaction("Deposit", currentUser);
+                        _myBank.Pause();
+                        break;
 
                     case "2":
-                        _myBank.ExecuteTransaction("Withdraw", null, 0, null); 
+                        _myBank.ExecuteTransaction("Withdraw", currentUser); ;
                         _myBank.Pause();
-                            break;                          
+                        break;
 
                     case "3":
-                        _myBank.ExecuteTransaction("Transfer", null, 0, null);
+                        _myBank.ExecuteTransaction("Transfer", currentUser);
                         _myBank.Pause();
-                            break;
+                        break;
 
                     case "4":
                         _myBank.Transactions(currentUser);
