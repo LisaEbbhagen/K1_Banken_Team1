@@ -48,7 +48,7 @@ namespace K1_Banken_Team1.Domain
                 ColorHelper.ShowInputPrompt("Ange namn: ");
                 name = Console.ReadLine();
 
-                if (users.Any(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase))) //kontrollera om namnet finns
+                if (users.Any(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase))) //Check if user already exists.
                 {
                     ColorHelper.ShowWarningMessage($"❌ Det finns redan en användare registrerad med namnet '{name}'. Välj ett annat namn.\n");
                     continue;
@@ -59,7 +59,7 @@ namespace K1_Banken_Team1.Domain
                     ColorHelper.ShowWarningMessage("❌ Namn får inte vara tomt.\n");
                     continue;
                 }
-                break; // namn är ok. gå vidare
+                break; // Name is ok.
             }
 
             string pin;
@@ -96,8 +96,30 @@ namespace K1_Banken_Team1.Domain
                 break;
             }
 
-            var newUser = new User(name, pin, id); //användaren skapas 
-            AddUser(newUser);                     // användaren läggs till listan
+            bool isAdmin = false; // Future use for admin creation.
+            while (true)
+            {
+               ColorHelper.ShowInputPrompt("Ska denna användare vara admin? (j/n): ");
+               string adminInput = Console.ReadLine().ToLower();
+                if (adminInput == "j")
+                {
+                   isAdmin = true;
+                   break;
+                }
+                else if (adminInput == "n")
+                {
+                   isAdmin = false;
+                   break;
+                }
+                else
+                {
+                        ColorHelper.ShowWarningMessage("Ogiltigt val. Ange 'j' för ja eller 'n' för nej.\n");
+                }
+                
+            }
+
+            var newUser = new User(name, pin, id, isAdmin); //Create user.
+            AddUser(newUser);                     // Add user to list.
 
             ColorHelper.ShowSuccessMessage($"✅ Användaren'{name}' har skapats och lagts till i systemet!");
         }

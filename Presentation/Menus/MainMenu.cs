@@ -61,7 +61,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                               .Split('\n')
                                .Where(line => !string.IsNullOrEmpty(line)));  //Remove empty lines to make logo look better
 
-                ColorHelper.ShowTitle("                                               === Välkommen till R.A.L´s bank ==="); //Rough version to make menu more appealing/centerd
+                ColorHelper.ShowTitle("                                               === Välkommen till R.A.L´s bank ===");//Rough version to make menu more appealing/centerd              
                 ColorHelper.ShowMenuChoice("                                                         1. Logga in");
                 ColorHelper.ShowMenuChoice("                                                         2. Admin");
                 ColorHelper.ShowMenuChoice("                                                         3. Avsluta");
