@@ -17,7 +17,7 @@ namespace K1_Banken_Team1.Domain
         public string Status { get; set; } = "Pending"; //Queue
         public decimal BalanceAfter { get; set; } 
         public string ToAccountNumber {  get; set; } //only for transfers
-        public Transaction() { }
+
         public Transaction(
             string id, 
             string accountNumber, 

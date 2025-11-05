@@ -19,15 +19,21 @@ namespace K1_Banken_Team1.Presentation.Menus
         public void RunUserMenu(User currentUser)
         {
             bool loggedIn = true;
-            Account userAccount = currentUser.Accounts.First(); // // simple version: get the first account of the user.
 
-            
-            _ = Task.Run(async () =>  // starts backgrounds activity that runs pending transactions every 15 minutes.
+            _ = Task.Run(async () =>
             {
                 while (true)
                 {
-                    await Task.Delay(TimeSpan.FromMinutes(1));
-                    _myBank.ProcessPendingTransactions();
+                    try
+                    {
+                        await Task.Delay(TimeSpan.FromMinutes(1));
+                        _myBank.ProcessPendingTransactions();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Fel i bakgrunds-Task: {ex.Message}"); //Catch any exceptions to prevent crashing.
+                        await Task.Delay(TimeSpan.FromSeconds(10));
+                    }
                 }
             });
 
@@ -47,6 +53,13 @@ namespace K1_Banken_Team1.Presentation.Menus
                 ColorHelper.ShowMenuChoice("0. Logga ut");
                 ColorHelper.ShowInputPrompt("\nVal: ");
                 string choice = Console.ReadLine();
+
+                if (!currentUser.Accounts.Any() && (choice == "1" || choice == "2" || choice == "3" || choice == "7"))
+                {
+                    ColorHelper.ShowWarningMessage("Du har inga konton. Skapa ett konto först.");
+                    _myBank.Pause();
+                    continue;
+                }
 
                 switch (choice)
                 {
@@ -68,6 +81,7 @@ namespace K1_Banken_Team1.Presentation.Menus
 
                     case "4":
                         _myBank.Transactions(currentUser);
+                        _myBank.Pause();
                         break;
 
                     case "5": 
@@ -85,7 +99,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                         _myBank.Pause();
                         break;
 
-                    case "8":
+                    case "0":
                         Console.WriteLine($"🔒Du loggas nu ut, {currentUser.Name}...");
                         loggedIn = false;
                         return;

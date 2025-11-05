@@ -378,14 +378,22 @@ namespace K1_Banken_Team1.Domain
                     input = Console.ReadLine();
                 }
             }
-                
-            if ((type == "Withdraw" || type == "Transfer") && fromAcc.Balance < amount) //check balance for withdraw or transfer
+
+            while ((type == "Withdraw" || type == "Transfer") && fromAcc.Balance < amount)
             {
                 ColorHelper.ShowWarningMessage($"❌ Otillräckligt saldo ({fromAcc.Balance} kr). Ange ett lägre belopp.");
-                return false;
+                ColorHelper.ShowInputPrompt("Ange belopp: ");
+                string newInput = Console.ReadLine();
+
+                while (!decimal.TryParse(newInput, out amount) || amount <= 0)
+                {
+                    ColorHelper.ShowWarningMessage("❌ Ogiltigt belopp. Ange en giltig siffra större än 0.");
+                    ColorHelper.ShowInputPrompt("Ange belopp: ");
+                    newInput = Console.ReadLine();
+                }
             }
 
-            
+
             var tx = new Transaction(            //create and add transaction to queue
                 Guid.NewGuid().ToString(),
                 accountNumber,
