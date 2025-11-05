@@ -1,3 +1,20 @@
+v.45 rapportör Abdalle
+
+Deltagare (Närvaro): Abdalle, Lisa; Rolf
+
+Sprintmål (veckans DoD): Fortsätte arbetet med Backlog.
+
+Vad vi gjorde
+fortsätt med backloggen och små fixade det sista innan inlämning och presentation
+lisa Jobbat med refaktorering och updatering av alla metoder som har direkt koppling till menyval, med console.clear för att dölja menyn efter menyval.Har även sett över alla menyval där tabellutskrift är att föredra och lagt in tabeller på dem ställena av samma typ. Implementerar colorhelper-klassen för färgsättning i konsollen (inte riktigt klart)
+Abdalle hade i uppgift att fixa små fel i transaktionerna och säkerställa korrekt validering när användaren anger konto eller pelopp, felaktiga konton eller ogiltiga summor ska nu stoppas direkt- allt fungerar som det ska
+Rolf fixade logga med färg och såg till att den ser bra ut , han gjorde justeingar som behövdes så att CheckingAccount ska fungera väl 
+
+Hinder:
+vi stötte på några merge-konflikter och kodrader som behövde rättas till i samband med refaktoriseringen.
+I övrigt uppstod inga större problem 
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
 v.44 rapportör: Lisa
 
 Deltagare (närvaro): Lisa, Rolf
