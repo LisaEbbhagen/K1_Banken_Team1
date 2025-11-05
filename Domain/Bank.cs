@@ -275,7 +275,6 @@ namespace K1_Banken_Team1.Domain
         // Usage: if currentUser is passed in the program will only search that user's own accounts. If the parameter is not provided, any account can be chosen (e.g. admin).
         public Account FindAccount(string accountNumber, User user = null)
         {
-            Console.Clear();
             if (string.IsNullOrWhiteSpace(accountNumber))
             {
                 ColorHelper.ShowWarningMessage("Kontonumret får inte vara tomt.");
@@ -900,20 +899,20 @@ namespace K1_Banken_Team1.Domain
 
         public User LoginUser()
         {
-            ColorHelper.ShowInputPrompt("Ange namn: ");
+            ColorHelper.ShowInputPromptFirstMenu("Ange namn: ");
             string name = Console.ReadLine();
 
             var user = users.FirstOrDefault(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             if (user == null)
             {
-                ColorHelper.ShowWarningMessage("❌ Okänt namn.");
+                ColorHelper.ShowWarningMessageFirstMenu("❌ Okänt namn.");
                 Pause();
                 return null;
             }
 
             if (user.IsLocked)
             {
-                ColorHelper.ShowWarningMessage("🔒 Kontot är låst. Kontakta admin");
+                ColorHelper.ShowWarningMessageFirstMenu("🔒 Kontot är låst. Kontakta admin");
                 Pause();
                 return null;
             }
@@ -921,23 +920,23 @@ namespace K1_Banken_Team1.Domain
             int attempts = 0;
             while (attempts < 3)
             {
-                ColorHelper.ShowInputPrompt("Ange PIN: ");
+                ColorHelper.ShowInputPromptFirstMenu("Ange PIN: ");
                 string pin = Console.ReadLine();
 
                 if (user.Pin == pin)
                 {
-                    ColorHelper.ShowSuccessMessage($"✅ Inloggad som {user.Name}!");
+                    ColorHelper.ShowSuccessMessageFirstMenu($"✅ Inloggad som {user.Name}!");
                     return user;
                 }
                 else
                 {
                     attempts++;
-                    ColorHelper.ShowErrorMessage($"❌ Fel PIN ({attempts}/3)");
+                    ColorHelper.ShowErrorMessageFirstMenu($"❌ Fel PIN ({attempts}/3)");
                 }
             }
 
             user.IsLocked = true;
-            ColorHelper.ShowErrorMessage("🚫 Kontot är nu låst. Kontakta admin");
+            ColorHelper.ShowErrorMessageFirstMenu("🚫 Kontot är nu låst. Kontakta admin");
             Pause();
             return null;
         }
