@@ -1,3 +1,5 @@
+﻿using K1_Banken_Team1.Presentation;
+using System.Collections.Generic;
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -20,11 +22,11 @@ namespace K1_Banken_Team1.Domain
             if (!users.Any(u => u.Id == user.Id))
             {
                 users.Add(user);
-                Console.WriteLine($"Användare {user.Name} med ID {user.Id} har lagts till.");
+                ColorHelper.ShowSuccessMessage($"Användare {user.Name} med ID {user.Id} har lagts till.");
             }
             else
             {
-                Console.WriteLine("Användaren finns redan.");
+                ColorHelper.ShowWarningMessage("Användaren finns redan.");
             }
         }
 
@@ -38,23 +40,23 @@ namespace K1_Banken_Team1.Domain
         public void CreateUser()
         {
             Console.Clear();
-            Console.WriteLine("🧑‍💻 Skapa ny användare\n");
+            ColorHelper.ShowHighlightedChoice("🧑‍💻 Skapa ny användare\n");
 
             string name;
             while (true)
             {
-                Console.Write("Ange namn: ");
+                ColorHelper.ShowInputPrompt("Ange namn: ");
                 name = Console.ReadLine();
 
                 if (users.Any(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase))) //kontrollera om namnet finns
                 {
-                    Console.WriteLine($"❌ Det finns redan en användare registrerad med namnet '{name}'. Välj ett annat namn.\n");
+                    ColorHelper.ShowWarningMessage($"❌ Det finns redan en användare registrerad med namnet '{name}'. Välj ett annat namn.\n");
                     continue;
                 }
 
                 if (string.IsNullOrWhiteSpace(name))
                 {
-                    Console.WriteLine("❌ Namn får inte vara tomt.\n");
+                    ColorHelper.ShowWarningMessage("❌ Namn får inte vara tomt.\n");
                     continue;
                 }
                 break; // namn är ok. gå vidare
@@ -63,32 +65,32 @@ namespace K1_Banken_Team1.Domain
             string pin;
             while (true)
             {
-                Console.Write("Ange PIN (4 siffror): ");
+                ColorHelper.ShowInputPrompt("Ange PIN (4 siffror): ");
                 pin = Console.ReadLine();
 
                 if (pin.Length == 4 && pin.All(char.IsDigit))
                 {
                     break; // pin ok
                 }
-                Console.WriteLine("❌ Ogiltig PIN. Ange exakt 4 siffror.\n");
+                ColorHelper.ShowWarningMessage("❌ Ogiltig PIN. Ange exakt 4 siffror.\n");
 
             }
 
             string id;
             while(true)
             {
-                Console.Write("Ange ID");
+                ColorHelper.ShowInputPrompt("Ange ID");
                 id = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(id))
                 {
-                    Console.WriteLine("❌ ID får inte vara tomt.\n ");
+                    ColorHelper.ShowWarningMessage("❌ ID får inte vara tomt.\n ");
                     continue;
                 }
 
                 if (users.Any(u => u.Id.Equals(id, StringComparison.OrdinalIgnoreCase)))
                 {
-                    Console.WriteLine($"❌ ID '{id}' andvänds redan. välj ett annat ID.");
+                    ColorHelper.ShowWarningMessage($"❌ ID '{id}' andvänds redan. välj ett annat ID.");
                     continue;
                 }
                 break;
@@ -97,13 +99,13 @@ namespace K1_Banken_Team1.Domain
             var newUser = new User(name, pin, id); //användaren skapas 
             AddUser(newUser);                     // användaren läggs till listan
 
-            Console.WriteLine($"✅ Användaren'{name}' har skapats och lagts till i systemet!");
+            ColorHelper.ShowSuccessMessage($"✅ Användaren'{name}' har skapats och lagts till i systemet!");
         }
 
         public void ListAllAccounts() //List all accounts, owner, balance that are registerd.
         {
             Console.Clear();
-            Console.WriteLine("Alla konton i banken: \n");
+            ColorHelper.ShowHighlightedChoice("Alla konton i banken: \n");
             Console.WriteLine(new string('-', 50)); 
             Console.WriteLine($"{"Ägare:",-15}  {"Kontonummer:",-10} {"Saldo:",16}");
             Console.WriteLine(new string('-', 50));
@@ -118,7 +120,7 @@ namespace K1_Banken_Team1.Domain
         public void ShowAllUsers()
         {
             Console.Clear();
-            Console.WriteLine("👥 Alla användare i systemet: \n");
+            ColorHelper.ShowHighlightedChoice("👥 Alla användare i systemet: \n");
             Console.WriteLine(new string('-', 30));
             Console.WriteLine($"{"Användarnamn:",-15}  {"Id:",-10}");
             Console.WriteLine(new string('-', 30));
@@ -136,11 +138,11 @@ namespace K1_Banken_Team1.Domain
             var positivAccounts = AccountsWithPositivBalance();
             if (positivAccounts.Count == 0)
             {
-                Console.WriteLine("Inga konton med positivt saldo.");
+                ColorHelper.ShowWarningMessage("Inga konton med positivt saldo hittades.");
                 return;
             }
 
-            Console.WriteLine("Konton med positivt saldo:\n");
+            ColorHelper.ShowHighlightedChoice("Konton med positivt saldo:\n");
             Console.WriteLine(new string('-', 50));
             Console.WriteLine($"{"Ägare:",-15}  {"Kontonummer:",-10} {"Saldo:",16}");
             Console.WriteLine(new string('-', 50));
@@ -159,7 +161,7 @@ namespace K1_Banken_Team1.Domain
             Console.Clear();
             if (accounts.ContainsKey(accountNumber)) //Check if account number already exists
             {
-                Console.WriteLine("Kontonumret finns redan.");
+                ColorHelper.ShowWarningMessage("Kontonumret finns redan.");
                 return;
             }
 
@@ -170,6 +172,7 @@ namespace K1_Banken_Team1.Domain
                     Console.WriteLine("Vilken typ av konto vill du skapa?");
                     Console.WriteLine("1. Sparkonto");
                     Console.WriteLine("2. Checkkonto");
+                    ColorHelper.ShowInputPrompt("Val: ");
                     string choice = Console.ReadLine();
 
                     if (choice == "1")
@@ -180,7 +183,7 @@ namespace K1_Banken_Team1.Domain
 
                     else
                     {
-                        Console.WriteLine("Ogiltigt val, försök igen.");
+                        ColorHelper.ShowWarningMessage("Ogiltigt val, försök igen.");
                         continue;
                     }
                 }
@@ -191,14 +194,14 @@ namespace K1_Banken_Team1.Domain
             {
                 if (string.IsNullOrWhiteSpace(currency))
                 {
-                    Console.Write("Vilken valuta vill du ha på kontot? (SEK, EUR, USD): ");
+                    ColorHelper.ShowInputPrompt("Vilken valuta vill du ha på kontot? (SEK, EUR, USD): ");
                     currency = Console.ReadLine()?.ToUpper();
                 }
 
                 if (currency == "SEK" || currency == "EUR" || currency == "USD")
                     break;
 
-                Console.WriteLine("Ogiltig valuta, försök igen.");
+                ColorHelper.ShowWarningMessage("Ogiltig valuta, försök igen.");
                 currency = null;
             }
 
@@ -215,7 +218,7 @@ namespace K1_Banken_Team1.Domain
                     newAccount = new CheckingAccount(accountNumber, user);
                     break;
                 default:
-                    Console.WriteLine("Ogiltig kontotyp. Skapar sparkonto som standard.");
+                    ColorHelper.ShowWarningMessage("Ogiltig kontotyp. Skapar sparkonto som standard.");
                     newAccount = new SavingAccount(accountNumber, user);
                     break;
             }
@@ -225,19 +228,19 @@ namespace K1_Banken_Team1.Domain
             accounts.Add(accountNumber, newAccount);
             user.AddAccount(newAccount);
 
-            Console.WriteLine($"Nytt {accountType}-konto öppnat med kontonummer: {accountNumber} ({currency}).");
+            ColorHelper.ShowSuccessMessage($"Nytt {accountType}-konto öppnat med kontonummer: {accountNumber} ({currency}).");
         }
 
         public void UnLockUserMenu()
         {
             Console.Clear();
-            Console.WriteLine("=== Lås upp användare === \n");
+            ColorHelper.ShowHighlightedChoice("=== Lås upp användare === \n");
 
             var lockedUsers = users.Where(u => u.IsLocked).ToList(); //Hämta alla låsta användare
 
             if (!lockedUsers.Any()) //Om inga låsta användare finns
             {
-                Console.WriteLine("\nℹ️ Det finns inga låsta användare just nu.");
+                ColorHelper.ShowWarningMessage("\nℹ️ Det finns inga låsta användare just nu.");
                 return;
             }
 
@@ -249,7 +252,7 @@ namespace K1_Banken_Team1.Domain
                     Console.WriteLine($"-{u.Name}");
                 }
 
-                Console.Write("\nAnge namnet på användaren du vill låsa upp:");
+                ColorHelper.ShowInputPrompt("\nAnge namnet på användaren du vill låsa upp:");
                 string name = Console.ReadLine();
 
                 var userToUnlock = lockedUsers //Hitta användaren
@@ -257,13 +260,13 @@ namespace K1_Banken_Team1.Domain
 
                 if (userToUnlock == null) //om användaren inte hittas
                 {
-                    Console.WriteLine("❌ Ingen användare hittades med det namnet. Ange namn igen. \n");
+                    ColorHelper.ShowWarningMessage("❌ Ingen användare hittades med det namnet. Ange namn igen. \n");
                     continue;
                 }
 
                 userToUnlock.IsLocked = false; //om användaren hittas
 
-                Console.WriteLine($"🔒 Kontot för {userToUnlock.Name} har låsts upp!");
+                ColorHelper.ShowSuccessMessage($"🔒 Kontot för {userToUnlock.Name} har låsts upp!");
                 return;
             }
         }
@@ -275,7 +278,7 @@ namespace K1_Banken_Team1.Domain
             Console.Clear();
             if (string.IsNullOrWhiteSpace(accountNumber))
             {
-                Console.WriteLine("Kontonumret får inte vara tomt.");
+                ColorHelper.ShowWarningMessage("Kontonumret får inte vara tomt.");
                 return null;
             }
 
@@ -291,7 +294,7 @@ namespace K1_Banken_Team1.Domain
 
             else
             {
-                Console.WriteLine("Konto finns ej.");
+                ColorHelper.ShowWarningMessage("Konto finns ej.");
                 return null;
             }
         }
@@ -300,20 +303,20 @@ namespace K1_Banken_Team1.Domain
         public bool ExecuteTransaction(string type, string accountNumber, decimal amount, string toAccountNumber = null)
         {
             Console.Clear();
-            Console.WriteLine($"\n-- {type.ToUpper()} --");
+            ColorHelper.ShowHighlightedChoice($"\n-- {type.ToUpper()} --");
 
             
             if (string.IsNullOrEmpty(accountNumber)) //Accountnumber with validation
             {
-                Console.Write("Ange kontonummer: ");
+                ColorHelper.ShowInputPrompt("Ange kontonummer: ");
                 accountNumber = Console.ReadLine();
             }
 
             var fromAcc = FindAccount(accountNumber);
             while (fromAcc == null)
             {
-                Console.WriteLine($"❌ Konto {accountNumber} hittades inte. Försök igen.");
-                Console.Write("Ange kontonummer: ");
+                ColorHelper.ShowWarningMessage($"❌ Konto {accountNumber} hittades inte. Försök igen.");
+                ColorHelper.ShowInputPrompt("Ange kontonummer: ");
                 accountNumber = Console.ReadLine();
                 fromAcc = FindAccount(accountNumber);
             }
@@ -324,15 +327,15 @@ namespace K1_Banken_Team1.Domain
             {
                 if (string.IsNullOrEmpty(toAccountNumber))
                 {
-                    Console.Write("Ange mottagarkonto: ");
+                    ColorHelper.ShowInputPrompt("Ange mottagarkonto: ");
                     toAccountNumber = Console.ReadLine();
                 }
 
                 toAcc = FindAccount(toAccountNumber);
                 while (toAcc == null)
                 {
-                    Console.WriteLine($"❌ Mottagarkonto {toAccountNumber} hittades inte. Försök igen.");
-                    Console.Write("Ange mottagarkonto: ");
+                    ColorHelper.ShowWarningMessage($"❌ Mottagarkonto {toAccountNumber} hittades inte. Försök igen.");
+                    ColorHelper.ShowInputPrompt("Ange mottagarkonto: ");
                     toAccountNumber = Console.ReadLine();
                     toAcc = FindAccount(toAccountNumber);
                 }
@@ -341,19 +344,19 @@ namespace K1_Banken_Team1.Domain
             
             if (amount <= 0)  //amount + validation
             {
-                Console.Write("Ange belopp: ");
+                ColorHelper.ShowInputPrompt("Ange belopp: ");
                 string input = Console.ReadLine();
                 while (!decimal.TryParse(input, out amount) || amount <= 0)
                 {
-                    Console.WriteLine("❌ Ogiltigt belopp. Ange en giltig siffra större än 0.");
-                    Console.Write("Ange belopp: ");
+                    ColorHelper.ShowWarningMessage("❌ Ogiltigt belopp. Ange en giltig siffra större än 0.");
+                    ColorHelper.ShowInputPrompt("Ange belopp: ");
                     input = Console.ReadLine();
                 }
             }
 
             if ((type == "Withdraw" || type == "Transfer") && fromAcc.Balance < amount) //check balance for withdraw or transfer
             {
-                Console.WriteLine($"❌ Otillräckligt saldo ({fromAcc.Balance} kr). Ange ett lägre belopp.");
+                ColorHelper.ShowWarningMessage($"❌ Otillräckligt saldo ({fromAcc.Balance} kr). Ange ett lägre belopp.");
                 return false;
             }
 
@@ -375,11 +378,11 @@ namespace K1_Banken_Team1.Domain
 
             
             if (type == "Transfer")                  //confirmation message in console
-                Console.WriteLine($"🕒 Överföring på {amount} kr från {accountNumber} till {toAccountNumber} är registrerad och körs om 15 minuter.");
+                ColorHelper.ShowSuccessMessage($"🕒 Överföring på {amount} kr från {accountNumber} till {toAccountNumber} är registrerad och körs om 15 minuter.");
             else if (type == "Deposit")
-                Console.WriteLine($"🕒 Insättning på {amount} kr är registrerad och körs om 15 minuter.");
+                ColorHelper.ShowSuccessMessage($"🕒 Insättning på {amount} kr är registrerad och körs om 15 minuter.");
             else if (type == "Withdraw")
-                Console.WriteLine($"🕒 Uttag på {amount} kr är registrerat och körs om 15 minuter.");
+                ColorHelper.ShowSuccessMessage($"🕒 Uttag på {amount} kr är registrerat och körs om 15 minuter.");
 
             return true;
         }
@@ -410,7 +413,7 @@ namespace K1_Banken_Team1.Domain
                         tx.Status = "Completed";
                         tx.BalanceAfter = fromAcc.Balance;
                         if (verbose)
-                            Console.WriteLine($"✅ Insättning: +{tx.Amount} kr till {fromAcc.AccountNumber}. Nytt saldo: {tx.BalanceAfter} kr.");
+                            ColorHelper.ShowSuccessMessage($"✅ Insättning: +{tx.Amount} kr till {fromAcc.AccountNumber}. Nytt saldo: {tx.BalanceAfter} kr.");
                         break;
 
                     case "Withdraw":
@@ -418,7 +421,7 @@ namespace K1_Banken_Team1.Domain
                         tx.Status = "Completed";
                         tx.BalanceAfter = fromAcc.Balance;
                         if (verbose)
-                            Console.WriteLine($"✅ Uttag: -{tx.Amount} kr från {fromAcc.AccountNumber}. Nytt saldo: {tx.BalanceAfter} kr.");
+                            ColorHelper.ShowSuccessMessage($"✅ Uttag: -{tx.Amount} kr från {fromAcc.AccountNumber}. Nytt saldo: {tx.BalanceAfter} kr.");
                         break;
 
                     case "Transfer":
@@ -427,7 +430,7 @@ namespace K1_Banken_Team1.Domain
                         tx.Status = "Completed";
                         tx.BalanceAfter = fromAcc.Balance; // saldo hos avsändaren efter körning
                         if (verbose)
-                            Console.WriteLine($"✅ Överföring: -{tx.Amount} kr från {fromAcc.AccountNumber} till {toAcc.AccountNumber}. Avsändarens saldo: {tx.BalanceAfter} kr.");
+                            ColorHelper.ShowSuccessMessage($"✅ Överföring: -{tx.Amount} kr från {fromAcc.AccountNumber} till {toAcc.AccountNumber}. Avsändarens saldo: {tx.BalanceAfter} kr.");
                         break;
                 }
             }
@@ -436,7 +439,7 @@ namespace K1_Banken_Team1.Domain
         public void Transactions(User currentUser)
         {
             Console.Clear();
-            Console.WriteLine("== Transaktioner ==\n");
+            ColorHelper.ShowHighlightedChoice("== Transaktioner ==\n");
 
             
             ProcessPendingTransactions(verbose: true); //Run pending transactions silently aftr 15 min
@@ -497,7 +500,7 @@ namespace K1_Banken_Team1.Domain
         {
             Console.Clear();
             var topThree = threeBiggestAmount();
-            Console.WriteLine("De tre största transaktionerna:\n");
+            ColorHelper.ShowHighlightedChoice("De tre största transaktionerna:\n");
             Console.WriteLine(new string('-', 70));
             Console.WriteLine($"{"Tidstämpel:",-20}  {"Kontonummer:",-10} {"Typ:",-15} {"Summa:",15}");
             Console.WriteLine(new string('-', 70));
@@ -518,14 +521,15 @@ namespace K1_Banken_Team1.Domain
             Console.WriteLine("3. Endast överföringar");
             Console.WriteLine("4. Alla transaktioner");
             Console.WriteLine("5. Gå tillbaka till föregående meny");
-
+            ColorHelper.ShowInputPrompt("Val: ");
             string choice = Console.ReadLine();
+            
             IEnumerable<Transaction> filtered = Enumerable.Empty<Transaction>(); //Skapar en tom sekvens av Transaction-objekt, en tom lista som du kan fylla senare. 
 
             switch (choice)
             {
                 case "1":
-                    Console.WriteLine("Senaste insättningarna:");
+                    ColorHelper.ShowHighlightedChoice("Senaste insättningarna:");
                     filtered = transactions
                         .Where(t => t.Type == "Deposit" && t.AccountNumber == accountNumber)
                         .OrderByDescending(t => t.Timestamp)
@@ -533,7 +537,7 @@ namespace K1_Banken_Team1.Domain
                     break;
 
                 case "2":
-                    Console.WriteLine("Senaste uttagen:");
+                    ColorHelper.ShowHighlightedChoice("Senaste uttagen:");
                     filtered = transactions
                         .Where(t => t.Type == "Withdraw" && t.AccountNumber == accountNumber)
                         .OrderByDescending(t => t.Timestamp)
@@ -541,7 +545,7 @@ namespace K1_Banken_Team1.Domain
                     break;
 
                 case "3":
-                    Console.WriteLine("Senaste överföringarna:");
+                    ColorHelper.ShowHighlightedChoice("Senaste överföringarna:");
                     filtered = transactions
                         .Where(t => t.Type == "Transfer" && t.AccountNumber == accountNumber)
                         .OrderByDescending(t => t.Timestamp)
@@ -549,7 +553,7 @@ namespace K1_Banken_Team1.Domain
                     break;
 
                 case "4":
-                    Console.WriteLine("Alla transaktioner:");
+                    ColorHelper.ShowHighlightedChoice("Alla transaktioner:");
                     filtered = transactions
                         .Where(t => t.AccountNumber == accountNumber)
                         .OrderByDescending(t => t.Timestamp);
@@ -560,7 +564,7 @@ namespace K1_Banken_Team1.Domain
                     return new List<Transaction>(); // returnerar tom lista vilket gör att vi undviker ev krascher               
 
                 default:
-                    Console.WriteLine("Ogiltigt val, försök igen.");
+                    ColorHelper.ShowWarningMessage("Ogiltigt val, försök igen.");
                     return new List<Transaction>(); // returnerar tom lista vilket gör att vi undviker ev krascher               
             }
             //Utskrift i tabellformat
@@ -589,7 +593,7 @@ namespace K1_Banken_Team1.Domain
                  })
                  .OrderByDescending(g => g.TotalBalance); //sortera i fallande ordning
 
-            Console.WriteLine("Totalt saldo per användare:\n");
+            ColorHelper.ShowHighlightedChoice("Totalt saldo per användare:\n");
             Console.WriteLine(new string('-', 50));
             Console.WriteLine($"{"Användarnamn:",-20} {"Summa:",15}");
             Console.WriteLine(new string('-', 50));
@@ -604,7 +608,7 @@ namespace K1_Banken_Team1.Domain
         public void ShowBiggestTransactionPerUser()
         {
             Console.Clear();
-            Console.WriteLine("Största insättning & uttag per användare:\n");
+            ColorHelper.ShowHighlightedChoice("Största insättning & uttag per användare:\n");
 
             var groupedByUser = accounts.Values
                                         .GroupBy(a => a.Owner.Name);
@@ -644,11 +648,11 @@ namespace K1_Banken_Team1.Domain
 
             if (userWithMost != null)
             {
-                Console.WriteLine($"\nAnvändare med flest transaktioner: \n{userWithMost.User} med {userWithMost.Count} st.");
+                ColorHelper.ShowHighlightedChoice($"\nAnvändare med flest transaktioner: \n{userWithMost.User} med {userWithMost.Count} st.");
             }
             else
             {
-                Console.WriteLine("Inga transaktioner hittades.");
+                ColorHelper.ShowWarningMessage("Inga transaktioner hittades.");
             }
         }
 
@@ -656,7 +660,7 @@ namespace K1_Banken_Team1.Domain
         public void SearchAccount()
         {
             Console.Clear();
-            Console.Write("Ange kontonummer eller namn: ");
+            ColorHelper.ShowInputPrompt("Ange kontonummer eller namn: ");
             string input = Console.ReadLine().ToLower();
 
             var results = accounts.Values
@@ -666,11 +670,11 @@ namespace K1_Banken_Team1.Domain
 
             if (results.Count == 0)
             {
-                Console.WriteLine("Inga konton hittades.");
+                ColorHelper.ShowWarningMessage("Inga konton hittades.");
                 return;
             }
 
-            Console.WriteLine("\nResultat:\n");
+            ColorHelper.ShowHighlightedChoice("\nResultat:\n");
             Console.WriteLine(new string('-', 60));
             Console.WriteLine($"{"Användarnamn:",-20} {"Kontonummer",-15}  {"Saldo:",15}");
             Console.WriteLine(new string('-', 60));
@@ -690,13 +694,13 @@ namespace K1_Banken_Team1.Domain
 
             while (accNumber == null)
             {
-                Console.Write("Kontonummer: ");
+                ColorHelper.ShowInputPrompt("Kontonummer: ");
                 accNo = Console.ReadLine();
                 accNumber = FindAccount(accNo, user);
                 
                 if (accNumber == null)
                 {
-                    Console.WriteLine("❌ Kontot hittades inte. Försök igen.");
+                    ColorHelper.ShowWarningMessage("❌ Kontot hittades inte. Försök igen.");
                 }
             }
                
@@ -711,11 +715,11 @@ namespace K1_Banken_Team1.Domain
             //Om inga konto finns
             if (accounts == null || !accounts.Any())
             {
-                Console.WriteLine("ℹ️Du har inga konton.");
+                ColorHelper.ShowWarningMessage("ℹ️Du har inga konton.");
             }
 
             //Utskrift i tabellformat
-            Console.WriteLine("Dina konton och saldo:\n");
+            ColorHelper.ShowHighlightedChoice("Dina konton och saldo:\n");
             Console.WriteLine(new string('-', 45));
             Console.WriteLine($"{"Användarnamn:",-15}  {"Kontonummer:",-10} {"Saldo:",10}");
             Console.WriteLine(new string('-', 45));
@@ -760,13 +764,14 @@ namespace K1_Banken_Team1.Domain
                 Console.WriteLine("Vilken typ av konto vill du skapa?");
                 Console.WriteLine("1. Sparkonto");
                 Console.WriteLine("2. Lönekonto");
+                ColorHelper.ShowInputPrompt("Val: ");
                 string choice = Console.ReadLine();
 
                 if (choice == "1") accountType = "spar";
                 else if (choice == "2") accountType = "Löning";
                 else
                 {
-                    Console.WriteLine("Ogiltigt val, försök igen.");
+                    ColorHelper.ShowWarningMessage("Ogiltigt val, försök igen.");
                     continue;
                 }
                 break;
@@ -775,10 +780,10 @@ namespace K1_Banken_Team1.Domain
             string currency = null; //Currency selection
             while (true)
             {
-                Console.Write("Vilken valuta vill du ha på kontot? (SEK, EUR, USD): ");
+                ColorHelper.ShowInputPrompt("Vilken valuta vill du ha på kontot? (SEK, EUR, USD): ");
                 currency = Console.ReadLine()?.ToUpper();
                 if (currency == "SEK" || currency == "EUR" || currency == "USD") break;
-                Console.WriteLine("Ogiltig valuta, försök igen.");
+                ColorHelper.ShowWarningMessage("Ogiltig valuta, försök igen.");
             }
 
             Account newAccount; //Create account based on type
@@ -790,11 +795,11 @@ namespace K1_Banken_Team1.Domain
             accounts.Add(accountNumber, newAccount);
             user.AddAccount(newAccount);
 
-            Console.WriteLine($"Nytt {accountType}-konto öppnat med kontonummer: {accountNumber} ({currency}).");
+            ColorHelper.ShowSuccessMessage($"Nytt {accountType}-konto öppnat med kontonummer: {accountNumber} ({currency}).");
 
             if (accountType == "spar") //If saving account, ask for initial deposit
             {
-                Console.Write("Hur mycket vill du sätta in på ditt nya sparkonto? ");
+                ColorHelper.ShowInputPrompt("Hur mycket vill du sätta in på ditt nya sparkonto? ");
                 if (decimal.TryParse(Console.ReadLine(), out decimal initialDeposit) && initialDeposit > 0)
                 {
                     newAccount.Deposit(initialDeposit);
@@ -804,7 +809,7 @@ namespace K1_Banken_Team1.Domain
                 }
                 else
                 {
-                    Console.WriteLine("Ogiltigt belopp. Ingen insättning gjord.");
+                    ColorHelper.ShowWarningMessage("Ogiltigt belopp. Ingen insättning gjord.");
                 }
             }
         }
@@ -826,7 +831,7 @@ namespace K1_Banken_Team1.Domain
             }
             else
             {
-                Console.WriteLine("Välj konto att sätta in lånet på:");
+                ColorHelper.ShowInputPrompt("Välj konto att sätta in lånet på:");
                 int index = 1;
                 foreach (var acc in user.Accounts)
                 {
@@ -837,13 +842,13 @@ namespace K1_Banken_Team1.Domain
                 int choice;
                 while (true)
                 {
-                    Console.Write("Ange kontonummer: ");
+                    ColorHelper.ShowInputPrompt("Ange kontonummer: ");
                     if (int.TryParse(Console.ReadLine(), out choice) && choice >= 1 && choice <= user.Accounts.Count)
                     {
                         break; // giltigt val, bryt loopen
                     }
 
-                    Console.WriteLine("Ogiltigt val, försök igen.");
+                    ColorHelper.ShowWarningMessage("Ogiltigt val, försök igen.");
                 }
 
                 selectedAccount = user.Accounts.ElementAt(choice - 1);
@@ -855,19 +860,19 @@ namespace K1_Banken_Team1.Domain
             {
                 Console.WriteLine($"Ditt totala innehav hos banken är {totalBalance} kr.");
                 Console.WriteLine($"Du kan låna upp till {totalBalance * 5} kr.");
-                Console.Write("Ange lånebelopp: ");
+                ColorHelper.ShowInputPrompt("Ange lånebelopp: ");
                 if (decimal.TryParse(Console.ReadLine(), out amount) && amount > 0 && amount <= totalBalance * 5)
                 {
                     break;
                 }
-                Console.WriteLine($"Beloppet måste vara större än 0kr och får inte överskrida {totalBalance * 5} kr.");
+                ColorHelper.ShowWarningMessage($"Beloppet måste vara större än 0kr och får inte överskrida {totalBalance * 5} kr.");
             }
 
             decimal interestRate = 0.08m; //8% ränta
             decimal totalRepayment = amount + amount * interestRate;
 
             selectedAccount.Balance += amount; //Sätter in lånet på kontot
-            Console.WriteLine($"\nDu har lånat {amount:C} till konto {selectedAccount.AccountNumber}.");
+            ColorHelper.ShowSuccessMessage($"\nDu har lånat {amount:C} till konto {selectedAccount.AccountNumber}.");
             Console.WriteLine($"Ränta: {interestRate:P}");
             Console.WriteLine($"Totalt att betala tillbaka: {totalRepayment} kr");
             Console.WriteLine($"Nytt saldo på kontot: {selectedAccount.Balance} kr");
@@ -876,39 +881,39 @@ namespace K1_Banken_Team1.Domain
         public void UpdateExchangeRates()
         {
             Console.Clear();
-            Console.WriteLine("\n=== Uppdatera växelkurser ===");
+            ColorHelper.ShowHighlightedChoice("\n=== Uppdatera växelkurser ===");
             foreach (var key in ExchangeRates.Keys.ToList())
             {
-                Console.Write($"Ange ny växelkurs för {key} (nuvarande: {ExchangeRates[key]}): ");
+                ColorHelper.ShowInputPrompt($"Ange ny växelkurs för {key} (nuvarande: {ExchangeRates[key]}): ");
                 if (decimal.TryParse(Console.ReadLine(), out decimal rate) && rate > 0)
                 {
                     ExchangeRates[key] = rate;
                 }
                 else
                 {
-                    Console.WriteLine("Ogiltig växelkurs, försök igen.");
+                    ColorHelper.ShowWarningMessage("Ogiltig växelkurs, försök igen.");
                 }              
             }
 
-            Console.WriteLine("Växelkurser uppdaterade!");
+            ColorHelper.ShowSuccessMessage("Växelkurser uppdaterade!");
         }
 
         public User LoginUser()
         {
-            Console.Write("Ange namn: ");
+            ColorHelper.ShowInputPrompt("Ange namn: ");
             string name = Console.ReadLine();
 
             var user = users.FirstOrDefault(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             if (user == null)
             {
-                Console.WriteLine("❌ Okänt namn.");
+                ColorHelper.ShowWarningMessage("❌ Okänt namn.");
                 Pause();
                 return null;
             }
 
             if (user.IsLocked)
             {
-                Console.WriteLine("🔒 Kontot är låst. Kontakta admin");
+                ColorHelper.ShowWarningMessage("🔒 Kontot är låst. Kontakta admin");
                 Pause();
                 return null;
             }
@@ -916,23 +921,23 @@ namespace K1_Banken_Team1.Domain
             int attempts = 0;
             while (attempts < 3)
             {
-                Console.Write("Ange PIN: ");
+                ColorHelper.ShowInputPrompt("Ange PIN: ");
                 string pin = Console.ReadLine();
 
                 if (user.Pin == pin)
                 {
-                    Console.WriteLine($"✅ Inloggad som {user.Name}!");
+                    ColorHelper.ShowSuccessMessage($"✅ Inloggad som {user.Name}!");
                     return user;
                 }
                 else
                 {
                     attempts++;
-                    Console.WriteLine($"❌ Fel PIN ({attempts}/3)");
+                    ColorHelper.ShowErrorMessage($"❌ Fel PIN ({attempts}/3)");
                 }
             }
 
             user.IsLocked = true;
-            Console.WriteLine("🚫 Kontot är nu låst. Kontakta admin");
+            ColorHelper.ShowErrorMessage("🚫 Kontot är nu låst. Kontakta admin");
             Pause();
             return null;
         }

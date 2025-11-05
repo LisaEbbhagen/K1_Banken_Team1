@@ -21,21 +21,22 @@ namespace K1_Banken_Team1.Presentation.Menus
 
             while (running)
             {
+                Console.Clear();
 
-                Console.WriteLine("\n=== Admin Meny ===");
-                Console.WriteLine("1. Lista alla konton");
-                Console.WriteLine("2. Visa konton med positivt saldo");
-                Console.WriteLine("3. Visa de tre största transaktionerna");
-                Console.WriteLine("4. Visa totalt saldo per användare");
-                Console.WriteLine("5. Visa största insättning & uttag per användare");
-                Console.WriteLine("6. Visa användare med flest transaktioner");
-                Console.WriteLine("7. Sök konto (kontonummer eller namn)");
-                Console.WriteLine("8. Uppdatera växelkurser");
-                Console.WriteLine("9. Lås upp användare");
-                Console.WriteLine("10. Skapa ny användare");
-                Console.WriteLine("11. Visa alla användare");
-                Console.WriteLine("0. Logga ut");
-                Console.Write("Val: ");
+                ColorHelper.ShowMenuHeader("Admin Meny");
+                ColorHelper.ShowMenuChoice("1. Lista alla konton");
+                ColorHelper.ShowMenuChoice("2. Visa konton med positivt saldo");
+                ColorHelper.ShowMenuChoice("3. Visa de tre största transaktioner");
+                ColorHelper.ShowMenuChoice("4. Visa total saldo per användare");
+                ColorHelper.ShowMenuChoice("5. Visa största insättning & uttag per användare");
+                ColorHelper.ShowMenuChoice("6. Visa användare med flest transaktioner");
+                ColorHelper.ShowMenuChoice("7. Sök konto (kontonummer eller namn)");
+                ColorHelper.ShowMenuChoice("8. Uppdatera växelkurser");
+                ColorHelper.ShowMenuChoice("9. Lås upp användare");
+                ColorHelper.ShowMenuChoice("10. Skapa ny användare");
+                ColorHelper.ShowMenuChoice("11. Visa alla användare");
+                ColorHelper.ShowMenuChoice("0. Logga ut");
+                ColorHelper.ShowInputPrompt("\nVal: ");
                 string choice = Console.ReadLine();
 
                 switch (choice)
@@ -102,7 +103,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                         break;
 
                     default:
-                        Console.WriteLine("Ogiltigt val, försök igen.");
+                        ColorHelper.ShowWarningMessage("Ogiltigt val, försök igen.");
                         break;
                 }
             }
