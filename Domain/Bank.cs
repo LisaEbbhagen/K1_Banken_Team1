@@ -180,6 +180,20 @@ namespace K1_Banken_Team1.Domain
 
         public List<Transaction> transactions { get; private set; } = new List<Transaction>(); //List for transactions.
 
+        public bool EnsureUserHasAccount(User user)
+        {
+            // User has no accounts
+            if (!user.Accounts.Any())
+            {
+                ColorHelper.ShowWarningMessage("❗ Du har inget konto kopplat till ditt användarkonto.");
+                ColorHelper.ShowInfoMessage("Du behöver skapa ett konto för att fortsätta.");
+
+                Pause();
+                return false;
+            }
+            return true;
+        }
+
         public void OpenAccount(User user, string accountNumber, string accountType = null, string currency = null) //Method to open new account.
         {
             Console.Clear();
@@ -370,7 +384,7 @@ namespace K1_Banken_Team1.Domain
 
             if ((type == "Withdraw" || type == "Transfer") && fromAcc.Balance <= 0) //block transaction if balance is 0.for withdraw/transfer
             {
-                ColorHelper.ShowWarningMessage($"✖ Ditt saldo är 0 kr. Du kan inte göra {type.ToLower()}.");
+                ColorHelper.ShowWarningMessage($"✖ Ditt saldo är {fromAcc.Balance :0} kr. Du kan inte göra {type.ToLower()}.");
                 Pause();
                 return false;
             }

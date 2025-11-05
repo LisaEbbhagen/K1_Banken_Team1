@@ -18,15 +18,16 @@ namespace K1_Banken_Team1.Presentation.Menus
 
         public void RunUserMenu(User currentUser)
         {
-            bool loggedIn = true;
-            Account userAccount = currentUser.Accounts.First(); // // simple version: get the first account of the user.
+            if (!_myBank.EnsureUserHasAccount(currentUser))
+                return;
 
+            bool loggedIn = true;
             
             _ = Task.Run(async () =>  // starts backgrounds activity that runs pending transactions every 15 minutes.
             {
                 while (true)
                 {
-                    await Task.Delay(TimeSpan.FromMinutes(1));
+                    await Task.Delay(TimeSpan.FromSeconds(3));
                     _myBank.ProcessPendingTransactions();
                 }
             });
@@ -44,7 +45,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                 ColorHelper.ShowMenuChoice("5. Visa alla mina konton och saldo");
                 ColorHelper.ShowMenuChoice("6. Skapa nytt spar/checkkonto");
                 ColorHelper.ShowMenuChoice("7. Ta ett banklån");
-                ColorHelper.ShowMenuChoice("8. Logga ut");
+                ColorHelper.ShowMenuChoice("0. Logga ut");
                 ColorHelper.ShowInputPrompt("\nVal: ");
                 string choice = Console.ReadLine();
 
@@ -85,7 +86,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                         _myBank.Pause();
                         break;
 
-                    case "8":
+                    case "0":
                         Console.WriteLine($"🔒Du loggas nu ut, {currentUser.Name}...");
                         loggedIn = false;
                         return;
