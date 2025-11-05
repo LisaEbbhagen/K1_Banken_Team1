@@ -43,7 +43,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                 Console.WriteLine("3. Överför pengar");
                 Console.WriteLine("4. Visa transaktioner");
                 Console.WriteLine("5. Visa alla mina konton och saldo");
-                Console.WriteLine("6. Skapa nytt spar/checkkonto");
+                Console.WriteLine("6. Skapa nytt spar/lönekonto");
                 Console.WriteLine("7. Ta ett banklån");
                 Console.WriteLine("8. Logga ut");
                 string choice = Console.ReadLine();

@@ -22,12 +22,51 @@ namespace K1_Banken_Team1.Presentation.Menus
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("=== Välkommen till K1 Banken ===");
-                Console.WriteLine("1. Logga in");
-                Console.WriteLine("2. Admin");
-                Console.WriteLine("3. Avsluta");
+                string logo = @"                                                                                                                               
+     $$\                                                                                                             $$\    
+     $$ |                                                                                                            $$ |   
+  $$$$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$\ $$$$$$$$\ 
+  \__$$  __|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\____|\__$$  __|
+     $$ |                                                                                                            $$ |   
+     \__|                                                                                                            \__|                                                                                                                                                                                        
+     $$\                   $$$$$$$\                   $$$$$$\                  $$\             $$\                   $$\ 
+     $$ |                  $$  __$$\                 $$  __$$\                 $$ |            $  |                  $$ |
+     $$ |                  $$ |  $$ |                $$ /  $$ |                $$ |            \_/$$$$$$$\           $$ |
+     \__|                  $$$$$$$  |                $$$$$$$$ |                $$ |              $$  _____|          \__|
+     $$\                   $$  __$$<                 $$  __$$ |                $$ |              \$$$$$$\            $$\ 
+     $$ |                  $$ |  $$ |                $$ |  $$ |                $$ |               \____$$\           $$ |
+     $$ |                  $$ |  $$ |      $$\       $$ |  $$ |      $$\       $$$$$$$$\         $$$$$$$  |          $$ |
+     \__|                  \__|  \__|      \__|      \__|  \__|      \__|      \________|        \_______/           \__|
+                                                                                                                                                                                                                                                              
+     $$\                               $$$$$$$\   $$$$$$\  $$\   $$\ $$\   $$\                                       $$\     
+     $$ |                              $$  __$$\ $$  __$$\ $$$\  $$ |$$ | $$  |                                      $$ |    
+     $$ |                              $$ |  $$ |$$ /  $$ |$$$$\ $$ |$$ |$$  /                                       $$ |    
+     \__|                              $$$$$$$\ |$$$$$$$$ |$$ $$\$$ |$$$$$  /                                        \__|    
+     $$\                               $$  __$$\ $$  __$$ |$$ \$$$$ |$$  $$<                                         $$\     
+     $$ |                              $$ |  $$ |$$ |  $$ |$$ |\$$$ |$$ |\$$\                                        $$ |    
+     $$ |                              $$$$$$$  |$$ |  $$ |$$ | \$$ |$$ | \$$\                                       $$ |    
+     \__|                              \_______/ \__|  \__|\__|  \__|\__|  \__|                                      \__|
+     $$\                                                                                                             $$\    
+     $$ |                                                                                                            $$ |   
+  $$$$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$\ $$$$$$$$\ 
+  \__$$  __|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\____|\__$$  __|
+     $$ |                                                                                                            $$ |   
+     \__|                                                                                                            \__|
+";
 
-                Console.Write("Val: ");
+
+                ColorHelper.ShowColoredLogo(logo);
+
+                logo = string.Join("\n", logo
+                              .Split('\n')
+                               .Where(line => !string.IsNullOrEmpty(line)));  //Remove empty lines to make logo look better
+
+                ColorHelper.ShowTitle("                                               === Välkommen till R.A.L Banken ==="); //Rough version to make menu more appealing/centerd
+                ColorHelper.ShowMenuChoice("                                                         1. Logga in");
+                ColorHelper.ShowMenuChoice("                                                         2. Admin");
+                ColorHelper.ShowInputPrompt("                                                         3. Avsluta");
+                Console.WriteLine();
+                Console.Write("                                                         Val: ");
                 string startChoice = Console.ReadLine();
 
                 switch (startChoice)
