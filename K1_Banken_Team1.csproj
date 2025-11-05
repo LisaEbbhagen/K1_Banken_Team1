@@ -12,4 +12,9 @@
     <Folder Include="Services\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include=".appmod\.migration\plan.md" />
+    <None Include=".appmod\.migration\progress.md" />
+  </ItemGroup>
+
 </Project>

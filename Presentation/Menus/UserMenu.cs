@@ -33,19 +33,19 @@ namespace K1_Banken_Team1.Presentation.Menus
 
             while (loggedIn)
             {
+                Console.Clear();
+                ColorHelper.ShowMenuHeader("Meny");
+                ColorHelper.ShowInfoMessage("Välj ett av följande alternativ:\n");
 
-                Console.WriteLine("\n=== Meny ===");
-                Console.WriteLine("\nVälkommen till K1 Banken!\n");
-                Console.WriteLine("Välj ett av följande alternativ!");
-
-                Console.WriteLine("1. Sätta in pengar");
-                Console.WriteLine("2. Ta ut pengar");
-                Console.WriteLine("3. Överför pengar");
-                Console.WriteLine("4. Visa transaktioner");
-                Console.WriteLine("5. Visa alla mina konton och saldo");
-                Console.WriteLine("6. Skapa nytt spar/checkkonto");
-                Console.WriteLine("7. Ta ett banklån");
-                Console.WriteLine("8. Logga ut");
+                ColorHelper.ShowMenuChoice("1. Sätta in pengar");
+                ColorHelper.ShowMenuChoice("2. Ta ut pengar");
+                ColorHelper.ShowMenuChoice("3. Överför pengar");
+                ColorHelper.ShowMenuChoice("4. Visa transaktioner");
+                ColorHelper.ShowMenuChoice("5. Visa alla mina konton och saldo");
+                ColorHelper.ShowMenuChoice("6. Skapa nytt spar/checkkonto");
+                ColorHelper.ShowMenuChoice("7. Ta ett banklån");
+                ColorHelper.ShowMenuChoice("0. Logga ut");
+                ColorHelper.ShowInputPrompt("\nVal: ");
                 string choice = Console.ReadLine();
 
                 switch (choice)
@@ -57,9 +57,9 @@ namespace K1_Banken_Team1.Presentation.Menus
                         break;
 
                     case "2":
-                        _myBank.ExecuteTransaction("Withdraw", currentUser); ;
+                        _myBank.ExecuteTransaction("Withdraw", currentUser); ; 
                         _myBank.Pause();
-                        break;
+                        break;                          
 
                     case "3":
                         _myBank.ExecuteTransaction("Transfer", currentUser);
@@ -91,7 +91,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                         return;
 
                     default:
-                        Console.WriteLine("Ogiltigt val, försök igen.");
+                        ColorHelper.ShowWarningMessage("Ogiltigt val, försök igen.");
                         break;
                 }
             }

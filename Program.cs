@@ -45,7 +45,6 @@ namespace K1_Banken_Team1
             var menuHandler = new MenuHandler(myBank, adminMenu, mainMenu, userMenu); // Skapa MenuHandler-instans
 
             menuHandler.Start(); // Start program.   
-
         }
     }
 }
