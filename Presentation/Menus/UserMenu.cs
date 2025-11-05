@@ -44,7 +44,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                 ColorHelper.ShowMenuChoice("5. Visa alla mina konton och saldo");
                 ColorHelper.ShowMenuChoice("6. Skapa nytt spar/checkkonto");
                 ColorHelper.ShowMenuChoice("7. Ta ett banklån");
-                ColorHelper.ShowMenuChoice("8. Logga ut");
+                ColorHelper.ShowMenuChoice("0. Logga ut");
                 ColorHelper.ShowInputPrompt("\nVal: ");
                 string choice = Console.ReadLine();
 
