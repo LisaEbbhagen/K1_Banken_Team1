@@ -22,12 +22,12 @@ namespace K1_Banken_Team1.Presentation.Menus
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("=== Välkommen till K1 Banken ===");
-                Console.WriteLine("1. Logga in");
-                Console.WriteLine("2. Admin");
-                Console.WriteLine("3. Avsluta");
+                ColorHelper.ShowMenuHeader("Välkommen till K1 Banken");
+                ColorHelper.ShowMenuChoice("1. Logga in");
+                ColorHelper.ShowMenuChoice("2. Admin");
+                ColorHelper.ShowMenuChoice("3. Avsluta");
 
-                Console.Write("Val: ");
+                ColorHelper.ShowInputPrompt("\nVal: ");
                 string startChoice = Console.ReadLine();
 
                 switch (startChoice)
@@ -39,7 +39,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                     case "3":
                         return "Exit";
                     default:
-                        Console.WriteLine("Ogiltigt val, försök igen.");
+                        ColorHelper.ShowWarningMessage("Ogiltigt val, försök igen.");
                         myBank.Pause();
                         return "MainMenu";
                 }

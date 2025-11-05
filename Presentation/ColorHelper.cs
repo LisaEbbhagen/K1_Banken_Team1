@@ -10,7 +10,8 @@ namespace K1_Banken_Team1.Presentation
     {
         public static void ShowTitle(string message)
         {
-            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.WriteLine(message);
             Console.ResetColor();
         }
@@ -45,16 +46,33 @@ namespace K1_Banken_Team1.Presentation
 
         public static void ShowMenuChoice(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        public static void ShowHighlightedChoice(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.BackgroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"> {message}");
             Console.ResetColor();
         }
 
         public static void ShowInputPrompt(string message)
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.ForegroundColor = ConsoleColor.Magenta;
             Console.Write(message);
             Console.ResetColor();
-        }       
+        }
+
+        public static void ShowMenuHeader(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine($"\n=== {message.ToUpper()} ===\n");
+            Console.ResetColor();
+        }
+
     }
 }
