@@ -1,6 +1,8 @@
 ﻿using K1_Banken_Team1.Presentation;
 using System.Collections.Generic;
 ﻿using System.Collections.Generic;
+using System.Reflection;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 
 namespace K1_Banken_Team1.Domain
@@ -326,11 +328,11 @@ namespace K1_Banken_Team1.Domain
             Console.Clear();
             ColorHelper.ShowHighlightedChoice($"\n-- {type.ToUpper()} --");
 
-
-            ColorHelper.ShowInputPrompt("Ange kontonummer: ");
-            string accountNumber = Console.ReadLine(); //should be the inlogged user
-
+            
+            ColorHelper.ShowInputPrompt("Ange DITT kontonummer: ");
+            string accountNumber = Console.ReadLine();  // Sender account - Should be inlogged user
             var fromAcc = FindAccount(accountNumber);
+             
             while (fromAcc == null || fromAcc.Owner != currentUser)
             {
                 ColorHelper.ShowWarningMessage($"❌ Konto {accountNumber} hittades inte. Försök igen.");
@@ -341,15 +343,16 @@ namespace K1_Banken_Team1.Domain
 
 
             string toAccountNumber = null;
-            Account toAcc = null;   //when transfer - ask for reciever account validation
-            if (type == "Transfer")
+            Account toAcc = null;   
+
+            if (type == "Transfer")  //when transfer - ask for reciever account validation
             {
                 ColorHelper.ShowInputPrompt("Ange mottagarkonto: ");
                 toAccountNumber = Console.ReadLine();
                 toAcc = FindAccount(toAccountNumber);
 
                 //not null or your own account
-                while (toAcc == null || toAccountNumber == accountNumber)
+                while (toAcc == null || toAccountNumber == accountNumber) //not null or your own logged in account
                 {
                     if (toAcc == null)
                     {
@@ -365,27 +368,36 @@ namespace K1_Banken_Team1.Domain
                 }
             }
 
-
-
-            ColorHelper.ShowInputPrompt("Ange belopp: ");
-            string input = Console.ReadLine();
-            if (!decimal.TryParse(input, out decimal amount) || amount <= 0)  //amount + validation
+            if ((type == "Withdraw" || type == "Transfer") && fromAcc.Balance <= 0) //block transaction if balance is 0.for withdraw/transfer
             {
-                while (!decimal.TryParse(input, out amount) || amount <= 0)
-                {
-                    ColorHelper.ShowWarningMessage("❌ Ogiltigt belopp. Ange en giltig siffra större än 0.");
-                    ColorHelper.ShowInputPrompt("Ange belopp: ");
-                    input = Console.ReadLine();
-                }
-            }
-                
-            if ((type == "Withdraw" || type == "Transfer") && fromAcc.Balance < amount) //check balance for withdraw or transfer
-            {
-                ColorHelper.ShowWarningMessage($"❌ Otillräckligt saldo ({fromAcc.Balance} kr). Ange ett lägre belopp.");
+                ColorHelper.ShowWarningMessage($"✖ Ditt saldo är 0 kr. Du kan inte göra {type.ToLower()}.");
+                Pause();
                 return false;
             }
 
-            
+            decimal amount;
+            while (true)
+            {
+                ColorHelper.ShowInputPrompt("Ange belopp: ");
+                string input = Console.ReadLine();
+
+               
+                if (!decimal.TryParse(input, out amount) || amount <= 0)  // amount must be a number and > 0
+                {
+                    ColorHelper.ShowWarningMessage("✖ Ogiltigt belopp. Ange en giltig siffra större än 0.");
+                    continue;
+                }
+               
+                if ((type == "Withdraw" || type == "Transfer") && amount > fromAcc.Balance)  // check balance for withdraw/transfer
+                {
+                    ColorHelper.ShowWarningMessage($"✖ Otillräckligt saldo (Ditt saldo = {fromAcc.Balance} kr). Ange ett lägre belopp.");
+                    continue;
+                }
+
+                break; //amount confirmed
+            }
+
+
             var tx = new Transaction(            //create and add transaction to queue
                 Guid.NewGuid().ToString(),
                 accountNumber,
@@ -421,7 +433,7 @@ namespace K1_Banken_Team1.Domain
         {
             var ready = transactions     //find transactions ready to be processed
                 .Where(t => t.Status == "Pending" &&
-                            DateTime.Now - t.Timestamp >= TimeSpan.FromMinutes(1))
+                            DateTime.Now - t.Timestamp >= TimeSpan.FromSeconds(3))
                 .ToList();
 
             if (ready.Count == 0) return; // Stop if no transaction are ready
@@ -453,7 +465,7 @@ namespace K1_Banken_Team1.Domain
                         fromAcc.Withdraw(tx.Amount); //transfer money between two accounts
                         toAcc.Deposit(tx.Amount);
                         tx.Status = "Completed";
-                        tx.BalanceAfter = fromAcc.Balance; // saldo hos avsändaren efter körning
+                        tx.BalanceAfter = fromAcc.Balance; // Balance after processed transaction
                         if (verbose)
                             ColorHelper.ShowSuccessMessage($"✅ Överföring: -{tx.Amount} kr från {fromAcc.AccountNumber} till {toAcc.AccountNumber}. Avsändarens saldo: {tx.BalanceAfter} kr.");
                         break;
