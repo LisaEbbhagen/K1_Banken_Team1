@@ -1,6 +1,8 @@
 ﻿using K1_Banken_Team1.Presentation;
 using System.Collections.Generic;
 ﻿using System.Collections.Generic;
+using System.Reflection;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 
 namespace K1_Banken_Team1.Domain
@@ -178,6 +180,20 @@ namespace K1_Banken_Team1.Domain
 
         public List<Transaction> transactions { get; private set; } = new List<Transaction>(); //List for transactions.
 
+        public bool EnsureUserHasAccount(User user)
+        {
+            // User has no accounts
+            if (!user.Accounts.Any())
+            {
+                ColorHelper.ShowWarningMessage("❗ Du har inget konto kopplat till ditt användarkonto.");
+                ColorHelper.ShowInfoMessage("Du behöver skapa ett konto för att fortsätta.");
+
+                Pause();
+                return false;
+            }
+            return true;
+        }
+
         public void OpenAccount(User user, string accountNumber, string accountType = null, string currency = null) //Method to open new account.
         {
             Console.Clear();
@@ -341,15 +357,16 @@ namespace K1_Banken_Team1.Domain
 
 
             string toAccountNumber = null;
-            Account toAcc = null;   //when transfer - ask for reciever account validation
-            if (type == "Transfer")
+            Account toAcc = null;   
+
+            if (type == "Transfer")  //when transfer - ask for reciever account validation
             {
                 ColorHelper.ShowInputPrompt("Ange mottagarkonto: ");
                 toAccountNumber = Console.ReadLine();
                 toAcc = FindAccount(toAccountNumber);
 
                 //not null or your own account
-                while (toAcc == null || toAccountNumber == accountNumber)
+                while (toAcc == null || toAccountNumber == accountNumber) //not null or your own logged in account
                 {
                     if (toAcc == null)
                     {
@@ -365,13 +382,21 @@ namespace K1_Banken_Team1.Domain
                 }
             }
 
-
-
-            ColorHelper.ShowInputPrompt("Ange belopp: ");
-            string input = Console.ReadLine();
-            if (!decimal.TryParse(input, out decimal amount) || amount <= 0)  //amount + validation
+            if ((type == "Withdraw" || type == "Transfer") && fromAcc.Balance <= 0) //block transaction if balance is 0.for withdraw/transfer
             {
-                while (!decimal.TryParse(input, out amount) || amount <= 0)
+                ColorHelper.ShowWarningMessage($"✖ Ditt saldo är {fromAcc.Balance :0} kr. Du kan inte göra {type.ToLower()}.");
+                Pause();
+                return false;
+            }
+
+            decimal amount;
+            while (true)
+            {
+                ColorHelper.ShowInputPrompt("Ange belopp: ");
+                string input = Console.ReadLine();
+
+               
+                if (!decimal.TryParse(input, out amount) || amount <= 0)  // amount must be a number and > 0
                 {
                     ColorHelper.ShowWarningMessage("❌ Ogiltigt belopp. Ange en giltig siffra större än 0.");
                     ColorHelper.ShowInputPrompt("Ange belopp: ");
@@ -429,7 +454,7 @@ namespace K1_Banken_Team1.Domain
         {
             var ready = transactions     //find transactions ready to be processed
                 .Where(t => t.Status == "Pending" &&
-                            DateTime.Now - t.Timestamp >= TimeSpan.FromMinutes(1))
+                            DateTime.Now - t.Timestamp >= TimeSpan.FromSeconds(3))
                 .ToList();
 
             if (ready.Count == 0) return; // Stop if no transaction are ready
@@ -461,7 +486,7 @@ namespace K1_Banken_Team1.Domain
                         fromAcc.Withdraw(tx.Amount); //transfer money between two accounts
                         toAcc.Deposit(tx.Amount);
                         tx.Status = "Completed";
-                        tx.BalanceAfter = fromAcc.Balance; // saldo hos avsändaren efter körning
+                        tx.BalanceAfter = fromAcc.Balance; // Balance after processed transaction
                         if (verbose)
                             ColorHelper.ShowSuccessMessage($"✅ Överföring: -{tx.Amount} kr från {fromAcc.AccountNumber} till {toAcc.AccountNumber}. Avsändarens saldo: {tx.BalanceAfter} kr.");
                         break;

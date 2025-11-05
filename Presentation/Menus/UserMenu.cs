@@ -18,6 +18,9 @@ namespace K1_Banken_Team1.Presentation.Menus
 
         public void RunUserMenu(User currentUser)
         {
+            if (!_myBank.EnsureUserHasAccount(currentUser))
+                return;
+
             bool loggedIn = true;
 
             _ = Task.Run(async () =>
