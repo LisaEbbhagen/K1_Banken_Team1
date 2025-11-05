@@ -10,7 +10,7 @@ namespace K1_Banken_Team1.Domain
     {
          public SavingAccount(string accountNumber, User owner) : base(accountNumber, owner) { }
 
-        public override bool Withdraw(decimal amount) //metod med avgift för uttag
+        public override bool Withdraw(decimal amount) //method for withdraw with fee.
         {
             if (amount <= 0 || amount > Balance)
             {
@@ -19,7 +19,7 @@ namespace K1_Banken_Team1.Domain
             }
             else
             {
-                Balance -= amount -= 50;
+                Balance -= (amount + 50);
                 Console.WriteLine($"Aktuellt saldo efter uttag: {Balance}");
                 return true;
             }

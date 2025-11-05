@@ -19,55 +19,64 @@ namespace K1_Banken_Team1.Presentation.Menus
         public void RunUserMenu(User currentUser)
         {
             bool loggedIn = true;
-            Account userAccount = currentUser.Accounts.First(); // enkel version: varje användare har ett konto
+            Account userAccount = currentUser.Accounts.First(); // // simple version: get the first account of the user.
+
+            
+            _ = Task.Run(async () =>  // starts backgrounds activity that runs pending transactions every 15 minutes.
+            {
+                while (true)
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(1));
+                    _myBank.ProcessPendingTransactions();
+                }
+            });
 
             while (loggedIn)
             {
+                Console.Clear();
+                ColorHelper.ShowMenuHeader("Meny");
+                ColorHelper.ShowInfoMessage("Välj ett av följande alternativ:\n");
 
-                Console.WriteLine("\n=== Meny ===");
-                Console.WriteLine("\nVälkommen till K1 Banken!\n");
-                Console.WriteLine("Välj ett av följande alternativ!");
-
-                Console.WriteLine("1. Sätta in pengar");
-                Console.WriteLine("2. Ta ut pengar");
-                Console.WriteLine("3. Överför pengar");
-                Console.WriteLine("4. Visa transaktioner");
-                Console.WriteLine("5. Visa alla mina konton och saldo");
-                Console.WriteLine("6. Skapa nytt sparkonto");
-                Console.WriteLine("7. Ta ett banklån");
-                Console.WriteLine("8. Logga ut");
+                ColorHelper.ShowMenuChoice("1. Sätta in pengar");
+                ColorHelper.ShowMenuChoice("2. Ta ut pengar");
+                ColorHelper.ShowMenuChoice("3. Överför pengar");
+                ColorHelper.ShowMenuChoice("4. Visa transaktioner");
+                ColorHelper.ShowMenuChoice("5. Visa alla mina konton och saldo");
+                ColorHelper.ShowMenuChoice("6. Skapa nytt spar/checkkonto");
+                ColorHelper.ShowMenuChoice("7. Ta ett banklån");
+                ColorHelper.ShowMenuChoice("0. Logga ut");
+                ColorHelper.ShowInputPrompt("\nVal: ");
                 string choice = Console.ReadLine();
 
                 switch (choice)
                 {
 
                     case "1":
-                            _myBank.DepositMoney(currentUser);
-                            _myBank.Pause();
-                            break;
+                        _myBank.ExecuteTransaction("Deposit", currentUser);
+                        _myBank.Pause();
+                        break;
 
                     case "2":
-                            _myBank.WithdrawMoney(currentUser);
-                            _myBank.Pause();
-                            break;                          
+                        _myBank.ExecuteTransaction("Withdraw", currentUser); ; 
+                        _myBank.Pause();
+                        break;                          
 
-                    case "3": 
-                            _myBank.TransferMoney(currentUser);
-                            _myBank.Pause();
-                            break;                   
+                    case "3":
+                        _myBank.ExecuteTransaction("Transfer", currentUser);
+                        _myBank.Pause();
+                        break;
 
-                    case "4": 
-                            _myBank.ShowAllTransactions(currentUser);
-                            _myBank.Pause();
-                            break;                   
+                    case "4":
+                        _myBank.Transactions(currentUser);
+                        break;
 
                     case "5": 
-                            _myBank.ShowAllMyAccountsAndMoney(currentUser);
-                            _myBank.Pause();
-                            break;
+                        _myBank.ShowAllMyAccountsAndMoney(currentUser);
+                        _myBank.Pause();
+                        break;
 
                     case "6":
-                        _myBank.AddNewSavingsAccount(currentUser);
+                        _myBank.AddNewAccount(currentUser);
                         _myBank.Pause();
                         break;
 
@@ -82,7 +91,7 @@ namespace K1_Banken_Team1.Presentation.Menus
                         return;
 
                     default:
-                        Console.WriteLine("Ogiltigt val, försök igen.");
+                        ColorHelper.ShowWarningMessage("Ogiltigt val, försök igen.");
                         break;
                 }
             }

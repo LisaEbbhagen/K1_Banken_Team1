@@ -22,27 +22,63 @@ namespace K1_Banken_Team1.Presentation.Menus
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("=== Välkommen till K1 Banken ===");
-                Console.WriteLine("1. Logga in");
-                Console.WriteLine("2. Skapa konto (Ej implementerat)");
-                Console.WriteLine("3. Admin");
-                Console.WriteLine("4. Avsluta");
+                string logo = @"                                                                                                                               
+     $$\                                                                                                             $$\    
+     $$ |                                                                                                            $$ |   
+  $$$$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$\ $$$$$$$$\ 
+  \__$$  __|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\____|\__$$  __|
+     $$ |                                                                                                            $$ |   
+     \__|                                                                                                            \__|                                                                                                                                                                                        
+     $$\                   $$$$$$$\                   $$$$$$\                  $$\             $$\                   $$\ 
+     $$ |                  $$  __$$\                 $$  __$$\                 $$ |            $  |                  $$ |
+     $$ |                  $$ |  $$ |                $$ /  $$ |                $$ |            \_/$$$$$$$\           $$ |
+     \__|                  $$$$$$$  |                $$$$$$$$ |                $$ |              $$  _____|          \__|
+     $$\                   $$  __$$<                 $$  __$$ |                $$ |              \$$$$$$\            $$\ 
+     $$ |                  $$ |  $$ |                $$ |  $$ |                $$ |               \____$$\           $$ |
+     $$ |                  $$ |  $$ |      $$\       $$ |  $$ |      $$\       $$$$$$$$\         $$$$$$$  |          $$ |
+     \__|                  \__|  \__|      \__|      \__|  \__|      \__|      \________|        \_______/           \__|
+                                                                                                                                                                                                                                                              
+     $$\                               $$$$$$$\   $$$$$$\  $$\   $$\ $$\   $$\                                       $$\     
+     $$ |                              $$  __$$\ $$  __$$\ $$$\  $$ |$$ | $$  |                                      $$ |    
+     $$ |                              $$ |  $$ |$$ /  $$ |$$$$\ $$ |$$ |$$  /                                       $$ |    
+     \__|                              $$$$$$$\ |$$$$$$$$ |$$ $$\$$ |$$$$$  /                                        \__|    
+     $$\                               $$  __$$\ $$  __$$ |$$ \$$$$ |$$  $$<                                         $$\     
+     $$ |                              $$ |  $$ |$$ |  $$ |$$ |\$$$ |$$ |\$$\                                        $$ |    
+     $$ |                              $$$$$$$  |$$ |  $$ |$$ | \$$ |$$ | \$$\                                       $$ |    
+     \__|                              \_______/ \__|  \__|\__|  \__|\__|  \__|                                      \__|
+     $$\                                                                                                             $$\    
+     $$ |                                                                                                            $$ |   
+  $$$$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$\ $$$$$$$$\ 
+  \__$$  __|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\____|\__$$  __|
+     $$ |                                                                                                            $$ |   
+     \__|                                                                                                            \__|
+";
 
-                Console.Write("Val: ");
+
+                ColorHelper.ShowColoredLogo(logo);
+
+                logo = string.Join("\n", logo
+                              .Split('\n')
+                               .Where(line => !string.IsNullOrEmpty(line)));  //Remove empty lines to make logo look better
+
+                ColorHelper.ShowTitle("Välkommen till R.A.L´s bank"); //Rough version to make menu more appealing/centerd
+                ColorHelper.ShowMenuChoice("\n" + new string(' ', 55) + "1. Logga in");
+                ColorHelper.ShowMenuChoice(new string(' ', 55) + "2. Admin");
+                ColorHelper.ShowMenuChoice(new string(' ', 55) + "3. Avsluta");
+                Console.WriteLine();
+                ColorHelper.ShowInputPrompt(new string(' ', 55) + "Val: ");
                 string startChoice = Console.ReadLine();
 
                 switch (startChoice)
                 {
                     case "1":
-                        return "UserMenu";    // returnera värdet, kör inte UserMenu här
+                        return "UserMenu";    // Return the value, do not run the UserMenu here, and return the value.
                     case "2":
-                        return "CreateAccount";
+                        return "AdminMenu";  // Return the value.
                     case "3":
-                        return "AdminMenu";  // returnera värdet
-                    case "4":
                         return "Exit";
                     default:
-                        Console.WriteLine("Ogiltigt val, försök igen.");
+                        ColorHelper.ShowWarningMessage("Ogiltigt val, försök igen.");
                         myBank.Pause();
                         return "MainMenu";
                 }
