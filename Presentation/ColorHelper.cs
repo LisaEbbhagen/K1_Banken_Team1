@@ -74,5 +74,18 @@ namespace K1_Banken_Team1.Presentation
             Console.ResetColor();
         }
 
+        public static void ShowColoredLogo(string logo)
+        {
+            foreach (char c in logo)
+            {
+                if (c == '$')
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                else
+                    Console.ForegroundColor = ConsoleColor.White;
+
+                Console.Write(c);
+            }
+            Console.ResetColor();
+        }
     }
 }
