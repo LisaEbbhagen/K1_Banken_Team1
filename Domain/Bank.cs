@@ -48,7 +48,7 @@ namespace K1_Banken_Team1.Domain
                 ColorHelper.ShowInputPrompt("Ange namn: ");
                 name = Console.ReadLine();
 
-                if (users.Any(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase))) //Check if user already exists.
+                if (users.Any(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase))) //Name Validataion  (if existed)
                 {
                     ColorHelper.ShowWarningMessage($"❌ Det finns redan en användare registrerad med namnet '{name}'. Välj ett annat namn.\n");
                     continue;
@@ -59,7 +59,7 @@ namespace K1_Banken_Team1.Domain
                     ColorHelper.ShowWarningMessage("❌ Namn får inte vara tomt.\n");
                     continue;
                 }
-                break; // Name is ok.
+                break; // name is Ok, next step
             }
 
             string pin;
@@ -70,7 +70,7 @@ namespace K1_Banken_Team1.Domain
 
                 if (pin.Length == 4 && pin.All(char.IsDigit))
                 {
-                    break; // pin ok
+                    break; // PIN ok, next step
                 }
                 ColorHelper.ShowWarningMessage("❌ Ogiltig PIN. Ange exakt 4 siffror.\n");
 
@@ -88,12 +88,12 @@ namespace K1_Banken_Team1.Domain
                     continue;
                 }
 
-                if (users.Any(u => u.Id.Equals(id, StringComparison.OrdinalIgnoreCase)))
+                if (users.Any(u => u.Id.Equals(id, StringComparison.OrdinalIgnoreCase))) //if Id is used
                 {
                     ColorHelper.ShowWarningMessage($"❌ ID '{id}' andvänds redan. välj ett annat ID.");
                     continue;
                 }
-                break;
+                break; //Id ok
             }
 
             bool isAdmin = false; // Future use for admin creation.
@@ -124,7 +124,7 @@ namespace K1_Banken_Team1.Domain
             ColorHelper.ShowSuccessMessage($"✅ Användaren'{name}' har skapats och lagts till i systemet!");
         }
 
-        public void ListAllAccounts() //List all accounts, owner, balance that are registerd.
+        public void ListAllAccounts() //List all accounts, owner, balance that are registered.
         {
             Console.Clear();
             ColorHelper.ShowHighlightedChoice("Alla konton i banken: \n");
@@ -258,9 +258,9 @@ namespace K1_Banken_Team1.Domain
             Console.Clear();
             ColorHelper.ShowHighlightedChoice("=== Lås upp användare === \n");
 
-            var lockedUsers = users.Where(u => u.IsLocked).ToList(); //Hämta alla låsta användare
+            var lockedUsers = users.Where(u => u.IsLocked).ToList(); //List all locked users
 
-            if (!lockedUsers.Any()) //Om inga låsta användare finns
+            if (!lockedUsers.Any()) //if there is no locked users
             {
                 ColorHelper.ShowWarningMessage("\nℹ️ Det finns inga låsta användare just nu.");
                 return;
@@ -277,16 +277,16 @@ namespace K1_Banken_Team1.Domain
                 ColorHelper.ShowInputPrompt("\nAnge namnet på användaren du vill låsa upp:");
                 string name = Console.ReadLine();
 
-                var userToUnlock = lockedUsers //Hitta användaren
+                var userToUnlock = lockedUsers //find userUser
                     .FirstOrDefault(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
-                if (userToUnlock == null) //om användaren inte hittas
+                if (userToUnlock == null) //if User is not existed
                 {
                     ColorHelper.ShowWarningMessage("❌ Ingen användare hittades med det namnet. Ange namn igen. \n");
                     continue;
                 }
 
-                userToUnlock.IsLocked = false; //om användaren hittas
+                userToUnlock.IsLocked = false; //if User is locked
 
                 ColorHelper.ShowSuccessMessage($"🔒 Kontot för {userToUnlock.Name} har låsts upp!");
                 return;
@@ -322,52 +322,56 @@ namespace K1_Banken_Team1.Domain
         }
 
         //All transactiontypes in one method:
-        public bool ExecuteTransaction(string type, string accountNumber, decimal amount, string toAccountNumber = null)
+        public bool ExecuteTransaction(string type, User currentUser)
         {
             Console.Clear();
             ColorHelper.ShowHighlightedChoice($"\n-- {type.ToUpper()} --");
 
-            
-            if (string.IsNullOrEmpty(accountNumber)) //Accountnumber with validation
-            {
-                ColorHelper.ShowInputPrompt("Ange kontonummer: ");
-                accountNumber = Console.ReadLine();
-            }
+
+            ColorHelper.ShowInputPrompt("Ange kontonummer: ");
+            string accountNumber = Console.ReadLine(); //should be the inlogged user
 
             var fromAcc = FindAccount(accountNumber);
-            while (fromAcc == null)
+            while (fromAcc == null || fromAcc.Owner != currentUser)
             {
                 ColorHelper.ShowWarningMessage($"❌ Konto {accountNumber} hittades inte. Försök igen.");
-                ColorHelper.ShowInputPrompt("Ange kontonummer: ");
+                ColorHelper.ShowInputPrompt("Ange ditt kontonummer: ");
                 accountNumber = Console.ReadLine();
                 fromAcc = FindAccount(accountNumber);
             }
 
-           
-            Account toAcc = null; //when transfer - ask for reciever account validation
+
+            string toAccountNumber = null;
+            Account toAcc = null;   //when transfer - ask for reciever account validation
             if (type == "Transfer")
             {
-                if (string.IsNullOrEmpty(toAccountNumber))
-                {
-                    ColorHelper.ShowInputPrompt("Ange mottagarkonto: ");
-                    toAccountNumber = Console.ReadLine();
-                }
-
+                ColorHelper.ShowInputPrompt("Ange mottagarkonto: ");
+                toAccountNumber = Console.ReadLine();
                 toAcc = FindAccount(toAccountNumber);
-                while (toAcc == null)
+
+                //not null or your own account
+                while (toAcc == null || toAccountNumber == accountNumber)
                 {
-                    ColorHelper.ShowWarningMessage($"❌ Mottagarkonto {toAccountNumber} hittades inte. Försök igen.");
+                    if (toAcc == null)
+                    {
+                        ColorHelper.ShowWarningMessage($"❌ Mottagarkonto {toAccountNumber} hittades inte. Försök igen.");
+                    }
+                    else
+                    {
+                        ColorHelper.ShowWarningMessage($"❌ Du kan inte överföra till detta konto. Försök igen.");
+                    }
                     ColorHelper.ShowInputPrompt("Ange mottagarkonto: ");
                     toAccountNumber = Console.ReadLine();
                     toAcc = FindAccount(toAccountNumber);
                 }
             }
 
-            
-            if (amount <= 0)  //amount + validation
+
+
+            ColorHelper.ShowInputPrompt("Ange belopp: ");
+            string input = Console.ReadLine();
+            if (!decimal.TryParse(input, out decimal amount) || amount <= 0)  //amount + validation
             {
-                ColorHelper.ShowInputPrompt("Ange belopp: ");
-                string input = Console.ReadLine();
                 while (!decimal.TryParse(input, out amount) || amount <= 0)
                 {
                     ColorHelper.ShowWarningMessage("❌ Ogiltigt belopp. Ange en giltig siffra större än 0.");
@@ -375,7 +379,7 @@ namespace K1_Banken_Team1.Domain
                     input = Console.ReadLine();
                 }
             }
-
+                
             if ((type == "Withdraw" || type == "Transfer") && fromAcc.Balance < amount) //check balance for withdraw or transfer
             {
                 ColorHelper.ShowWarningMessage($"❌ Otillräckligt saldo ({fromAcc.Balance} kr). Ange ett lägre belopp.");
@@ -418,7 +422,7 @@ namespace K1_Banken_Team1.Domain
         {
             var ready = transactions     //find transactions ready to be processed
                 .Where(t => t.Status == "Pending" &&
-                            DateTime.Now - t.Timestamp >= TimeSpan.FromMinutes(15))
+                            DateTime.Now - t.Timestamp >= TimeSpan.FromMinutes(1))
                 .ToList();
 
             if (ready.Count == 0) return; // Stop if no transaction are ready
