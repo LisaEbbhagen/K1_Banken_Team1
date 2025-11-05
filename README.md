@@ -8,8 +8,6 @@ This BankApp is a collaborative group project developed by us during the Fullsta
 ### Technologies
 - Language: C#
 - Framework: .NET 8
-- ORM: Entity Framework Core
-- Database: SQL Server LocalDB
 - IDE: Visual Studio
 - Version Control: Git (shared team repository with branching and pull requests)
 
@@ -71,7 +69,6 @@ It’s simple, fast, and designed to feel intuitive.
 **Troubleshooting & tips:**
 - If no users exist yet, use the `Admin` menu to create a user before attempting to log in.
 - Invalid inputs will trigger warning messages, re-enter values as prompted.
-- Ensure SQL Server LocalDB is running and the connection string in `appsettings.json` (or code) is correct.
 - Use the `Exit` option from the main menu to close the app.
 
 ### Authors
