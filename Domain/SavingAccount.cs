@@ -19,7 +19,7 @@ namespace K1_Banken_Team1.Domain
             }
             else
             {
-                Balance -= amount -= 50;
+                Balance -= (amount + 50);
                 Console.WriteLine($"Aktuellt saldo efter uttag: {Balance}");
                 return true;
             }
