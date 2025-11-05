@@ -96,8 +96,30 @@ namespace K1_Banken_Team1.Domain
                 break; //Id ok
             }
 
-            var newUser = new User(name, pin, id); //create User
-            AddUser(newUser);                     //User added to the List  
+            bool isAdmin = false; // Future use for admin creation.
+            while (true)
+            {
+               ColorHelper.ShowInputPrompt("Ska denna användare vara admin? (j/n): ");
+               string adminInput = Console.ReadLine().ToLower();
+                if (adminInput == "j")
+                {
+                   isAdmin = true;
+                   break;
+                }
+                else if (adminInput == "n")
+                {
+                   isAdmin = false;
+                   break;
+                }
+                else
+                {
+                        ColorHelper.ShowWarningMessage("Ogiltigt val. Ange 'j' för ja eller 'n' för nej.\n");
+                }
+                
+            }
+
+            var newUser = new User(name, pin, id, isAdmin); //Create user.
+            AddUser(newUser);                     // Add user to list.
 
             ColorHelper.ShowSuccessMessage($"✅ Användaren'{name}' har skapats och lagts till i systemet!");
         }
