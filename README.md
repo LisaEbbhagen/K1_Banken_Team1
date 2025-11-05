@@ -1,5 +1,5 @@
 # K1_Banken_Team1 
-# RAL´s bank
+# R.A.L´s bank
 ## - a console-based BankApp in C#
 
 ### General info
