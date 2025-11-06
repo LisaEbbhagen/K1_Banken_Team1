@@ -395,13 +395,10 @@ namespace K1_Banken_Team1.Domain
                 ColorHelper.ShowInputPrompt("Ange belopp: ");
                 string input = Console.ReadLine();
 
-               
-                if (!decimal.TryParse(input, out amount) || amount <= 0)  // amount must be a number and > 0
-                {
-                    ColorHelper.ShowWarningMessage("❌ Ogiltigt belopp. Ange en giltig siffra större än 0.");
-                    ColorHelper.ShowInputPrompt("Ange belopp: ");
-                    input = Console.ReadLine();
-                }
+                if (decimal.TryParse(input, out amount) && amount > 0)
+                    break;
+
+                ColorHelper.ShowWarningMessage("❌ Ogiltigt belopp. Ange en siffra större än 0.");
             }
 
             while ((type == "Withdraw" || type == "Transfer") && fromAcc.Balance < amount)
@@ -409,13 +406,8 @@ namespace K1_Banken_Team1.Domain
                 ColorHelper.ShowWarningMessage($"❌ Otillräckligt saldo ({fromAcc.Balance} kr). Ange ett lägre belopp.");
                 ColorHelper.ShowInputPrompt("Ange belopp: ");
                 string newInput = Console.ReadLine();
-
-                while (!decimal.TryParse(newInput, out amount) || amount <= 0)
-                {
-                    ColorHelper.ShowWarningMessage("❌ Ogiltigt belopp. Ange en giltig siffra större än 0.");
-                    ColorHelper.ShowInputPrompt("Ange belopp: ");
-                    newInput = Console.ReadLine();
-                }
+                decimal.TryParse(newInput, out amount);
+            
             }
 
 
