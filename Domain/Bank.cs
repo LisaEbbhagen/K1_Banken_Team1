@@ -123,6 +123,32 @@ namespace K1_Banken_Team1.Domain
             var newUser = new User(name, pin, id, isAdmin); //Create user.
             AddUser(newUser);                     // Add user to list.
 
+            ColorHelper.ShowInfoMessage("Nu skapar vi ett konto för denna användare.");
+
+            string accountNumber;
+            while (true)
+            {
+                ColorHelper.ShowInputPrompt("Ange kontonummer: ");
+                accountNumber = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(accountNumber))
+                {
+                    ColorHelper.ShowWarningMessage("❌ Kontonummer får inte vara tomt.");
+                    continue;
+                }
+                if (accounts.ContainsKey(accountNumber))
+                {
+                    ColorHelper.ShowWarningMessage("❌ Kontonumret används redan. Välj ett annat.");
+                    continue;
+                }
+                break;
+            }
+           
+            var newAccount = new Account(accountNumber, newUser);
+            newUser.AddAccount(newAccount);
+
+            //Add account to bank's account dictionary
+            accounts[accountNumber] = newAccount;
+
             ColorHelper.ShowSuccessMessage($"✅ Användaren'{name}' har skapats och lagts till i systemet!");
         }
 
@@ -991,5 +1017,10 @@ namespace K1_Banken_Team1.Domain
             Pause();
             return null;
         }
+        public void AddAccountToBank(Account account)
+        {
+            accounts.Add(account.AccountNumber, account);
+        }
+
     }
 }
